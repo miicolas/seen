@@ -42,6 +42,8 @@ Both files expose `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_PUBLISHAB
 
 **Supabase is the backend** — there is no separate server. Server-side logic and any third-party/AI calls run in **Supabase Edge Functions** (`supabase/functions/`); schema lives in **migrations** (`supabase/migrations/`) with RLS. Follow the **`backend` skill** for these, plus the existing `supabase` / `supabase-postgres-best-practices` skills. Provider secrets stay server-side (`supabase secrets set`), never in `EXPO_PUBLIC_*`.
 
+**Movie data** comes from TMDB via the server-side `tmdb` Edge Function, which proxies TMDB and caches movie details in the `movies` table to protect the API quota. Follow the **`tmdb` skill** for any TMDB work (search/discover/find/detail, images, auth, cache).
+
 ## Architecture
 
 iOS-only Expo Router (file-based routing) app. Source lives under `src/` and is imported via the `@/*` alias (→ `src/*`), with `@/assets/*` → `assets/*`. Typed routes and the React Compiler are both enabled (`app.json` → `experiments`).
@@ -98,6 +100,6 @@ The starter left behind some `*.web.tsx`/`*.web.ts` files (e.g. `app-tabs.web.ts
 ### Conventions
 
 - Files are named **kebab-case**; the path alias `@/` is used for all internal imports.
-- User-facing screen text is in **French** (e.g. the login screen).
+- User-facing screen text is in **English**. (The legacy login screen is still in French and is being migrated.)
 - Build UI with Expo UI SwiftUI per the `expo-ui-swiftui` skill; reach for plain RN views only when there's no native equivalent.
 - Source layout under `src/`: `app/` (routes), `components/` (+ `components/ui/`), `hooks/`, `providers/`, `lib/`, `constants/`, and `store/` (Zustand). Add `types/` and `utils/` when those layers are introduced (typed API client, shared helpers).

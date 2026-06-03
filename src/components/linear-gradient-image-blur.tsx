@@ -13,7 +13,24 @@ import {
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
-type GradientColors = readonly [ColorValue, ColorValue, ColorValue, ColorValue];
+export type GradientColors = readonly [
+  ColorValue,
+  ColorValue,
+  ColorValue,
+  ColorValue,
+];
+
+/**
+ * Dark bottom scrim preset. Use for cards that overlay white text on an image
+ * so the text stays legible in both themes (the default gradient fades to the
+ * theme background, which would wash out white text in light mode).
+ */
+export const DARK_SCRIM: GradientColors = [
+  "transparent",
+  "#00000040",
+  "#00000090",
+  "#000000E6",
+];
 
 export interface LinearGradientImageBlurProps {
   // Visibility controls.
