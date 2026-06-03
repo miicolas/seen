@@ -1,55 +1,14 @@
-// Edge Function `tmdb` — the single server-side chokepoint for TMDB.
-// Keeps the TMDB token server-side, centralizes quota/rate-limit handling, and
-// caches movie details in the `movies` table (cache-aside). search/discover/find
-// always hit TMDB but warm the cache with the rows they return.
-//
-// Call from the app:
-//   supabase.functions.invoke("tmdb", { body: { action: "search", query: "dune" } })
-//   supabase.functions.invoke("tmdb", { body: { action: "movie", tmdb_id: 438631 } })
-//   supabase.functions.invoke("tmdb", { body: { action: "discover", params: { sort_by: "popularity.desc" } } })
-//   supabase.functions.invoke("tmdb", { body: { action: "find", external_id: "tt1160419", source: "imdb_id" } })
-
 import { corsHeaders, jsonResponse } from "../_shared/cors.ts";
-import {
-  discover,
-  findByExternalId,
-  getMovieDetail,
-  searchMovies,
-  TmdbError,
-  trending,
-  type TmdbMediaType,
-} from "../_shared/tmdb.ts";
-import {
-  getCachedMovieDetail,
-  upsertMovieDetail,
-  upsertMovieList,
-} from "../_shared/cache.ts";
+import { TmdbError, type TmdbMediaType } from "../_shared/tmdb.ts";
+import { handlers } from "./handlers/index.ts";
+import type { HandlerContext, RequestBody } from "./types.ts";
 
 const DEFAULT_LANGUAGE = "fr-FR";
 
-// Warming the cache from a list response is best-effort: the caller's payload is
-// the TMDB result, not the cached rows. Schedule it off the response path so it
-// never adds a DB round-trip to latency (and a failed warm can't fail the
-// request). `EdgeRuntime.waitUntil` keeps the instance alive until it settles.
 function warmCache(work: Promise<void>): void {
   const scheduled = work.catch((err) => console.error("cache warm failed", err));
   // deno-lint-ignore no-explicit-any
   (globalThis as any).EdgeRuntime?.waitUntil?.(scheduled);
-}
-
-interface RequestBody {
-  action?: "search" | "discover" | "find" | "movie" | "trending";
-  query?: string;
-  page?: number;
-  tmdb_id?: number;
-  external_id?: string;
-  source?: string;
-  language?: string;
-  // "movie" (default) or "tv" — selects the TMDB media endpoint.
-  media_type?: TmdbMediaType;
-  // For the "trending" action: "day" or "week" (defaults to "week").
-  time_window?: "day" | "week";
-  params?: Record<string, string | number | boolean | undefined>;
 }
 
 function mediaTypeOf(value: string | undefined): TmdbMediaType {
@@ -68,75 +27,24 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: "Invalid JSON body" }, 400);
   }
 
-  const language = body.language ?? DEFAULT_LANGUAGE;
+  const handler = body.action && handlers[body.action];
+  if (!handler) {
+    return jsonResponse(
+      { error: "Unknown action. Use search | discover | find | movie | trending." },
+      400,
+    );
+  }
+
+  const ctx: HandlerContext = {
+    language: body.language ?? DEFAULT_LANGUAGE,
+    warmCache,
+    mediaTypeOf,
+  };
 
   try {
-    switch (body.action) {
-      case "search": {
-        if (!body.query) return jsonResponse({ error: "query is required" }, 400);
-        const result = await searchMovies(body.query, body.page ?? 1, language);
-        warmCache(upsertMovieList(result.results, language));
-        return jsonResponse(result);
-      }
-
-      case "discover": {
-        const mediaType = mediaTypeOf(body.media_type);
-        const result = await discover(mediaType, {
-          language,
-          page: body.page ?? 1,
-          ...(body.params ?? {}),
-        });
-        warmCache(upsertMovieList(result.results, language, mediaType));
-        return jsonResponse(result);
-      }
-
-      case "trending": {
-        // `media_type: "all"` returns a mixed movie+tv feed (Netflix-style);
-        // each item carries its own media_type, so warmCache tags them per-item.
-        const media = body.media_type ?? "all";
-        const result = await trending(
-          media === "all" ? "all" : mediaTypeOf(media),
-          body.time_window ?? "week",
-          language,
-        );
-        warmCache(upsertMovieList(result.results, language, mediaTypeOf(body.media_type)));
-        return jsonResponse(result);
-      }
-
-      case "find": {
-        if (!body.external_id) {
-          return jsonResponse({ error: "external_id is required" }, 400);
-        }
-        const result = await findByExternalId(
-          body.external_id,
-          body.source ?? "imdb_id",
-          language,
-        );
-        warmCache(upsertMovieList(result.movie_results ?? [], language));
-        return jsonResponse(result);
-      }
-
-      case "movie": {
-        if (!body.tmdb_id) {
-          return jsonResponse({ error: "tmdb_id is required" }, 400);
-        }
-        const cached = await getCachedMovieDetail(body.tmdb_id);
-        if (cached) return jsonResponse({ ...cached, _cache: "hit" });
-
-        const detail = await getMovieDetail(body.tmdb_id, language);
-        await upsertMovieDetail(detail, language);
-        return jsonResponse({ ...detail, _cache: "miss" });
-      }
-
-      default:
-        return jsonResponse(
-          { error: "Unknown action. Use search | discover | find | movie." },
-          400,
-        );
-    }
+    return await handler(body, ctx);
   } catch (err) {
     if (err instanceof TmdbError) {
-      // Map TMDB errors to HTTP. 429 carries Retry-After.
       const headers: Record<string, string> = {};
       if (err.status === 429 && err.retryAfter) {
         headers["Retry-After"] = err.retryAfter;

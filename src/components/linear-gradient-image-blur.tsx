@@ -20,11 +20,6 @@ export type GradientColors = readonly [
   ColorValue,
 ];
 
-/**
- * Dark bottom scrim preset. Use for cards that overlay white text on an image
- * so the text stays legible in both themes (the default gradient fades to the
- * theme background, which would wash out white text in light mode).
- */
 export const DARK_SCRIM: GradientColors = [
   "transparent",
   "#00000040",
@@ -33,27 +28,16 @@ export const DARK_SCRIM: GradientColors = [
 ];
 
 export interface LinearGradientImageBlurProps {
-  // Visibility controls.
   showBlur?: boolean;
   showGradient?: boolean;
   showProgressiveBlur?: boolean;
   showSolidColor?: boolean;
-
-  // Gradient configuration (4 stops at 0 / 0.25 / 0.5 / 0.75).
   lightGradientColors?: GradientColors;
   darkGradientColors?: GradientColors;
-
-  // Image configuration.
   imageUrl?: ImageSource | number;
-
-  // Blur configuration.
   blurIntensity?: number;
   tintColor?: BlurTint;
-
-  // Solid color configuration.
   solidColor?: string;
-
-  // Style overrides.
   containerStyle?: ViewStyle;
   imageStyle?: ImageStyle;
 }
@@ -87,11 +71,6 @@ function ProgressiveBlurView({
   );
 }
 
-/**
- * Layered full-bleed background: an image with a gradient overlay and optional
- * progressive (gradient-masked) blur on top. Ported from the endlessly app and
- * adapted to Seen's conventions (expo-image, theme colors). iOS-only.
- */
 export function LinearGradientImageBlur({
   showBlur = false,
   showGradient = false,

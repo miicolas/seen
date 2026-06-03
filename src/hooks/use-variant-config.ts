@@ -24,12 +24,6 @@ interface VariantConfigOptions {
   supportedVariants?: BaseVariant[];
 }
 
-/**
- * Per-variant color resolution — ported from the reference app (Endlessly).
- * Returns `{ backgroundColor, borderColor, textColor, borderWidth }` (plus
- * `placeholderColor` when requested) for each supported variant, resolved for
- * the active color scheme and accent color.
- */
 export function useVariantConfig<T extends BaseVariant>(
   color?: UIColor | null,
   options: VariantConfigOptions = {},
@@ -62,8 +56,6 @@ export function useVariantConfig<T extends BaseVariant>(
         solid: {
           backgroundColor: bgColor,
           borderColor,
-          // Always legible on the filled background (white on dark/saturated,
-          // near-black on light) — overrides the reference app's quirk.
           textColor: getContrastText(bgColor),
           borderWidth: BORDER_WIDTH.THIN,
         },
@@ -163,7 +155,6 @@ export function useVariantConfig<T extends BaseVariant>(
       return createVariantConfig(bgColor, textColor, bgColor, placeholderColor);
     }
 
-    // No explicit color → use the active accent.
     const baseHex = accentHex;
     const highContrastText = isDark
       ? getColorValue("zinc", COLOR_SHADES.LIGHTEST)

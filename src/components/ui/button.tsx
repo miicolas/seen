@@ -21,26 +21,22 @@ import { useAccentColor } from "@/hooks/use-accent-color";
 import { hapticTap } from "@/lib/haptics";
 import type { UIColor, UISize } from "@/types/ui";
 
-// Native SwiftUI button styles we map our variants onto.
 export type ButtonVariant =
-  | "solid" // filled, prominent (native borderedProminent)
-  | "glass" // liquid-glass prominent (like the onboarding CTA)
-  | "soft" // tinted light fill (native bordered)
-  | "outline" // bordered
-  | "link"; // text-only (native borderless)
+  | "solid"
+  | "glass"
+  | "soft"
+  | "outline"
+  | "link";
 
 export interface ButtonProps {
   title: string;
   onPress: () => void;
   variant?: ButtonVariant;
-  /** Accent family; defaults to the app accent. */
   color?: UIColor;
   size?: UISize;
   disabled?: boolean;
   loading?: boolean;
-  /** Fire `hapticTap` on press. @default true */
   haptic?: boolean;
-  /** Fixed width in px (e.g. for full-width CTAs). Hugs content when omitted. */
   width?: number;
 }
 
@@ -73,11 +69,6 @@ const HEIGHT_FOR_FRAME: Record<UISize, number> = {
   "2xl": 56,
 };
 
-/**
- * SwiftUI-first button using **native** button styles (filled / glass / bordered
- * / borderless) tinted with the app accent — same family of CTAs as the
- * onboarding screen, with native press feedback and a capsule shape.
- */
 export function Button({
   title,
   onPress,
@@ -106,8 +97,6 @@ export function Button({
         onPress={handlePress}
         modifiers={[
           buttonStyle(VARIANT_TO_STYLE[variant]),
-          // Minimal native chrome so the frame height below controls the size
-          // precisely (same approach as the onboarding CTA).
           controlSize("mini"),
           tint(tintColor),
           clipShape("capsule"),

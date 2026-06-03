@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Platform, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -10,6 +11,7 @@ import { BottomTabInset, MaxContentWidth, Spacing } from "@/constants/theme";
 import { useAuthContext } from "@/hooks/use-auth-context";
 
 export function Home() {
+  const { t } = useTranslation();
   const { user } = useAuthContext();
   const email = user?.email ?? "—";
 
@@ -19,13 +21,13 @@ export function Home() {
         <ThemedView style={styles.heroSection}>
           <AnimatedIcon />
           <ThemedText type="title" style={styles.title}>
-            Bienvenue&nbsp;👋
+            {t("home.welcome")}
           </ThemedText>
         </ThemedView>
 
         <ThemedView type="backgroundElement" style={styles.card}>
           <ThemedText type="small" themeColor="textSecondary">
-            Connecté en tant que
+            {t("home.signedInAs")}
           </ThemedText>
           <ThemedText type="smallBold" selectable>
             {email}

@@ -10,11 +10,6 @@ interface SectionProps {
   children: ReactNode;
 }
 
-/**
- * A titled, frosted-glass container — same DA as the reference app's `Section`
- * (a blurred rounded card). Layout container only; interactive controls inside
- * are SwiftUI (`@expo/ui/swift-ui`). iOS-only.
- */
 export function Section({ title, children }: SectionProps) {
   const isDark = useColorScheme() === "dark";
 

@@ -1,9 +1,10 @@
+import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 
 import { Text } from "@/components/ui/text";
 import { SPACING } from "@/constants/design-tokens";
 import { useDiscoverMedia } from "@/hooks/use-discover-media";
-import type { TmdbMovieSummary } from "@/lib/tmdb";
+import type { MediaFilter, TmdbMovieSummary } from "@/lib/tmdb";
 
 import { DiscoverSkeleton } from "./discover-skeleton";
 import { HeroCard } from "./hero-card";
@@ -11,13 +12,13 @@ import { PosterCard } from "./poster-card";
 import { RankingCard } from "./ranking-card";
 import { Shelf } from "./shelf";
 
-// Movies and series share the same numeric id space, so key on media_type too.
 const keyOf = (media: TmdbMovieSummary, index: number) =>
   `${media.media_type}-${media.id}-${index}`;
 
-export const DiscoverContainer = () => {
+export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
+  const { t } = useTranslation();
   const { trending, topToday, newReleases, genres, isLoading, error } =
-    useDiscoverMedia();
+    useDiscoverMedia(filter);
 
   if (isLoading) return <DiscoverSkeleton />;
 
@@ -31,11 +32,22 @@ export const DiscoverContainer = () => {
     );
   }
 
-  // Slice the trending list so the featured hero and the Trending row don't
-  // repeat the same titles. Empty shelves render nothing (see `Shelf`).
   const featured = trending.slice(0, 5);
   const trendingRow = trending.slice(5);
   const topTen = topToday.slice(0, 10);
+
+  const trendingEyebrow =
+    filter === "all"
+      ? t("discover.eyebrowAll")
+      : filter === "movie"
+        ? t("discover.eyebrowMovies")
+        : t("discover.eyebrowSeries");
+  const newReleasesSubtitle =
+    filter === "all"
+      ? t("discover.freshAll")
+      : filter === "movie"
+        ? t("discover.freshMovies")
+        : t("discover.freshSeries");
 
   return (
     <View style={styles.container}>
@@ -51,8 +63,8 @@ export const DiscoverContainer = () => {
       />
 
       <Shelf
-        title="Trending Now"
-        eyebrow="Movies & Series"
+        title={t("discover.trendingTitle")}
+        eyebrow={trendingEyebrow}
         data={trendingRow}
         keyExtractor={keyOf}
         visibleCards={2.2}
@@ -62,8 +74,8 @@ export const DiscoverContainer = () => {
       />
 
       <Shelf
-        title="Top 10 Today"
-        eyebrow="Chart"
+        title={t("discover.topTodayTitle")}
+        eyebrow={t("discover.topTodayEyebrow")}
         data={topTen}
         keyExtractor={keyOf}
         visibleCards={2.2}
@@ -73,8 +85,8 @@ export const DiscoverContainer = () => {
       />
 
       <Shelf
-        title="New Releases"
-        subtitle="Fresh films and shows"
+        title={t("discover.newReleasesTitle")}
+        subtitle={newReleasesSubtitle}
         data={newReleases}
         keyExtractor={keyOf}
         visibleCards={1.6}
@@ -85,8 +97,8 @@ export const DiscoverContainer = () => {
 
       {genres.map((genre) => (
         <Shelf
-          key={genre.name}
-          title={genre.name}
+          key={genre.key}
+          title={t(`discover.genre${genre.key}`)}
           data={genre.media}
           keyExtractor={keyOf}
           visibleCards={2.2}

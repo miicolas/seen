@@ -1,13 +1,3 @@
-/**
- * Design tokens — ported from the reference app (Endlessly).
- * Centralized constants for consistent UI; eliminates magic numbers.
- *
- * Pairs with the `design-system` skill. `src/constants/theme.ts` keeps the
- * light/dark semantic `Colors`; this file holds the shared scales used by the
- * variant system and the `src/components/ui/*` components.
- */
-
-// COLOR SHADES ---------------------------------------------------------------
 export const COLOR_SHADES = {
   LIGHTEST: 50,
   VERY_LIGHT: 100,
@@ -19,25 +9,16 @@ export const COLOR_SHADES = {
   DARKEST: 950,
 } as const;
 
-// OPACITY --------------------------------------------------------------------
 export const OPACITY = {
-  /** Subtle background opacity for light mode (hex suffix). */
   BACKGROUND_LIGHT: "10",
-  /** Subtle background opacity for dark mode (hex suffix). */
   BACKGROUND_DARK: "20",
-  /** Placeholder opacity for light mode (hex suffix). */
   PLACEHOLDER_LIGHT: "66",
-  /** Placeholder opacity for dark mode (hex suffix). */
   PLACEHOLDER_DARK: "99",
-  /** Disabled state opacity. */
   DISABLED: 0.5,
-  /** Pressed state opacity. */
   PRESSED: 0.9,
-  /** Muted text opacity. */
   MUTED: 0.6,
 } as const;
 
-// BORDER WIDTHS --------------------------------------------------------------
 export const BORDER_WIDTH = {
   NONE: 0,
   THIN: 1,
@@ -45,7 +26,6 @@ export const BORDER_WIDTH = {
   THICK: 3,
 } as const;
 
-// COMPONENT HEIGHTS ----------------------------------------------------------
 export const COMPONENT_HEIGHT = {
   XS: 28,
   SM: 36,
@@ -55,7 +35,6 @@ export const COMPONENT_HEIGHT = {
   XXL: 72,
 } as const;
 
-// FONT SIZES -----------------------------------------------------------------
 export const FONT_SIZE = {
   XS: 12,
   SM: 14,
@@ -77,7 +56,6 @@ export const FONT_SIZE = {
   DISPLAY_XXXL: 220,
 } as const;
 
-// LINE HEIGHTS ---------------------------------------------------------------
 export const LINE_HEIGHT = {
   XS: 16,
   SM: 20,
@@ -98,7 +76,6 @@ export const LINE_HEIGHT = {
   DISPLAY_XXXL: 268,
 } as const;
 
-// SPACING --------------------------------------------------------------------
 export const SPACING = {
   NONE: 0,
   XXS: 1,
@@ -110,7 +87,6 @@ export const SPACING = {
   XXL: 64,
 } as const;
 
-// BORDER RADIUS --------------------------------------------------------------
 export const BORDER_RADIUS = {
   NONE: 0,
   SM: 8,
@@ -119,7 +95,6 @@ export const BORDER_RADIUS = {
   FULL: 9999,
 } as const;
 
-// ANIMATION DURATIONS --------------------------------------------------------
 export const DURATION = {
   QUICK: 150,
   FAST: 300,
@@ -129,7 +104,6 @@ export const DURATION = {
   SPLASH: 1000,
 } as const;
 
-// Z-INDEX LAYERS -------------------------------------------------------------
 export const Z_INDEX = {
   BASE: 0,
   CONTENT: 1,
@@ -140,7 +114,6 @@ export const Z_INDEX = {
   DROPDOWN: 30,
 } as const;
 
-// SEMANTIC MAPPINGS ----------------------------------------------------------
 export const THEME_SHADES = {
   BG: { LIGHT: COLOR_SHADES.LIGHTEST, DARK: COLOR_SHADES.DARKEST },
   TEXT: { LIGHT: COLOR_SHADES.LIGHTEST, DARK: COLOR_SHADES.DARKEST },

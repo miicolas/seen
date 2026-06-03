@@ -1,8 +1,3 @@
-// Service-role Supabase client for cache writes. Bypasses RLS, so it is used
-// ONLY server-side inside Edge Functions — never exposed to the app.
-// SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are injected automatically by the
-// Supabase runtime (local `functions serve` and deployed).
-
 import { createClient, type SupabaseClient } from "jsr:@supabase/supabase-js@2";
 
 let cached: SupabaseClient | null = null;

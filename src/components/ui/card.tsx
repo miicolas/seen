@@ -14,10 +14,6 @@ interface CardProps {
   style?: ViewStyle;
 }
 
-/**
- * Rounded surface container — same DA as the reference app's `Card`. Plain or
- * bordered, optionally pressable. Adapts to light/dark via the semantic `Colors`.
- */
 export function Card({
   children,
   variant = "plain",

@@ -23,10 +23,8 @@ type TextAlign = "leading" | "center" | "trailing";
 
 export interface TextProps {
   children: string;
-  /** Font size token (maps to `FONT_SIZE`). @default 'md' */
   size?: UISize;
   weight?: FontWeight;
-  /** Hex color. Defaults to the native adaptive label color when omitted. */
   color?: string;
   align?: TextAlign;
 }
@@ -40,10 +38,6 @@ const SIZE_TO_FONT: Record<UISize, number> = {
   "2xl": FONT_SIZE.XXL,
 };
 
-/**
- * SwiftUI-first text. Self-hosted so it can be dropped into any RN layout.
- * Tokens (`FONT_SIZE`) drive the size; native label color is used by default.
- */
 export function Text({
   children,
   size = "md",

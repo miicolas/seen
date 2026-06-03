@@ -8,40 +8,20 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Restore any persisted session on startup.
-    supabase.auth.getSession().then(({ data, error }) => {
-      console.log("[auth] getSession →", {
-        hasSession: !!data.session,
-        email: data.session?.user.email ?? null,
-        error: error?.message ?? null,
-      });
+    supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
       setIsLoading(false);
     });
 
-    // Keep the session in sync (sign in / sign out / token refresh).
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, nextSession) => {
-      console.log(
-        "[auth] event →",
-        event,
-        "| email:",
-        nextSession?.user.email ?? null
-      );
+    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession);
       setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
-
-  console.log(
-    "[auth] render → isLoggedIn:",
-    !!session,
-    "| email:",
-    session?.user.email ?? null
-  );
 
   return (
     <AuthContext.Provider

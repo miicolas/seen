@@ -46,3 +46,7 @@ example
 # AI
 ./claude
 ./agents
+
+# App Store Connect API key (materialized in CI, never commit)
+eas-asc-api-key.p8
+*.p8

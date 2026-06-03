@@ -1,5 +1,3 @@
-// Required by supabase-js in React Native: provides a spec-compliant URL /
-// URLSearchParams. Must be imported before createClient is used.
 import "react-native-url-polyfill/auto";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -9,12 +7,10 @@ import * as Crypto from "expo-crypto";
 import * as SecureStore from "expo-secure-store";
 import { AppState } from "react-native";
 
-// As Expo's SecureStore does not support values larger than 2048 bytes, an
-// AES-256 key is generated and stored in SecureStore, while it is used to
-// encrypt/decrypt the (larger) session value stored in AsyncStorage.
+// SecureStore caps values at 2048 bytes, so the AES key lives in SecureStore
+// and the encrypted (larger) session blob lives in AsyncStorage.
 class LargeSecureStore {
   private async _encrypt(key: string, value: string) {
-    // expo-crypto's secure RNG works in Expo Go and dev builds alike.
     const encryptionKey = Crypto.getRandomValues(new Uint8Array(256 / 8));
 
     const cipher = new aesjs.ModeOfOperation.ctr(
@@ -80,7 +76,6 @@ export const supabase = createClient(
   },
 );
 
-// Refresh the auth token automatically while the app is in the foreground.
 AppState.addEventListener("change", (state) => {
   if (state === "active") {
     supabase.auth.startAutoRefresh();

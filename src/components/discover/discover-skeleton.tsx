@@ -11,7 +11,6 @@ import { BORDER_RADIUS, OPACITY, SPACING } from "@/constants/design-tokens";
 import { MaxContentWidth } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
 
-/** A looping opacity pulse for skeleton placeholders. */
 function usePulse() {
   const opacity = useSharedValue<number>(OPACITY.MUTED);
   useEffect(() => {
@@ -25,7 +24,6 @@ function SkeletonShelf({
   visibleCards,
   count,
 }: {
-  /** Card height as a multiple of its width. */
   heightRatio: number;
   visibleCards: number;
   count: number;
@@ -61,7 +59,6 @@ function SkeletonShelf({
   );
 }
 
-/** Loading placeholder that mirrors the Discover layout (hero + poster rows). */
 export function DiscoverSkeleton() {
   return (
     <View style={styles.container}>

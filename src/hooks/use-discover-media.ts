@@ -1,25 +1,28 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
-import { MEDIA_GENRE_SHELVES } from "@/constants/movie-genres";
+import {
+  MEDIA_GENRE_SHELVES,
+  type MediaGenreShelf,
+} from "@/constants/movie-genres";
+import { errorMessage } from "@/lib/format";
 import {
   discoverMedia,
   trendingMedia,
+  type MediaFilter,
   type TmdbMovieSummary,
 } from "@/lib/tmdb";
 
 export interface GenreRow {
+  key: MediaGenreShelf["key"];
   name: string;
   media: TmdbMovieSummary[];
 }
 
 interface DiscoverMedia {
-  /** Mixed movie + series trending feed (this week), top-sliced for the hero. */
   trending: TmdbMovieSummary[];
-  /** Mixed trending today, used for the ranked Top 10 row. */
   topToday: TmdbMovieSummary[];
-  /** Newest movies and series, interleaved. */
   newReleases: TmdbMovieSummary[];
-  /** One row per genre, each mixing movies and series. */
   genres: GenreRow[];
   isLoading: boolean;
   error: string | null;
@@ -29,7 +32,6 @@ function today(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-/** Alternate two lists (a, b, a, b, …) so a row mixes both media types. */
 function interleave(
   a: TmdbMovieSummary[],
   b: TmdbMovieSummary[],
@@ -43,12 +45,19 @@ function interleave(
   return out;
 }
 
-/**
- * Drives the Netflix-style Discover screen: every row mixes movies and series.
- * Trending rows come from `/trending/all` (already mixed); new-release and genre
- * rows fetch movies and TV in parallel and interleave them.
- */
-export function useDiscoverMedia(): DiscoverMedia {
+function combine(
+  movies: TmdbMovieSummary[],
+  series: TmdbMovieSummary[],
+  filter: MediaFilter,
+): TmdbMovieSummary[] {
+  if (filter === "movie") return movies;
+  if (filter === "tv") return series;
+  return interleave(movies, series);
+}
+
+export function useDiscoverMedia(filter: MediaFilter = "all"): DiscoverMedia {
+  const { i18n } = useTranslation();
+  const language = i18n.language;
   const [trending, setTrending] = useState<TmdbMovieSummary[]>([]);
   const [topToday, setTopToday] = useState<TmdbMovieSummary[]>([]);
   const [newReleases, setNewReleases] = useState<TmdbMovieSummary[]>([]);
@@ -56,62 +65,82 @@ export function useDiscoverMedia(): DiscoverMedia {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Reset state on filter or language change (React-blessed, during render).
+  const [active, setActive] = useState(`${filter}:${language}`);
+  if (active !== `${filter}:${language}`) {
+    setActive(`${filter}:${language}`);
+    setIsLoading(true);
+    setError(null);
+  }
+
   useEffect(() => {
     let cancelled = false;
 
+    const wantMovie = filter !== "tv";
+    const wantTv = filter !== "movie";
+    const none = Promise.resolve<TmdbMovieSummary[]>([]);
+    const date = today();
+
+    const trendingWeekP = trendingMedia(filter, "week");
+    const trendingDayP = trendingMedia(filter, "day");
+    const newMoviesP = wantMovie
+      ? discoverMedia("movie", {
+          sort_by: "primary_release_date.desc",
+          "primary_release_date.lte": date,
+          "vote_count.gte": 50,
+        })
+      : none;
+    const newSeriesP = wantTv
+      ? discoverMedia("tv", {
+          sort_by: "first_air_date.desc",
+          "first_air_date.lte": date,
+          "vote_count.gte": 50,
+        })
+      : none;
+    const genreP = MEDIA_GENRE_SHELVES.map((genre) => ({
+      key: genre.key,
+      name: genre.name,
+      movies: wantMovie
+        ? discoverMedia("movie", {
+            with_genres: genre.movieGenreId,
+            sort_by: "popularity.desc",
+            "vote_count.gte": 100,
+          })
+        : none,
+      series: wantTv
+        ? discoverMedia("tv", {
+            with_genres: genre.tvGenreId,
+            sort_by: "popularity.desc",
+            "vote_count.gte": 100,
+          })
+        : none,
+    }));
+
     (async () => {
       try {
-        const date = today();
-        const [
-          trendingWeek,
-          trendingDay,
-          newMovies,
-          newSeries,
-          ...genreLists
-        ] = await Promise.all([
-          trendingMedia("all", "week"),
-          trendingMedia("all", "day"),
-          discoverMedia("movie", {
-            sort_by: "primary_release_date.desc",
-            "primary_release_date.lte": date,
-            "vote_count.gte": 50,
-          }),
-          discoverMedia("tv", {
-            sort_by: "first_air_date.desc",
-            "first_air_date.lte": date,
-            "vote_count.gte": 50,
-          }),
-          // Two calls per genre row (movies + series), flattened by Promise.all.
-          ...MEDIA_GENRE_SHELVES.flatMap((genre) => [
-            discoverMedia("movie", {
-              with_genres: genre.movieGenreId,
-              sort_by: "popularity.desc",
-              "vote_count.gte": 100,
-            }),
-            discoverMedia("tv", {
-              with_genres: genre.tvGenreId,
-              sort_by: "popularity.desc",
-              "vote_count.gte": 100,
-            }),
-          ]),
-        ]);
+        const [trendingWeek, trendingDay, newMovies, newSeries, genreRows] =
+          await Promise.all([
+            trendingWeekP,
+            trendingDayP,
+            newMoviesP,
+            newSeriesP,
+            Promise.all(
+              genreP.map(async (genre) => ({
+                key: genre.key,
+                name: genre.name,
+                media: combine(await genre.movies, await genre.series, filter),
+              })),
+            ),
+          ]);
 
         if (cancelled) return;
         setTrending(trendingWeek);
         setTopToday(trendingDay);
-        setNewReleases(interleave(newMovies, newSeries));
-        setGenres(
-          MEDIA_GENRE_SHELVES.map((genre, index) => ({
-            name: genre.name,
-            media: interleave(
-              genreLists[index * 2] ?? [],
-              genreLists[index * 2 + 1] ?? [],
-            ),
-          })),
-        );
+        setNewReleases(combine(newMovies, newSeries, filter));
+        setGenres(genreRows);
       } catch (err) {
         if (cancelled) return;
-        setError(err instanceof Error ? err.message : "Failed to load");
+        setError(errorMessage(err, "Failed to load"));
       } finally {
         if (!cancelled) setIsLoading(false);
       }
@@ -120,7 +149,7 @@ export function useDiscoverMedia(): DiscoverMedia {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [filter, language]);
 
   return { trending, topToday, newReleases, genres, isLoading, error };
 }

@@ -1,15 +1,9 @@
-// TMDB client for Edge Functions. The token stays server-side (Deno.env) — it
-// must NEVER reach the app bundle. See `.agents/skills/tmdb/SKILL.md`.
-
 const TMDB_BASE = "https://api.themoviedb.org/3";
 
-// Defaults applied to every request. The app is French.
 const DEFAULT_LANGUAGE = "fr-FR";
 
-// Movie detail sub-requests bundled in one call to save quota.
 const DETAIL_APPEND = "credits,videos,images,release_dates";
 
-/** Error carrying a TMDB status so the handler can map it to an HTTP code. */
 export class TmdbError extends Error {
   status: number;
   statusCode?: number;
@@ -30,8 +24,6 @@ export class TmdbError extends Error {
 }
 
 function authHeaders(): HeadersInit {
-  // Prefer the v4 read access token (Bearer). Fall back to the v3 api_key,
-  // which is appended as a query param in `tmdbFetch` when no token is set.
   const token = Deno.env.get("TMDB_TOKEN");
   if (token) {
     return {
@@ -48,7 +40,6 @@ async function tmdbFetch<T>(
 ): Promise<T> {
   const url = new URL(`${TMDB_BASE}${path}`);
 
-  // Sensible defaults; callers can override.
   if (params.language === undefined) params.language = DEFAULT_LANGUAGE;
   if (params.include_adult === undefined) params.include_adult = false;
 
@@ -56,7 +47,6 @@ async function tmdbFetch<T>(
     if (value !== undefined) url.searchParams.set(key, String(value));
   }
 
-  // v3 fallback when no Bearer token is configured.
   const headers = authHeaders();
   if (!("Authorization" in headers)) {
     const apiKey = Deno.env.get("TMDB_API_KEY");
@@ -73,7 +63,7 @@ async function tmdbFetch<T>(
       statusCode = body?.status_code;
       statusMessage = body?.status_message ?? statusMessage;
     } catch {
-      // Non-JSON error body — keep the HTTP status text.
+      statusMessage = res.statusText;
     }
     throw new TmdbError(
       statusMessage,
@@ -86,7 +76,6 @@ async function tmdbFetch<T>(
   return (await res.json()) as T;
 }
 
-/** GET /search/movie — text search. */
 export function searchMovies(
   query: string,
   page = 1,
@@ -95,21 +84,45 @@ export function searchMovies(
   return tmdbFetch("/search/movie", { query, page, language });
 }
 
-/** GET /discover/movie — filter/sort based discovery. `params` is passed through. */
+export function searchTv(
+  query: string,
+  page = 1,
+  language?: string,
+): Promise<TmdbPagedResult> {
+  return tmdbFetch("/search/tv", { query, page, language });
+}
+
+export function searchMulti(
+  query: string,
+  page = 1,
+  language?: string,
+): Promise<TmdbPagedResult> {
+  return tmdbFetch("/search/multi", { query, page, language });
+}
+
+export function search(
+  filter: "all" | TmdbMediaType,
+  query: string,
+  page = 1,
+  language?: string,
+): Promise<TmdbPagedResult> {
+  if (filter === "tv") return searchTv(query, page, language);
+  if (filter === "movie") return searchMovies(query, page, language);
+  return searchMulti(query, page, language);
+}
+
 export function discoverMovies(
   params: Record<string, string | number | boolean | undefined>,
 ): Promise<TmdbPagedResult> {
   return tmdbFetch("/discover/movie", params);
 }
 
-/** GET /discover/tv — same as discoverMovies but for TV series. */
 export function discoverTv(
   params: Record<string, string | number | boolean | undefined>,
 ): Promise<TmdbPagedResult> {
   return tmdbFetch("/discover/tv", params);
 }
 
-/** GET /discover/{movie|tv} — dispatch on media type. */
 export function discover(
   mediaType: TmdbMediaType,
   params: Record<string, string | number | boolean | undefined>,
@@ -117,11 +130,6 @@ export function discover(
   return mediaType === "tv" ? discoverTv(params) : discoverMovies(params);
 }
 
-/**
- * GET /trending/{media_type}/{time_window} — Netflix-style mixed feed.
- * `media_type` "all" returns movies AND tv in one list, each item carrying its
- * own `media_type`. `time_window` is "day" or "week".
- */
 export function trending(
   mediaType: "all" | TmdbMediaType,
   timeWindow: "day" | "week",
@@ -130,7 +138,6 @@ export function trending(
   return tmdbFetch(`/trending/${mediaType}/${timeWindow}`, { language });
 }
 
-/** GET /find/{external_id} — resolve an external id (e.g. imdb_id) to TMDB data. */
 export function findByExternalId(
   externalId: string,
   source = "imdb_id",
@@ -142,7 +149,6 @@ export function findByExternalId(
   });
 }
 
-/** GET /movie/{id} — full detail with bundled sub-requests. */
 export function getMovieDetail(
   tmdbId: number,
   language?: string,
@@ -153,14 +159,10 @@ export function getMovieDetail(
   });
 }
 
-// --- Loose TMDB shapes (only the fields we read) -------------------------------
-
 export type TmdbMediaType = "movie" | "tv";
 
 export interface TmdbMovieSummary {
   id: number;
-  // Movies use title/release_date; TV uses name/first_air_date. We read both so
-  // the cache can normalize them into the movie-shaped columns.
   title?: string;
   name?: string;
   original_title?: string;
@@ -174,9 +176,7 @@ export interface TmdbMovieSummary {
   vote_count?: number;
   popularity?: number;
   genre_ids?: number[];
-  // Present on /trending/all items; absent on /discover/{movie,tv} (the caller
-  // knows the type there and passes a default).
-  media_type?: TmdbMediaType;
+  media_type?: TmdbMediaType | "person";
 }
 
 export interface TmdbMovieDetail extends TmdbMovieSummary {

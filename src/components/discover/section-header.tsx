@@ -8,18 +8,11 @@ import { hapticTap } from "@/lib/haptics";
 
 interface SectionHeaderProps {
   title: string;
-  /** Small grey ALL-CAPS line above the title. */
   eyebrow?: string;
-  /** Lighter grey line below the title. */
   subtitle?: string;
-  /** When set, renders a trailing chevron and makes the header pressable. */
   onSeeAll?: () => void;
 }
 
-/**
- * Apple-Music-style section header: optional eyebrow, bold title, optional
- * subtitle, and an optional "see all" chevron. Built on `@/components/ui/text`.
- */
 export function SectionHeader({
   title,
   eyebrow,

@@ -1,0 +1,11 @@
+{
+  "setup": [
+    "bun i"
+  ],
+  "teardown": [
+    "docker compose down"
+  ],
+  "run": [
+    "bunx expo start --ios"
+  ]
+}

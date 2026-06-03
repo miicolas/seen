@@ -57,11 +57,6 @@ const SIZE_TO_HEIGHT: Record<UISize, number> = {
   "2xl": COMPONENT_HEIGHT.XXL,
 };
 
-/**
- * SwiftUI-first text field driven by the shared variant system. Renders a native
- * `TextField` (or `SecureField` when `secure`). Same tokens/variants as the
- * reference app's `Input`.
- */
 export function Input({
   placeholder,
   onChangeText,

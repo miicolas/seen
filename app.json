@@ -8,7 +8,12 @@
     "scheme": "seen",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/seen.icon"
+      "bundleIdentifier": "app.seen.com",
+      "icon": "./assets/seen.icon",
+      "usesAppleSignIn": true,
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -25,6 +30,7 @@
     },
     "plugins": [
       "expo-router",
+      "expo-apple-authentication",
       [
         "expo-splash-screen",
         {
@@ -36,7 +42,13 @@
         }
       ],
       "expo-secure-store",
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+        "expo-localization",
+        {
+          "supportedLocales": ["en", "fr"]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

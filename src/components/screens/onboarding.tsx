@@ -1,12 +1,21 @@
-import { Button, Host, HStack, Text as SwiftUIText } from "@expo/ui/swift-ui";
+import * as AppleAuthentication from "expo-apple-authentication";
+import {
+  Button as SwiftUIButton,
+  HStack,
+  Host,
+  Text as SwiftUIText,
+} from "@expo/ui/swift-ui";
 import {
   buttonStyle,
   controlSize,
+  disabled as disabledModifier,
   font,
   foregroundColor,
   frame,
   tint,
 } from "@expo/ui/swift-ui/modifiers";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
 import Animated, {
   SensorType,
@@ -19,8 +28,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradientImageBlur } from "@/components/linear-gradient-image-blur";
 import { ThemedText } from "@/components/themed-text";
 import { Spacing } from "@/constants/theme";
-import { hapticTap } from "@/lib/haptics";
-import { useOnboardingStore } from "@/store/use-onboarding-store";
+import { signInWithApple } from "@/lib/apple-auth";
+import {
+  isDevAuthBypassEnabled,
+  signInWithDevSeedUser,
+} from "@/lib/dev-auth";
+import { hapticError, hapticSuccess, hapticTap } from "@/lib/haptics";
 
 const DARK_GRADIENT = [
   "transparent",
@@ -30,11 +43,37 @@ const DARK_GRADIENT = [
 ] as const;
 
 export function Onboarding() {
+  const { t } = useTranslation();
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const markSeenAction = useOnboardingStore((s) => s.markSeenAction);
+  const [appleAvailable, setAppleAvailable] = useState<boolean | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [authLoading, setAuthLoading] = useState<"apple" | "dev" | null>(null);
 
   const rotation = useAnimatedSensor(SensorType.ROTATION, { interval: 20 });
+  const buttonWidth = Math.max(160, Math.min(width - 80, 360));
+  const isLoading = authLoading !== null;
+  const showDevAuthBypass = isDevAuthBypassEnabled();
+
+  useEffect(() => {
+    let isMounted = true;
+
+    AppleAuthentication.isAvailableAsync()
+      .then((isAvailable) => {
+        if (isMounted) {
+          setAppleAvailable(isAvailable);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setAppleAvailable(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const foregroundStyle = useAnimatedStyle(() => {
     const { pitch, roll } = rotation.sensor.value;
@@ -56,16 +95,56 @@ export function Onboarding() {
     };
   });
 
-  function handleStart() {
+  async function handleStart() {
+    if (isLoading) {
+      return;
+    }
+
     hapticTap();
-    markSeenAction();
-    // Marking onboarding as seen flips the guard in `_layout.tsx`, which reveals
-    // the login screen. No imperative navigation needed.
+    setError(null);
+    setAuthLoading("apple");
+
+    try {
+      const result = await signInWithApple();
+
+      if (result.status === "signed-in") {
+        hapticSuccess();
+      } else if (result.status === "unavailable") {
+        hapticError();
+        setAppleAvailable(false);
+      }
+    } catch (authError) {
+      hapticError();
+      console.error("Apple sign in failed:", authError);
+      setError(t("onboarding.authError"));
+    } finally {
+      setAuthLoading(null);
+    }
+  }
+
+  async function handleDevSignIn() {
+    if (isLoading) {
+      return;
+    }
+
+    hapticTap();
+    setError(null);
+    setAuthLoading("dev");
+
+    try {
+      await signInWithDevSeedUser();
+      hapticSuccess();
+    } catch (authError) {
+      hapticError();
+      console.error("Dev seed sign in failed:", authError);
+      setError(t("onboarding.devAuthError"));
+    } finally {
+      setAuthLoading(null);
+    }
   }
 
   return (
     <View style={styles.container}>
-      {/* Overscanned so the parallax shift never reveals the image edges. */}
       <Animated.View style={[styles.background, backgroundStyle]}>
         <LinearGradientImageBlur
           imageUrl={require("@/assets/images/background/cover-seen.png")}
@@ -85,37 +164,86 @@ export function Onboarding() {
       >
         <View style={styles.textWrapper}>
           <ThemedText style={styles.title}>
-            Tout ce que tu as vu, au même endroit
+            {t("onboarding.title")}
           </ThemedText>
           <ThemedText style={styles.subtitle}>
-            Note, critique et garde une trace de tes films et séries
+            {t("onboarding.subtitle")}
           </ThemedText>
         </View>
 
-        <Host matchContents style={styles.buttonHost}>
-          <Button
-            modifiers={[
-              controlSize("mini"),
-              buttonStyle("glassProminent"),
-              tint("#ffffff"),
-            ]}
-            onPress={handleStart}
-          >
-            <HStack
-              spacing={8}
-              modifiers={[frame({ width: width - 80, height: 44 })]}
-            >
-              <SwiftUIText
+        <View style={styles.buttonArea}>
+          {isLoading ? (
+            <Host matchContents>
+              <SwiftUIButton
                 modifiers={[
-                  font({ weight: "semibold", size: 16 }),
-                  foregroundColor("#000000"),
+                  buttonStyle("glassProminent"),
+                  controlSize("mini"),
+                  tint("#ffffff"),
+                  disabledModifier(true),
                 ]}
+                onPress={() => {}}
               >
-                Commencer
-              </SwiftUIText>
-            </HStack>
-          </Button>
-        </Host>
+                <HStack modifiers={[frame({ width: buttonWidth, height: 44 })]}>
+                  <SwiftUIText
+                    modifiers={[
+                      font({ weight: "semibold", size: 16 }),
+                      foregroundColor("#000000"),
+                    ]}
+                  >
+                    {t("onboarding.authenticating")}
+                  </SwiftUIText>
+                </HStack>
+              </SwiftUIButton>
+            </Host>
+          ) : appleAvailable === true ? (
+            <AppleAuthentication.AppleAuthenticationButton
+              buttonType={
+                AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
+              }
+              buttonStyle={
+                AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
+              }
+              cornerRadius={22}
+              onPress={handleStart}
+              style={{ width: buttonWidth, height: 44 }}
+            />
+          ) : null}
+
+          {showDevAuthBypass && !isLoading ? (
+            <Host matchContents>
+              <SwiftUIButton
+                modifiers={[
+                  buttonStyle("glass"),
+                  controlSize("mini"),
+                  tint("#ffffff"),
+                  disabledModifier(false),
+                ]}
+                onPress={handleDevSignIn}
+              >
+                <HStack modifiers={[frame({ width: buttonWidth, height: 40 })]}>
+                  <SwiftUIText
+                    modifiers={[
+                      font({ weight: "semibold", size: 15 }),
+                      foregroundColor("#ffffff"),
+                    ]}
+                  >
+                    {t("onboarding.devSignIn")}
+                  </SwiftUIText>
+                </HStack>
+              </SwiftUIButton>
+            </Host>
+          ) : null}
+
+          {appleAvailable === false && !showDevAuthBypass ? (
+            <ThemedText style={styles.statusText}>
+              {t("onboarding.appleUnavailable")}
+            </ThemedText>
+          ) : null}
+
+          {error ? (
+            <ThemedText style={styles.errorText}>{error}</ThemedText>
+          ) : null}
+        </View>
       </Animated.View>
     </View>
   );
@@ -162,9 +290,22 @@ const styles = StyleSheet.create({
     marginTop: Spacing.two,
     color: "#ffffffB3",
   },
-  buttonHost: {
-    width: "100%",
-    overflow: "visible",
+  buttonArea: {
+    minHeight: 44,
     marginTop: Spacing.four,
+    alignItems: "center",
+    gap: Spacing.two,
+  },
+  statusText: {
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: "center",
+    color: "#ffffffB3",
+  },
+  errorText: {
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: "center",
+    color: "#ff453a",
   },
 });

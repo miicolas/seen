@@ -1,49 +1,24 @@
 import { StyleSheet, View } from "react-native";
 
-import {
-  DARK_SCRIM,
-  LinearGradientImageBlur,
-} from "@/components/linear-gradient-image-blur";
-import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
 import { SPACING } from "@/constants/design-tokens";
 import { truncate } from "@/lib/format";
-import { hapticTap } from "@/lib/haptics";
 import { tmdbImageUrl, type TmdbMovieSummary } from "@/lib/tmdb";
+
+import { ScrimArtworkCard } from "./scrim-artwork-card";
 
 interface HeroCardProps {
   movie: TmdbMovieSummary;
-  /** Card width from the shelf peek math; hero keeps a 16:9 backdrop. */
   width: number;
   eyebrow?: string;
 }
 
-/**
- * Large landscape "Featured" card: a wide backdrop with an eyebrow + title
- * overlaid at the bottom over a dark scrim.
- */
 export function HeroCard({ movie, width, eyebrow = "Featured" }: HeroCardProps) {
   const uri = tmdbImageUrl(movie.backdrop_path ?? movie.poster_path, "w1280");
   const title = truncate(movie.title ?? movie.original_title ?? "Untitled", 32);
 
-  function handlePress() {
-    hapticTap();
-    // TODO: navigate to a movie-detail screen once it exists.
-  }
-
   return (
-    <Card
-      variant="plain"
-      onPress={handlePress}
-      style={{ width, height: width * (9 / 16), padding: 0 }}>
-      <LinearGradientImageBlur
-        imageUrl={uri ? { uri } : undefined}
-        showGradient
-        showProgressiveBlur
-        blurIntensity={20}
-        lightGradientColors={DARK_SCRIM}
-        darkGradientColors={DARK_SCRIM}
-      />
+    <ScrimArtworkCard imageUrl={uri} width={width} aspectRatio={9 / 16}>
       <View style={styles.overlay}>
         <Text size="xs" weight="bold" color="#ffffff">
           {eyebrow.toUpperCase()}
@@ -52,7 +27,7 @@ export function HeroCard({ movie, width, eyebrow = "Featured" }: HeroCardProps) 
           {title}
         </Text>
       </View>
-    </Card>
+    </ScrimArtworkCard>
   );
 }
 

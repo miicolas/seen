@@ -1,7 +1,3 @@
-// Shared CORS helpers for the Seen Edge Functions.
-// The app calls functions through `supabase.functions.invoke`, but we keep
-// permissive CORS so local tooling (curl, Studio) works too.
-
 export const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":

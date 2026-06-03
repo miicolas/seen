@@ -1,15 +1,3 @@
-/**
- * TailwindCSS-inspired color palette — ported from the reference app (Endlessly).
- * Complete color system with consistent naming and scales.
- *
- * Usage:
- * - `ColorPalette[family][shade]` (e.g. `ColorPalette.blue[500]`)
- * - Each family has shades from 50 (lightest) → 950 (darkest).
- * - Prefer `getColorValue(family, shade)` for dynamic access.
- *
- * This is the brand/accent layer. `src/constants/theme.ts` stays the
- * light/dark semantic layer; for native system surfaces prefer `Color.ios.*`.
- */
 import type { UIColor } from "@/types/ui";
 
 export const ColorPalette = {
@@ -316,19 +304,12 @@ export const ColorPalette = {
 
 type Shade = keyof typeof ColorPalette.grayscale;
 
-/**
- * Resolve a hex color from the palette.
- * @param color UI color family name.
- * @param shade Shade 50–950 (defaults to 500).
- */
 export const getColorValue = (color: UIColor, shade: number = 500): string => {
   if (color === "black") {
-    // "black": grayscale clamped so backgrounds never go pure white.
     const adjustedShade = Math.max(100, shade) as Shade;
     return ColorPalette.grayscale[adjustedShade] ?? ColorPalette.grayscale[500];
   }
   if (color === "white") {
-    // "white": shade 50 = pure white … 950 = pure black.
     return ColorPalette.grayscale[shade as Shade] ?? ColorPalette.grayscale[500];
   }
 
@@ -336,18 +317,12 @@ export const getColorValue = (color: UIColor, shade: number = 500): string => {
   return family[shade] ?? family[500];
 };
 
-/**
- * Pick a readable text color (white or near-black) for a given background hex,
- * based on relative luminance. Used by the `solid` variant so filled buttons
- * always have legible labels.
- */
 export const getContrastText = (hex: string): string => {
   const normalized = hex.replace("#", "").slice(0, 6);
   if (normalized.length < 6) return "#ffffff";
   const r = parseInt(normalized.slice(0, 2), 16) / 255;
   const g = parseInt(normalized.slice(2, 4), 16) / 255;
   const b = parseInt(normalized.slice(4, 6), 16) / 255;
-  // Perceived luminance (sRGB coefficients).
   const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
   return luminance > 0.6 ? "#0a0a0a" : "#ffffff";
 };

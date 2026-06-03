@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -8,8 +9,6 @@ import { supabase } from '@/lib/supabase';
 
 async function onSignOutButtonPress() {
   hapticTap();
-  // `local` scope clears the stored session without a network round-trip, so
-  // the auth listener always fires (and the guard redirects) even offline.
   const { error } = await supabase.auth.signOut({ scope: 'local' });
   if (error) {
     console.error('Error signing out:', error);
@@ -17,12 +16,13 @@ async function onSignOutButtonPress() {
 }
 
 export default function SignOutButton() {
+  const { t } = useTranslation();
   return (
     <Pressable
       onPress={onSignOutButtonPress}
       style={({ pressed }) => pressed && styles.pressed}>
       <ThemedView type="backgroundElement" style={styles.button}>
-        <ThemedText type="smallBold">Se déconnecter</ThemedText>
+        <ThemedText type="smallBold">{t('home.signOut')}</ThemedText>
       </ThemedView>
     </Pressable>
   );

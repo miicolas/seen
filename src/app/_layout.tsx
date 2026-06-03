@@ -1,3 +1,5 @@
+import "@/lib/i18n";
+
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
@@ -7,26 +9,20 @@ import { SplashScreenController } from "@/components/splash-screen-controller";
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import AuthProvider from "@/providers/auth-provider";
-import { useOnboardingStore } from "@/store/use-onboarding-store";
 
-// Separate RootNavigator so we can access the AuthContext
 function RootNavigator() {
   const { isLoggedIn } = useAuthContext();
-  const hasSeenOnboarding = useOnboardingStore((s) => s.hasSeenOnboarding);
 
   return (
     <Stack>
       <Stack.Protected guard={isLoggedIn}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack.Protected>
-      <Stack.Protected guard={!isLoggedIn && !hasSeenOnboarding}>
+      <Stack.Protected guard={!isLoggedIn}>
         <Stack.Screen
           name="(onboarding)/index"
           options={{ headerShown: false }}
         />
-      </Stack.Protected>
-      <Stack.Protected guard={!isLoggedIn && hasSeenOnboarding}>
-        <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
       </Stack.Protected>
       <Stack.Screen name="+not-found" />
     </Stack>

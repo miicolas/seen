@@ -1,5 +1,3 @@
-// Shared UI component types — ported from the reference app (Endlessly).
-
 export type UISize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
 
 export type UIRadius =
@@ -39,7 +37,6 @@ export type UIColor =
   | "black"
   | "white";
 
-// Shared radius values mapping (px).
 export const RADIUS_VALUES: Record<UIRadius, number> = {
   none: 0,
   xxs: 4,
@@ -52,7 +49,6 @@ export const RADIUS_VALUES: Record<UIRadius, number> = {
   full: 32,
 };
 
-// Resolved per-variant color configuration.
 export interface ColorConfig {
   backgroundColor: string;
   borderColor: string;
@@ -60,7 +56,6 @@ export interface ColorConfig {
   borderWidth: number;
 }
 
-// Extended config for inputs (adds placeholder color).
 export interface InputColorConfig extends ColorConfig {
   placeholderColor: string;
 }

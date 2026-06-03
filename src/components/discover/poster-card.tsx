@@ -10,16 +10,10 @@ import { tmdbImageUrl, type TmdbMovieSummary } from "@/lib/tmdb";
 
 interface PosterCardProps {
   movie: TmdbMovieSummary;
-  /** Card width from the shelf peek math; poster keeps a 2:3 aspect. */
   width: number;
-  /** Show the year · ★rating line under the title. */
   showMeta?: boolean;
 }
 
-/**
- * Apple-Music "browse" card: a clean rounded poster with the title + meta
- * BELOW the artwork (not overlaid). Plain image — no gradient/blur needed.
- */
 export function PosterCard({ movie, width, showMeta = true }: PosterCardProps) {
   const theme = useTheme();
   const uri = tmdbImageUrl(
@@ -37,7 +31,6 @@ export function PosterCard({ movie, width, showMeta = true }: PosterCardProps) {
 
   function handlePress() {
     hapticTap();
-    // TODO: navigate to a movie-detail screen once it exists.
   }
 
   return (
