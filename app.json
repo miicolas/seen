@@ -12,7 +12,14 @@
       "icon": "./assets/seen.icon",
       "usesAppleSignIn": true,
       "infoPlist": {
-        "CFBundleAllowMixedLocalizations": true
+        "CFBundleAllowMixedLocalizations": true,
+        "CFBundleLocalizations": [
+          "en",
+          "fr",
+          "en",
+          "fr"
+        ],
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {

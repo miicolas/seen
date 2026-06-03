@@ -56,6 +56,16 @@ async function saveAppleNameMetadata(fullName: AppleAuthenticationFullName | nul
   }
 }
 
+async function createAppleNonce() {
+  const rawNonce = Crypto.randomUUID();
+  const hashedNonce = await Crypto.digestStringAsync(
+    Crypto.CryptoDigestAlgorithm.SHA256,
+    rawNonce,
+  );
+
+  return { rawNonce, hashedNonce };
+}
+
 export async function signInWithApple(): Promise<AppleAuthResult> {
   const isAvailable = await AppleAuthentication.isAvailableAsync();
 
@@ -63,11 +73,11 @@ export async function signInWithApple(): Promise<AppleAuthResult> {
     return { status: "unavailable" };
   }
 
-  const nonce = Crypto.randomUUID();
+  const { rawNonce, hashedNonce } = await createAppleNonce();
 
   try {
     const credential = await AppleAuthentication.signInAsync({
-      nonce,
+      nonce: hashedNonce,
       requestedScopes: [
         AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
         AppleAuthentication.AppleAuthenticationScope.EMAIL,
@@ -81,7 +91,7 @@ export async function signInWithApple(): Promise<AppleAuthResult> {
     const signInCredentials: SignInWithIdTokenCredentials = {
       provider: "apple",
       token: credential.identityToken,
-      nonce,
+      nonce: rawNonce,
       ...(credential.authorizationCode
         ? { access_token: credential.authorizationCode }
         : {}),

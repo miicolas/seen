@@ -52,6 +52,11 @@
   },
   "scripts": {
     "start": "expo start",
+    "dev": "supabase start && expo start --ios",
+    "build:local": "eas build --platform ios --profile development --local",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
     "ios": "expo run:ios",
