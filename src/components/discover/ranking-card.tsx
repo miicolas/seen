@@ -4,6 +4,7 @@ import { ThemedText } from "@/components/themed-text";
 import { Text } from "@/components/ui/text";
 import { SPACING } from "@/constants/design-tokens";
 import { truncate } from "@/lib/format";
+import { mediaDetailHref } from "@/lib/navigation";
 import { tmdbImageUrl, type TmdbMovieSummary } from "@/lib/tmdb";
 
 import { ScrimArtworkCard } from "./scrim-artwork-card";
@@ -23,7 +24,11 @@ export function RankingCard({ movie, rank, width }: RankingCardProps) {
       : undefined;
 
   return (
-    <ScrimArtworkCard imageUrl={uri} width={width} aspectRatio={1.4}>
+    <ScrimArtworkCard
+      imageUrl={uri}
+      width={width}
+      aspectRatio={1.4}
+      href={mediaDetailHref(movie)}>
       <ThemedText type="title" style={styles.rank}>
         {String(rank)}
       </ThemedText>

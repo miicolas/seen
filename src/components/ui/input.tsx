@@ -31,15 +31,24 @@ type ContentType = Parameters<typeof textContentTypeModifier>[0];
 type Capitalization = Parameters<typeof textInputAutocapitalization>[0];
 type SubmitLabel = Parameters<typeof submitLabelModifier>[0];
 
+/** Observable text state from `useNativeState('')`, as accepted by SwiftUI TextField. */
+export type ObservableText = Parameters<typeof TextField>[0]["text"];
+
+/** A multiline field is this many times taller than its single-line height. */
+const MULTILINE_HEIGHT_MULTIPLIER = 2.6;
+
 export interface InputProps {
   placeholder?: string;
   onChangeText?: (text: string) => void;
+  /** Observable text state (`useNativeState('')`) — enables prefilling/reading the value. */
+  state?: ObservableText;
   secure?: boolean;
   variant?: InputVariant;
   color?: UIColor;
   size?: UISize;
   radius?: UIRadius;
   width?: number;
+  multiline?: boolean;
   keyboardType?: KeyboardType;
   textContentType?: ContentType;
   autocapitalization?: Capitalization;
@@ -60,12 +69,14 @@ const SIZE_TO_HEIGHT: Record<UISize, number> = {
 export function Input({
   placeholder,
   onChangeText,
+  state,
   secure = false,
   variant = "soft",
   color = "neutral",
   size = "lg",
   radius = "md",
   width,
+  multiline = false,
   keyboardType,
   textContentType,
   autocapitalization,
@@ -92,7 +103,12 @@ export function Input({
       ? [border({ color: cfg.borderColor, width: cfg.borderWidth })]
       : []),
     clipShape("roundedRectangle", radiusPx),
-    frame({ height, ...(width ? { width } : {}) }),
+    frame({
+      height: multiline
+        ? Math.round(height * MULTILINE_HEIGHT_MULTIPLIER)
+        : height,
+      ...(width ? { width } : {}),
+    }),
     ...(keyboardType ? [keyboardTypeModifier(keyboardType)] : []),
     ...(textContentType ? [textContentTypeModifier(textContentType)] : []),
     ...(autocapitalization
@@ -103,14 +119,26 @@ export function Input({
     ...(onSubmit ? [onSubmitModifier(onSubmit)] : []),
   ];
 
-  const Field = secure ? SecureField : TextField;
+  if (secure) {
+    return (
+      <Host matchContents>
+        <SecureField
+          placeholder={placeholder}
+          onTextChange={onChangeText}
+          modifiers={modifiers}
+        />
+      </Host>
+    );
+  }
 
   return (
     <Host matchContents>
-      <Field
+      <TextField
         placeholder={placeholder}
         onTextChange={onChangeText}
         modifiers={modifiers}
+        axis={multiline ? "vertical" : "horizontal"}
+        {...(state ? { text: state } : {})}
       />
     </Host>
   );

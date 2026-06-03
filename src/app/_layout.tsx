@@ -24,6 +24,16 @@ function RootNavigator() {
           options={{ headerShown: false }}
         />
       </Stack.Protected>
+      <Stack.Screen
+        name="review"
+        options={{
+          title: "",
+          presentation: "formSheet",
+          headerShown: true,
+          sheetGrabberVisible: true,
+          sheetAllowedDetents: [0.6, 0.95],
+        }}
+      />
       <Stack.Screen name="+not-found" />
     </Stack>
   );

@@ -1,4 +1,5 @@
 import { Image } from "expo-image";
+import { Link } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 
 import { Text } from "@/components/ui/text";
@@ -6,6 +7,7 @@ import { BORDER_RADIUS, SPACING } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
 import { truncate } from "@/lib/format";
 import { hapticTap } from "@/lib/haptics";
+import { mediaDetailHref } from "@/lib/navigation";
 import { tmdbImageUrl, type TmdbMovieSummary } from "@/lib/tmdb";
 
 interface PosterCardProps {
@@ -34,27 +36,35 @@ export function PosterCard({ movie, width, showMeta = true }: PosterCardProps) {
   }
 
   return (
-    <Pressable onPress={handlePress} style={[styles.card, { width }]}>
-      <Image
-        source={uri ? { uri } : undefined}
-        style={[
-          styles.image,
-          { width, height: width * 1.5, backgroundColor: theme.backgroundElement },
-        ]}
-        contentFit="cover"
-        transition={200}
-      />
-      <View style={styles.caption}>
-        <Text size="sm" weight="semibold">
-          {title}
-        </Text>
-        {showMeta && meta ? (
-          <Text size="xs" weight="regular" color={theme.textSecondary}>
-            {meta}
+    <Link href={mediaDetailHref(movie)} asChild>
+      <Pressable onPress={handlePress} style={StyleSheet.flatten([styles.card, { width }])}>
+        <Link.AppleZoom>
+          <Image
+            source={uri ? { uri } : undefined}
+            style={StyleSheet.flatten([
+              styles.image,
+              {
+                width,
+                height: width * 1.5,
+                backgroundColor: theme.backgroundElement,
+              },
+            ])}
+            contentFit="cover"
+            transition={200}
+          />
+        </Link.AppleZoom>
+        <View style={styles.caption}>
+          <Text size="sm" weight="semibold">
+            {title}
           </Text>
-        ) : null}
-      </View>
-    </Pressable>
+          {showMeta && meta ? (
+            <Text size="xs" weight="regular" color={theme.textSecondary}>
+              {meta}
+            </Text>
+          ) : null}
+        </View>
+      </Pressable>
+    </Link>
   );
 }
 

@@ -2,7 +2,10 @@ const TMDB_BASE = "https://api.themoviedb.org/3";
 
 const DEFAULT_LANGUAGE = "fr-FR";
 
-const DETAIL_APPEND = "credits,videos,images,release_dates";
+const DETAIL_APPEND: Record<TmdbMediaType, string> = {
+  movie: "credits,videos,images,release_dates",
+  tv: "credits,videos,images,content_ratings",
+};
 
 export class TmdbError extends Error {
   status: number;
@@ -149,13 +152,14 @@ export function findByExternalId(
   });
 }
 
-export function getMovieDetail(
+export function getMediaDetail(
+  mediaType: TmdbMediaType,
   tmdbId: number,
   language?: string,
 ): Promise<TmdbMovieDetail> {
-  return tmdbFetch(`/movie/${tmdbId}`, {
+  return tmdbFetch(`/${mediaType}/${tmdbId}`, {
     language,
-    append_to_response: DETAIL_APPEND,
+    append_to_response: DETAIL_APPEND[mediaType],
   });
 }
 

@@ -3,6 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { Text } from "@/components/ui/text";
 import { SPACING } from "@/constants/design-tokens";
 import { truncate } from "@/lib/format";
+import { mediaDetailHref } from "@/lib/navigation";
 import { tmdbImageUrl, type TmdbMovieSummary } from "@/lib/tmdb";
 
 import { ScrimArtworkCard } from "./scrim-artwork-card";
@@ -18,7 +19,11 @@ export function HeroCard({ movie, width, eyebrow = "Featured" }: HeroCardProps) 
   const title = truncate(movie.title ?? movie.original_title ?? "Untitled", 32);
 
   return (
-    <ScrimArtworkCard imageUrl={uri} width={width} aspectRatio={9 / 16}>
+    <ScrimArtworkCard
+      imageUrl={uri}
+      width={width}
+      aspectRatio={9 / 16}
+      href={mediaDetailHref(movie)}>
       <View style={styles.overlay}>
         <Text size="xs" weight="bold" color="#ffffff">
           {eyebrow.toUpperCase()}

@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Seen",
-    "slug": "Seen",
+    "slug": "seenbox",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -46,13 +46,23 @@
       [
         "expo-localization",
         {
-          "supportedLocales": ["en", "fr"]
+          "supportedLocales": [
+            "en",
+            "fr"
+          ]
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "f5bacb4d-9027-4a2c-88d9-221a1ea91c3d"
+      }
+    },
+    "owner": "miicolass"
   }
 }

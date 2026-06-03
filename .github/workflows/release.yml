@@ -1,12 +1,12 @@
-name: Production Tag Deployment
+name: Promote tag to main
 
 on:
   push:
     tags:
-      - '*' # any tag denotes a production release
+      - '*' # any tag promotes its commit to main
 
 jobs:
-  Deploy-iOS:
+  promote:
     runs-on: ubuntu-latest
     permissions:
       contents: write # required to push to main
@@ -16,66 +16,11 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: Determine tag commit
-        id: tag
-        run: |
-          echo "tag_name=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
-          tag_sha=$(git rev-list -n 1 "$GITHUB_REF_NAME")
-          echo "tag_sha=$tag_sha" >> $GITHUB_OUTPUT
-
       - name: Update main to tag commit (no merge/squash)
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
+          tag_sha=$(git rev-list -n 1 "$GITHUB_REF_NAME")
           git fetch origin main --prune
-          git checkout -B main "${{ steps.tag.outputs.tag_sha }}"
+          git checkout -B main "$tag_sha"
           git push origin main --force-with-lease
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Setup EAS
-        uses: expo/expo-github-action@v8
-        with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Write App Store Connect API key
-        run: |
-          printf '%s' "${{ secrets.ASC_API_KEY_P8 }}" > eas-asc-api-key.p8
-
-      - name: Build iOS and submit to TestFlight
-        run: eas build --platform ios --profile production --non-interactive --auto-submit
-
-      - name: Remove App Store Connect API key
-        if: always()
-        run: rm -f eas-asc-api-key.p8
-
-      - name: Notify Discord (Production Deploy Success)
-        if: success()
-        env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          TAG_NAME: ${{ steps.tag.outputs.tag_name }}
-          COMMIT_SHA: ${{ steps.tag.outputs.tag_sha }}
-          REPO: ${{ github.repository }}
-        run: node scripts/notify-discord-deploy.mjs
-
-      - name: Notify Discord (Production Deploy Failure)
-        if: failure()
-        env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          TAG_NAME: ${{ steps.tag.outputs.tag_name }}
-          COMMIT_SHA: ${{ steps.tag.outputs.tag_sha }}
-          REPO: ${{ github.repository }}
-          DEPLOY_STATUS: failure
-        run: node scripts/notify-discord-deploy.mjs
