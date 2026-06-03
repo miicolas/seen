@@ -13,6 +13,7 @@
     "expo-blur": "~56.0.3",
     "expo-constants": "~56.0.16",
     "expo-crypto": "~56.0.4",
+    "expo-dev-client": "~56.0.18",
     "expo-device": "~56.0.4",
     "expo-font": "~56.0.5",
     "expo-glass-effect": "~56.0.4",
@@ -53,7 +54,7 @@
   "scripts": {
     "start": "expo start",
     "dev": "supabase start && expo start --ios",
-    "build:local": "eas build --platform ios --profile development --local",
+    "build:local": "eas build --platform ios --profile production --local",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
