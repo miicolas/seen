@@ -61,40 +61,26 @@ export default function TabTwoScreen() {
         <ThemedView style={styles.sectionsWrapper}>
           <Collapsible title="File-based routing">
             <ThemedText type="small">
-              This app has two screens: <ThemedText type="code">src/app/index.tsx</ThemedText> and{' '}
-              <ThemedText type="code">src/app/explore.tsx</ThemedText>
+              This app has two screens:{' '}
+              <ThemedText type="code">src/app/(tabs)/index.tsx</ThemedText> and{' '}
+              <ThemedText type="code">src/app/(tabs)/explore.tsx</ThemedText>
             </ThemedText>
             <ThemedText type="small">
-              The layout file in <ThemedText type="code">src/app/_layout.tsx</ThemedText> sets up
-              the tab navigator.
+              The layout file in <ThemedText type="code">src/app/(tabs)/_layout.tsx</ThemedText> sets
+              up the tab navigator.
             </ThemedText>
             <ExternalLink href="https://docs.expo.dev/router/introduction">
               <ThemedText type="linkPrimary">Learn more</ThemedText>
             </ExternalLink>
           </Collapsible>
 
-          <Collapsible title="Android, iOS, and web support">
-            <ThemedView type="backgroundElement" style={styles.collapsibleContent}>
-              <ThemedText type="small">
-                You can open this project on Android, iOS, and the web. To open the web version,
-                press <ThemedText type="smallBold">w</ThemedText> in the terminal running this
-                project.
-              </ThemedText>
-              <Image
-                source={require('@/assets/images/tutorial-web.png')}
-                style={styles.imageTutorial}
-              />
-            </ThemedView>
-          </Collapsible>
-
-          <Collapsible title="Images">
+          <Collapsible title="Authentification">
             <ThemedText type="small">
-              For static images, you can use the <ThemedText type="code">@2x</ThemedText> and{' '}
-              <ThemedText type="code">@3x</ThemedText> suffixes to provide files for different
-              screen densities.
+              L&apos;auth Supabase est branchée via{' '}
+              <ThemedText type="code">src/providers/auth-provider.tsx</ThemedText> et les routes
+              protégées dans <ThemedText type="code">src/app/_layout.tsx</ThemedText>.
             </ThemedText>
-            <Image source={require('@/assets/images/react-logo.png')} style={styles.imageReact} />
-            <ExternalLink href="https://reactnative.dev/docs/images">
+            <ExternalLink href="https://docs.expo.dev/router/advanced/authentication/">
               <ThemedText type="linkPrimary">Learn more</ThemedText>
             </ExternalLink>
           </Collapsible>
@@ -162,19 +148,5 @@ const styles = StyleSheet.create({
     gap: Spacing.five,
     paddingHorizontal: Spacing.four,
     paddingTop: Spacing.three,
-  },
-  collapsibleContent: {
-    alignItems: 'center',
-  },
-  imageTutorial: {
-    width: '100%',
-    aspectRatio: 296 / 171,
-    borderRadius: Spacing.three,
-    marginTop: Spacing.two,
-  },
-  imageReact: {
-    width: 100,
-    height: 100,
-    alignSelf: 'center',
   },
 });
