@@ -102,6 +102,34 @@ export function discoverMovies(
   return tmdbFetch("/discover/movie", params);
 }
 
+/** GET /discover/tv — same as discoverMovies but for TV series. */
+export function discoverTv(
+  params: Record<string, string | number | boolean | undefined>,
+): Promise<TmdbPagedResult> {
+  return tmdbFetch("/discover/tv", params);
+}
+
+/** GET /discover/{movie|tv} — dispatch on media type. */
+export function discover(
+  mediaType: TmdbMediaType,
+  params: Record<string, string | number | boolean | undefined>,
+): Promise<TmdbPagedResult> {
+  return mediaType === "tv" ? discoverTv(params) : discoverMovies(params);
+}
+
+/**
+ * GET /trending/{media_type}/{time_window} — Netflix-style mixed feed.
+ * `media_type` "all" returns movies AND tv in one list, each item carrying its
+ * own `media_type`. `time_window` is "day" or "week".
+ */
+export function trending(
+  mediaType: "all" | TmdbMediaType,
+  timeWindow: "day" | "week",
+  language?: string,
+): Promise<TmdbPagedResult> {
+  return tmdbFetch(`/trending/${mediaType}/${timeWindow}`, { language });
+}
+
 /** GET /find/{external_id} — resolve an external id (e.g. imdb_id) to TMDB data. */
 export function findByExternalId(
   externalId: string,
@@ -127,18 +155,28 @@ export function getMovieDetail(
 
 // --- Loose TMDB shapes (only the fields we read) -------------------------------
 
+export type TmdbMediaType = "movie" | "tv";
+
 export interface TmdbMovieSummary {
   id: number;
+  // Movies use title/release_date; TV uses name/first_air_date. We read both so
+  // the cache can normalize them into the movie-shaped columns.
   title?: string;
+  name?: string;
   original_title?: string;
+  original_name?: string;
   overview?: string;
   release_date?: string;
+  first_air_date?: string;
   poster_path?: string | null;
   backdrop_path?: string | null;
   vote_average?: number;
   vote_count?: number;
   popularity?: number;
   genre_ids?: number[];
+  // Present on /trending/all items; absent on /discover/{movie,tv} (the caller
+  // knows the type there and passes a default).
+  media_type?: TmdbMediaType;
 }
 
 export interface TmdbMovieDetail extends TmdbMovieSummary {

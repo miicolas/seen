@@ -11,11 +11,13 @@
 
 import { corsHeaders, jsonResponse } from "../_shared/cors.ts";
 import {
-  discoverMovies,
+  discover,
   findByExternalId,
   getMovieDetail,
   searchMovies,
   TmdbError,
+  trending,
+  type TmdbMediaType,
 } from "../_shared/tmdb.ts";
 import {
   getCachedMovieDetail,
@@ -36,14 +38,22 @@ function warmCache(work: Promise<void>): void {
 }
 
 interface RequestBody {
-  action?: "search" | "discover" | "find" | "movie";
+  action?: "search" | "discover" | "find" | "movie" | "trending";
   query?: string;
   page?: number;
   tmdb_id?: number;
   external_id?: string;
   source?: string;
   language?: string;
+  // "movie" (default) or "tv" — selects the TMDB media endpoint.
+  media_type?: TmdbMediaType;
+  // For the "trending" action: "day" or "week" (defaults to "week").
+  time_window?: "day" | "week";
   params?: Record<string, string | number | boolean | undefined>;
+}
+
+function mediaTypeOf(value: string | undefined): TmdbMediaType {
+  return value === "tv" ? "tv" : "movie";
 }
 
 Deno.serve(async (req) => {
@@ -70,12 +80,26 @@ Deno.serve(async (req) => {
       }
 
       case "discover": {
-        const result = await discoverMovies({
+        const mediaType = mediaTypeOf(body.media_type);
+        const result = await discover(mediaType, {
           language,
           page: body.page ?? 1,
           ...(body.params ?? {}),
         });
-        warmCache(upsertMovieList(result.results, language));
+        warmCache(upsertMovieList(result.results, language, mediaType));
+        return jsonResponse(result);
+      }
+
+      case "trending": {
+        // `media_type: "all"` returns a mixed movie+tv feed (Netflix-style);
+        // each item carries its own media_type, so warmCache tags them per-item.
+        const media = body.media_type ?? "all";
+        const result = await trending(
+          media === "all" ? "all" : mediaTypeOf(media),
+          body.time_window ?? "week",
+          language,
+        );
+        warmCache(upsertMovieList(result.results, language, mediaTypeOf(body.media_type)));
         return jsonResponse(result);
       }
 
