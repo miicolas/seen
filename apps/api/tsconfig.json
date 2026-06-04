@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["bun"],
+    "rootDir": "../..",
+    "outDir": "dist",
+    "paths": {
+      "@seen/db": ["../../packages/db/src/index.ts"],
+      "@seen/db/*": ["../../packages/db/src/*"],
+      "@seen/shared": ["../../packages/shared/src/index.ts"],
+      "@seen/shared/*": ["../../packages/shared/src/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "tests/**/*.ts"]
+}
