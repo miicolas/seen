@@ -23,12 +23,18 @@ export const env = {
     "dev-only-replace-with-a-long-random-secret",
   ),
   betterAuthUrl: requiredEnv("BETTER_AUTH_URL", "http://localhost:3000"),
-  trustedOrigins: (optionalEnv("TRUSTED_ORIGINS") ?? "seen://,seen://*,exp://,exp://**")
+  trustedOrigins: (
+    optionalEnv("TRUSTED_ORIGINS") ??
+    "seen://,seen://*,exp://,exp://**,https://appleid.apple.com"
+  )
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean),
   appleClientId: optionalEnv("APPLE_CLIENT_ID"),
-  appleClientSecret: optionalEnv("APPLE_CLIENT_SECRET"),
+  appleTeamId: optionalEnv("APPLE_TEAM_ID"),
+  appleKeyId: optionalEnv("APPLE_KEY_ID"),
+  applePrivateKey: optionalEnv("APPLE_PRIVATE_KEY"),
+  appleBundleIdentifier: optionalEnv("APPLE_APP_BUNDLE_IDENTIFIER"),
   tmdbToken: optionalEnv("TMDB_TOKEN"),
   tmdbApiKey: optionalEnv("TMDB_API_KEY"),
   s3Endpoint: requiredEnv("S3_ENDPOINT", "http://localhost:9000"),
