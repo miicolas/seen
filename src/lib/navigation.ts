@@ -22,6 +22,13 @@ export function mediaDetailHref(media: TmdbMovieSummary): Href {
   } as Href;
 }
 
+export function imageViewerHref(uri: string): Href {
+  return {
+    pathname: "/(tabs)/discover/image",
+    params: { uri },
+  } as Href;
+}
+
 // Params shared by the media and episode review sheets.
 function buildReviewParams(params: {
   title: string;

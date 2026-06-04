@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { FieldRow } from "@/components/ui/field-row";
+import { GlassPanel } from "@/components/ui/glass-panel";
 import { type ObservableText } from "@/components/ui/input";
 import { StarRating } from "@/components/ui/star-rating";
 import { LAYOUT } from "@/constants/design-tokens";
@@ -99,11 +100,9 @@ export function ReviewForm({
           />
         </View>
 
-        <View
-          style={[
-            styles.fieldsPanel,
-            { backgroundColor: theme.backgroundElement },
-          ]}
+        <GlassPanel
+          style={styles.fieldsPanel}
+          fallbackColor={theme.backgroundElement}
         >
           <FieldRow
             label={t("review.titleLabel")}
@@ -124,7 +123,7 @@ export function ReviewForm({
             state={commentState}
             onChangeText={onCommentChange}
           />
-        </View>
+        </GlassPanel>
 
         <Pressable onPress={() => hapticTap()} style={styles.nicknameHitSlop}>
           <Text style={[styles.nickname, { color: accentHex }]}>

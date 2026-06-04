@@ -1,6 +1,7 @@
 import { Image } from "expo-image";
 import { Link } from "expo-router";
-import { Pressable, StyleSheet, View } from "react-native";
+import { PressableScale } from "pressto";
+import { StyleSheet, View } from "react-native";
 
 import { Text } from "@/components/ui/text";
 import { BORDER_RADIUS, SPACING } from "@/constants/design-tokens";
@@ -32,7 +33,10 @@ export function PosterCard({ movie, width, showMeta = true }: PosterCardProps) {
 
   return (
     <Link href={mediaDetailHref(movie)} asChild>
-      <Pressable onPress={handlePress} style={StyleSheet.flatten([styles.card, { width }])}>
+      <PressableScale
+        onPress={handlePress}
+        style={StyleSheet.flatten([styles.card, { width }])}
+      >
         <Link.AppleZoom>
           <Image
             source={uri ? { uri } : undefined}
@@ -58,7 +62,7 @@ export function PosterCard({ movie, width, showMeta = true }: PosterCardProps) {
             </Text>
           ) : null}
         </View>
-      </Pressable>
+      </PressableScale>
     </Link>
   );
 }

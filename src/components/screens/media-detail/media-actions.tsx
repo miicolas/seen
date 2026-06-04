@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 
-import { Button } from "@/components/ui/button";
+import { GlassButton } from "@/components/ui/button";
 import { SPACING } from "@/constants/design-tokens";
 
 export function MediaActions({
@@ -18,8 +18,7 @@ export function MediaActions({
 }) {
   return (
     <View style={styles.actionContainer}>
-      <Button
-        variant="glass"
+      <GlassButton
         icon={hasReview ? "checkmark" : "star.fill"}
         title={hasReview ? reviewedLabel : unreviewedLabel}
         tintColor={accentHex}

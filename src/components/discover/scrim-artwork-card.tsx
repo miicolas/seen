@@ -1,6 +1,7 @@
 import { Link, type Href } from "expo-router";
+import { PressableScale } from "pressto";
 import type { ReactNode } from "react";
-import { Pressable, StyleSheet, View, type ViewStyle } from "react-native";
+import { StyleSheet, View, type ViewStyle } from "react-native";
 
 import {
   BOTTOM_SCRIM_LOCATIONS,
@@ -50,12 +51,15 @@ export function ScrimArtworkCard({
     };
     return (
       <Link href={href} asChild>
-        <Pressable onPress={onPress ?? (() => hapticTap())} style={containerStyle}>
+        <PressableScale
+          onPress={onPress ?? (() => hapticTap())}
+          style={containerStyle}
+        >
           <Link.AppleZoom>
             <View style={StyleSheet.absoluteFill}>{scrim}</View>
           </Link.AppleZoom>
           {children}
-        </Pressable>
+        </PressableScale>
       </Link>
     );
   }

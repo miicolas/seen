@@ -14,29 +14,14 @@ import {
   tint,
 } from "@expo/ui/swift-ui/modifiers";
 import { useColorScheme } from "react-native";
-import type { SFSymbol } from "sf-symbols-typescript";
 
 import { getColorValue } from "@/constants/colors";
 import { FONT_SIZE } from "@/constants/design-tokens";
 import { useAccentColor } from "@/hooks/use-accent-color";
 import { hapticTap } from "@/lib/haptics";
-import type { UIColor, UISize } from "@/types/ui";
+import type { UISize } from "@/types/ui";
 
-export type ButtonVariant = "solid" | "glass" | "soft" | "outline" | "link";
-
-export interface ButtonProps {
-  title: string;
-  onPress: () => void;
-  variant?: ButtonVariant;
-  color?: UIColor;
-  tintColor?: string;
-  size?: UISize;
-  icon?: SFSymbol;
-  disabled?: boolean;
-  loading?: boolean;
-  haptic?: boolean;
-  width?: number | "fill";
-}
+import type { ButtonProps, ButtonVariant } from "./button.types";
 
 const VARIANT_TO_STYLE: Record<
   ButtonVariant,

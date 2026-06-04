@@ -11,6 +11,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ReviewCard } from "@/components/screens/media-detail/ratings-section/review-card";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Text } from "@/components/ui/text";
 import { SPACING } from "@/constants/design-tokens";
 import { MaxContentWidth } from "@/constants/theme";
@@ -87,13 +88,11 @@ export function ReviewsListView({
 
     return (
       <View style={styles.empty}>
-        <Text
-          size="sm"
-          weight="medium"
-          color={theme.textSecondary}
-          align="center">
-          {t("mediaDetail.noReviewsYet")}
-        </Text>
+        <EmptyState
+          icon="star.bubble"
+          title={t("mediaDetail.noReviewsYet")}
+          subtitle={t("mediaDetail.noReviewsHint")}
+        />
       </View>
     );
   };

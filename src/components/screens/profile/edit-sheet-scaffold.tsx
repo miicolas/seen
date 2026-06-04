@@ -1,8 +1,9 @@
-import { Stack } from "expo-router";
 import type { ReactNode } from "react";
-import { ScrollView, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { ScreenToolbar } from "@/components/navigation";
 import { LAYOUT } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
 
@@ -24,26 +25,39 @@ export function EditSheetScaffold({
 
   return (
     <>
-      <Stack.Toolbar placement="left">
-        <Stack.Toolbar.Button onPress={onClose} disabled={closeDisabled}>
-          <Stack.Toolbar.Icon sf="xmark" />
-        </Stack.Toolbar.Button>
-      </Stack.Toolbar>
-      <Stack.Toolbar placement="right">
-        <Stack.Toolbar.Button onPress={onSave} disabled={saveDisabled}>
-          <Stack.Toolbar.Icon sf="checkmark" />
-        </Stack.Toolbar.Button>
-      </Stack.Toolbar>
+      <ScreenToolbar
+        placement="left"
+        actions={[
+          {
+            key: "close",
+            icon: "xmark",
+            onPress: onClose,
+            disabled: closeDisabled,
+          },
+        ]}
+      />
+      <ScreenToolbar
+        placement="right"
+        actions={[
+          {
+            key: "save",
+            icon: "checkmark",
+            onPress: onSave ?? (() => {}),
+            disabled: saveDisabled,
+          },
+        ]}
+      />
 
-      <ScrollView
+      <KeyboardAwareScrollView
         style={[styles.root, { backgroundColor: theme.background }]}
+        bottomOffset={LAYOUT.SCREEN_PADDING}
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{
           paddingBottom: Math.max(insets.bottom, LAYOUT.SCREEN_PADDING),
         }}
       >
         {children}
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </>
   );
 }

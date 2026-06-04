@@ -1,5 +1,4 @@
 import { Stack, useFocusEffect, useRouter } from "expo-router";
-import { SymbolView } from "expo-symbols";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -12,7 +11,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Button } from "@/components/ui/button";
+import { GlassButton } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Text } from "@/components/ui/text";
 import { BottomTabInset } from "@/constants/theme";
 import {
@@ -125,12 +125,10 @@ export function ProfileScreen() {
                 </View>
                 
 
-                <Button
+                <GlassButton
                   title={t("profile.edit")}
                   onPress={handleEdit}
-                  variant="glass"
                   size="sm"
-                  fill
                 />
               </View>
 
@@ -170,20 +168,18 @@ export function ProfileScreen() {
                       { backgroundColor: theme.backgroundElement },
                     ]}
                   >
-                    <SymbolView
-                      name="star"
-                      size={30}
-                      tintColor={theme.textSecondary}
+                    <EmptyState
+                      icon="star"
+                      title={t("profile.emptyActivity")}
+                      subtitle={t("profile.emptyActivityHint")}
+                      action={
+                        <GlassButton
+                          title={t("profile.discover")}
+                          onPress={() => router.push("/(tabs)/discover")}
+                          size="sm"
+                        />
+                      }
                     />
-                    <Text
-                      size="sm"
-                      weight="semibold"
-                      color={theme.textSecondary}
-                      fillWidth
-                      align="center"
-                    >
-                      {t("profile.emptyActivity")}
-                    </Text>
                   </View>
                 )}
 

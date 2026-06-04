@@ -1,8 +1,9 @@
-import { Icon, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { ScreenHeader, ScreenToolbar } from "@/components/navigation";
 import { Text } from "@/components/ui/text";
 import { useTheme } from "@/hooks/use-theme";
 
@@ -23,13 +24,19 @@ export function EpisodeDetail() {
 
   return (
     <>
-      <Stack.Header transparent style={{ shadowColor: "transparent" }} />
+      <ScreenHeader />
       <Stack.Title>{vm.title}</Stack.Title>
-      <Stack.Toolbar placement="right">
-        <Stack.Toolbar.Button onPress={vm.handleClose} tintColor="#ffffff">
-          <Icon sf="xmark" />
-        </Stack.Toolbar.Button>
-      </Stack.Toolbar>
+      <ScreenToolbar
+        placement="right"
+        actions={[
+          {
+            key: "close",
+            icon: "xmark",
+            onPress: vm.handleClose,
+            tintColor: "#ffffff",
+          },
+        ]}
+      />
 
       <View style={[styles.root, { backgroundColor: theme.background }]}>
         <MediaParallaxHeader

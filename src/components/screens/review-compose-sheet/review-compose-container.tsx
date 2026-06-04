@@ -1,13 +1,14 @@
-import { Stack, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useCallback } from "react";
 import {
   ActivityIndicator,
-  ScrollView,
   StyleSheet,
   useWindowDimensions,
   View,
 } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
+import { ScreenToolbar } from "@/components/navigation";
 import { LAYOUT } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
 import { hapticTap } from "@/lib/haptics";
@@ -36,13 +37,15 @@ export function ReviewComposeContainer({
 
   return (
     <>
-      <Stack.Toolbar placement="left">
-        <Stack.Toolbar.Button onPress={onClose}>
-          <Stack.Toolbar.Icon sf="xmark" />
-        </Stack.Toolbar.Button>
-      </Stack.Toolbar>
+      <ScreenToolbar
+        placement="left"
+        actions={[{ key: "close", icon: "xmark", onPress: onClose }]}
+      />
 
-      <ScrollView contentInsetAdjustmentBehavior="automatic">
+      <KeyboardAwareScrollView
+        bottomOffset={LAYOUT.SCREEN_PADDING}
+        contentInsetAdjustmentBehavior="automatic"
+      >
         {controller.isLoading ? (
           <View style={[styles.loading, { backgroundColor: theme.background }]}>
             <ActivityIndicator />
@@ -56,7 +59,7 @@ export function ReviewComposeContainer({
             buttonWidth={buttonWidth}
           />
         )}
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </>
   );
 }

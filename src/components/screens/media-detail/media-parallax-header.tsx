@@ -1,6 +1,7 @@
 import { Image, type ImageLoadEventData } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
+import { PressableScale } from "pressto";
 import { type PropsWithChildren, useState } from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -14,6 +15,8 @@ import Animated, {
 
 import { SPACING } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
+import { hapticTap } from "@/lib/haptics";
+import { imageViewerHref } from "@/lib/navigation";
 
 const BLURHASH =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
@@ -33,6 +36,7 @@ export function MediaParallaxHeader({
   adaptToHero?: boolean;
 }>) {
   const theme = useTheme();
+  const router = useRouter();
   const { top } = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   // Real backdrop renders sharp; when missing, blur the poster so it reads as an
@@ -92,16 +96,24 @@ export function MediaParallaxHeader({
           ]}
         >
           {heroUri ? (
-            <Image
-              source={{ uri: heroUri }}
-              placeholder={{ blurhash: BLURHASH }}
+            <PressableScale
+              onPress={() => {
+                hapticTap();
+                router.push(imageViewerHref(heroUri));
+              }}
               style={StyleSheet.absoluteFill}
-              contentFit="cover"
-              contentPosition="center"
-              blurRadius={heroBlur}
-              transition={400}
-              onLoad={onHeroLoad}
-            />
+            >
+              <Image
+                source={{ uri: heroUri }}
+                placeholder={{ blurhash: BLURHASH }}
+                style={StyleSheet.absoluteFill}
+                contentFit="cover"
+                contentPosition="center"
+                blurRadius={heroBlur}
+                transition={400}
+                onLoad={onHeroLoad}
+              />
+            </PressableScale>
           ) : null}
           <LinearGradient
             colors={["transparent", "transparent", theme.background]}

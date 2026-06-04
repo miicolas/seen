@@ -1,10 +1,12 @@
 import { useNativeState } from "@expo/ui/swift-ui";
-import { Stack, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { toast } from "sonner-native";
 
+import { ScreenToolbar } from "@/components/navigation";
 import { Button } from "@/components/ui/button";
 import { LAYOUT } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
@@ -76,32 +78,39 @@ export function ReviewFormBody({
         comment: trimmedComment.length > 0 ? trimmedComment : null,
       });
       hapticSuccess();
+      toast.success(t("review.saved"));
       router.back();
     } catch {
       hapticError();
+      toast.error(t("review.saveError"));
     }
-  }, [canSave, isSaving, reviewTitleState, commentState, stars, controller, router]);
+  }, [canSave, isSaving, reviewTitleState, commentState, stars, controller, router, t]);
 
   const handleDelete = useCallback(async () => {
     try {
       await controller.remove();
       hapticDelete();
+      toast.success(t("review.deleted"));
       router.back();
     } catch {
       hapticError();
+      toast.error(t("review.saveError"));
     }
-  }, [controller, router]);
+  }, [controller, router, t]);
 
   return (
     <>
-      <Stack.Toolbar placement="right">
-        <Stack.Toolbar.Button
-          onPress={handleSave}
-          disabled={!canSave || isSaving}
-        >
-          <Stack.Toolbar.Icon sf="arrow.up" />
-        </Stack.Toolbar.Button>
-      </Stack.Toolbar>
+      <ScreenToolbar
+        placement="right"
+        actions={[
+          {
+            key: "save",
+            icon: "arrow.up",
+            onPress: handleSave,
+            disabled: !canSave || isSaving,
+          },
+        ]}
+      />
 
       <ReviewForm
         mediaTitle={controller.mediaTitle}

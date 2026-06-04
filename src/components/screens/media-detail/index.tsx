@@ -4,6 +4,7 @@ import { StyleSheet, View } from "react-native";
 import { Stack } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { ScreenHeader } from "@/components/navigation";
 import { Text } from "@/components/ui/text";
 import { useTheme } from "@/hooks/use-theme";
 
@@ -30,12 +31,7 @@ export function MediaDetail() {
 
   return (
     <>
-      <Stack.Header
-        transparent
-        style={{
-          shadowColor: "transparent",
-        }}
-      />
+      <ScreenHeader />
       <Stack.Title>{vm.title}</Stack.Title>
 
       <View style={[styles.root, { backgroundColor: theme.background }]}>

@@ -7,6 +7,7 @@ import {
   View,
 } from "react-native";
 
+import { EmptyState } from "@/components/ui/empty-state";
 import { Text } from "@/components/ui/text";
 import { SPACING } from "@/constants/design-tokens";
 import { MaxContentWidth } from "@/constants/theme";
@@ -53,9 +54,11 @@ export function SearchResults({
         {isLoading ? (
           <ActivityIndicator />
         ) : (
-          <Text size="sm" weight="medium" align="center">
-            {t("discover.noResults", { query: query.trim() })}
-          </Text>
+          <EmptyState
+            icon="magnifyingglass"
+            title={t("discover.noResults", { query: query.trim() })}
+            subtitle={t("discover.noResultsHint")}
+          />
         )}
       </View>
     );

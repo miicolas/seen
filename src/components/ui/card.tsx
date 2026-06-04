@@ -1,8 +1,9 @@
+import { PressableScale } from "pressto";
 import type { ReactNode } from "react";
-import { Pressable, StyleSheet, useColorScheme, View, type ViewStyle } from "react-native";
+import { StyleSheet, useColorScheme, View, type ViewStyle } from "react-native";
 
 import { Colors } from "@/constants/theme";
-import { BORDER_RADIUS, BORDER_WIDTH, OPACITY, SPACING } from "@/constants/design-tokens";
+import { BORDER_RADIUS, BORDER_WIDTH, SPACING } from "@/constants/design-tokens";
 
 type CardVariant = "bordered" | "plain";
 
@@ -32,17 +33,12 @@ export function Card({
 
   if (onPress || onLongPress) {
     return (
-      <Pressable
+      <PressableScale
         onPress={onPress}
         onLongPress={onLongPress}
-        style={({ pressed }) => [
-          styles.card,
-          cardStyle,
-          pressed ? { opacity: OPACITY.PRESSED } : null,
-          style,
-        ]}>
+        style={StyleSheet.flatten([styles.card, cardStyle, style])}>
         {children}
-      </Pressable>
+      </PressableScale>
     );
   }
 

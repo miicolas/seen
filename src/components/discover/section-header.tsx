@@ -1,5 +1,6 @@
 import { SymbolView } from "expo-symbols";
-import { Pressable, StyleSheet, View } from "react-native";
+import { PressableScale } from "pressto";
+import { StyleSheet, View } from "react-native";
 
 import { Text } from "@/components/ui/text";
 import { SPACING } from "@/constants/design-tokens";
@@ -51,13 +52,13 @@ export function SectionHeader({
 
   if (onSeeAll) {
     return (
-      <Pressable
+      <PressableScale
         onPress={() => {
           hapticTap();
           onSeeAll();
         }}>
         {content}
-      </Pressable>
+      </PressableScale>
     );
   }
 

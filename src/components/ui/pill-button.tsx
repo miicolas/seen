@@ -1,7 +1,8 @@
-import { Pressable, StyleSheet } from "react-native";
+import { PressableScale } from "pressto";
+import { StyleSheet } from "react-native";
 
 import { Text } from "@/components/ui/text";
-import { BORDER_RADIUS, OPACITY, SPACING } from "@/constants/design-tokens";
+import { BORDER_RADIUS, SPACING } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
 
 interface PillButtonProps {
@@ -20,22 +21,21 @@ export function PillButton({
   const theme = useTheme();
 
   return (
-    <Pressable
+    <PressableScale
       accessibilityRole="button"
       accessibilityState={{ selected }}
       onPress={onPress}
-      style={({ pressed }) => [
+      style={StyleSheet.flatten([
         styles.pill,
         { backgroundColor: selected ? accentHex : theme.backgroundElement },
-        pressed ? { opacity: OPACITY.PRESSED } : null,
-      ]}>
+      ])}>
       <Text
         size="sm"
         weight="bold"
         color={selected ? theme.onAccent : theme.text}>
         {label}
       </Text>
-    </Pressable>
+    </PressableScale>
   );
 }
 

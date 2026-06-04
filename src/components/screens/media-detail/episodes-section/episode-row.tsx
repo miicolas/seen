@@ -1,14 +1,14 @@
 import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
+import { PressableScale } from "pressto";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import type { SFSymbol } from "sf-symbols-typescript";
 
 import { Text } from "@/components/ui/text";
 import {
   BORDER_RADIUS,
   LINE_HEIGHT,
-  OPACITY,
   SPACING,
 } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
@@ -77,10 +77,10 @@ export function EpisodeRow({
   const date = formatEpisodeDate(episode.air_date);
 
   return (
-    <Pressable
+    <PressableScale
       accessibilityRole="button"
       onPress={onPress}
-      style={({ pressed }) => [
+      style={StyleSheet.flatten([
         styles.episodeRow,
         showDivider
           ? {
@@ -88,8 +88,7 @@ export function EpisodeRow({
               borderBottomWidth: StyleSheet.hairlineWidth,
             }
           : null,
-        pressed ? { opacity: OPACITY.PRESSED } : null,
-      ]}
+      ])}
     >
       <Image
         source={stillUri ? { uri: stillUri } : undefined}
@@ -165,7 +164,7 @@ export function EpisodeRow({
           tintColor={theme.textSecondary}
         />
       </View>
-    </Pressable>
+    </PressableScale>
   );
 }
 
