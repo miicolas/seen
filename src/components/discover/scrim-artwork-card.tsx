@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Pressable, StyleSheet, View, type ViewStyle } from "react-native";
 
 import {
+  BOTTOM_SCRIM_LOCATIONS,
   DARK_SCRIM,
   LinearGradientImageBlur,
 } from "@/components/linear-gradient-image-blur";
@@ -32,7 +33,8 @@ export function ScrimArtworkCard({
       imageUrl={imageUrl ? { uri: imageUrl } : undefined}
       showGradient
       showProgressiveBlur
-      blurIntensity={20}
+      blurIntensity={28}
+      gradientLocations={BOTTOM_SCRIM_LOCATIONS}
       lightGradientColors={DARK_SCRIM}
       darkGradientColors={DARK_SCRIM}
     />

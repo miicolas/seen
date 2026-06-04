@@ -1,13 +1,12 @@
 import { supabase } from "@/lib/supabase";
-import type { MediaType } from "@/lib/tmdb";
+import { currentUserId } from "@/services/core";
 
-import { currentUserId } from "../current-user";
-import type { Review } from "../types";
+import type { MediaRef, Review } from "../types";
 
-export async function getMyReview(
-  tmdbId: number,
-  mediaType: MediaType,
-): Promise<Review | null> {
+export async function getMyReview({
+  tmdbId,
+  mediaType,
+}: MediaRef): Promise<Review | null> {
   const user_id = await currentUserId();
   const { data, error } = await supabase
     .from("reviews")

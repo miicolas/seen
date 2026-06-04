@@ -10,7 +10,7 @@ import {
 import { Text } from "@/components/ui/text";
 import { SPACING } from "@/constants/design-tokens";
 import { MaxContentWidth } from "@/constants/theme";
-import { useSearchMedia } from "@/hooks/use-search-media";
+import { useSearchMedia } from "@/hooks/tmdb/use-search-media";
 import type { MediaFilter, TmdbMovieSummary } from "@/lib/tmdb";
 
 import { PosterCard } from "./poster-card";

@@ -8,6 +8,7 @@ import {
 import { errorMessage } from "@/lib/format";
 import {
   discoverMedia,
+  hasRating,
   trendingMedia,
   type MediaFilter,
   type TmdbMovieSummary,
@@ -50,9 +51,9 @@ function combine(
   series: TmdbMovieSummary[],
   filter: MediaFilter,
 ): TmdbMovieSummary[] {
-  if (filter === "movie") return movies;
-  if (filter === "tv") return series;
-  return interleave(movies, series);
+  if (filter === "movie") return movies.filter(hasRating);
+  if (filter === "tv") return series.filter(hasRating);
+  return interleave(movies, series).filter(hasRating);
 }
 
 export function useDiscoverMedia(filter: MediaFilter = "all"): DiscoverMedia {
@@ -134,8 +135,8 @@ export function useDiscoverMedia(filter: MediaFilter = "all"): DiscoverMedia {
           ]);
 
         if (cancelled) return;
-        setTrending(trendingWeek);
-        setTopToday(trendingDay);
+        setTrending(trendingWeek.filter(hasRating));
+        setTopToday(trendingDay.filter(hasRating));
         setNewReleases(combine(newMovies, newSeries, filter));
         setGenres(genreRows);
       } catch (err) {

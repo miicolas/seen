@@ -95,6 +95,13 @@ export const BORDER_RADIUS = {
   FULL: 9999,
 } as const;
 
+export const LAYOUT = {
+  CONTENT_MAX_WIDTH: 640,
+  SCREEN_PADDING: 20,
+  FIELD_LABEL_WIDTH: 76,
+  FIELD_ROW_PADDING: 16,
+} as const;
+
 export const DURATION = {
   QUICK: 150,
   FAST: 300,

@@ -1,8 +1,9 @@
-import { Image } from "expo-image";
+import { Image, type ImageLoadEventData } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link } from "expo-router";
-import type { PropsWithChildren } from "react";
-import { StyleSheet, View } from "react-native";
+import { type PropsWithChildren, useState } from "react";
+import { StyleSheet, useWindowDimensions, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, {
   interpolate,
   useAnimatedRef,
@@ -17,25 +18,39 @@ import { useTheme } from "@/hooks/use-theme";
 const BLURHASH =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
-const POSTER_OVERLAP = 56;
-
 export function MediaParallaxHeader({
   backdropUri,
   posterUri,
   headerHeight,
   bottomInset,
+  adaptToHero = false,
   children,
 }: PropsWithChildren<{
   backdropUri?: string | null;
   posterUri?: string | null;
   headerHeight: number;
   bottomInset: number;
+  adaptToHero?: boolean;
 }>) {
   const theme = useTheme();
+  const { top } = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
   // Real backdrop renders sharp; when missing, blur the poster so it reads as an
   // ambient background instead of duplicating the poster card below.
   const heroUri = backdropUri ?? posterUri;
   const heroBlur = backdropUri ? 0 : 40;
+  // Landscape episode stills (16:9) over-zoom inside the tall default box; when
+  // asked to adapt, shrink the header to the hero's natural ratio so it shows
+  // uncropped. Never grow past headerHeight (keeps a portrait fallback tall).
+  const [heroRatio, setHeroRatio] = useState<number | null>(null);
+  const resolvedHeight =
+    adaptToHero && heroRatio
+      ? Math.min(headerHeight, Math.round(width / heroRatio))
+      : headerHeight;
+  const onHeroLoad = (event: ImageLoadEventData) => {
+    const { width: w, height: h } = event.source;
+    if (w > 0 && h > 0) setHeroRatio(w / h);
+  };
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useSharedValue(0);
 
@@ -48,76 +63,94 @@ export function MediaParallaxHeader({
       scrollOffset.value <= 0
         ? interpolate(
             scrollOffset.value,
-            [-headerHeight, 0],
-            [-headerHeight / 2, 0],
+            [-resolvedHeight, 0],
+            [-resolvedHeight / 2, 0],
           )
         : 0;
     const scale =
       scrollOffset.value <= 0
-        ? interpolate(scrollOffset.value, [-headerHeight, 0], [2, 1])
+        ? interpolate(scrollOffset.value, [-resolvedHeight, 0], [2, 1])
         : 1;
     return { transform: [{ translateY }, { scale }] };
   });
 
   return (
-    <Animated.ScrollView
-      ref={scrollRef}
-      onScroll={scrollHandler}
-      scrollEventThrottle={16}
-      showsVerticalScrollIndicator={false}
-      contentInsetAdjustmentBehavior="never"
-      contentContainerStyle={{ paddingBottom: bottomInset + SPACING.LG }}
-    >
-      <Animated.View
-        style={[styles.header, { height: headerHeight }, headerAnimatedStyle]}
+    <View style={[styles.viewContainer, { backgroundColor: theme.background }]}>
+      <Animated.ScrollView
+        ref={scrollRef}
+        onScroll={scrollHandler}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
+        contentInsetAdjustmentBehavior="always"
+        contentContainerStyle={{ paddingBottom: bottomInset + SPACING.LG }}
       >
-        {heroUri ? (
-          <Image
-            source={{ uri: heroUri }}
-            placeholder={{ blurhash: BLURHASH }}
-            style={StyleSheet.absoluteFill}
-            contentFit="cover"
-            contentPosition="center"
-            blurRadius={heroBlur}
-            transition={400}
-          />
-        ) : null}
-        <LinearGradient
-          colors={["transparent", "transparent", theme.background]}
-          locations={[0, 0.55, 1]}
-          style={StyleSheet.absoluteFill}
-        />
-      </Animated.View>
-
-      <View style={styles.body}>
-        <Link.AppleZoomTarget>
-          <View style={styles.posterShadow}>
+        <Animated.View
+          style={[
+            styles.header,
+            { backgroundColor: theme.background, height: resolvedHeight },
+            headerAnimatedStyle,
+          ]}
+        >
+          {heroUri ? (
             <Image
-              source={posterUri ? { uri: posterUri } : undefined}
-              style={[
-                styles.posterCard,
-                { backgroundColor: theme.backgroundElement },
-              ]}
+              source={{ uri: heroUri }}
+              placeholder={{ blurhash: BLURHASH }}
+              style={StyleSheet.absoluteFill}
               contentFit="cover"
-              transition={200}
+              contentPosition="center"
+              blurRadius={heroBlur}
+              transition={400}
+              onLoad={onHeroLoad}
             />
+          ) : null}
+          <LinearGradient
+            colors={["transparent", "transparent", theme.background]}
+            locations={[0, 0.55, 1]}
+            style={StyleSheet.absoluteFill}
+          />
+        </Animated.View>
+
+        <View
+          style={[styles.contentChildren, { marginTop: -resolvedHeight }]}
+        >
+          <View style={[styles.body, { marginTop: top * 3 }]}>
+            <Link.AppleZoomTarget>
+              <View style={styles.posterShadow}>
+                <Image
+                  source={posterUri ? { uri: posterUri } : undefined}
+                  style={[
+                    styles.posterCard,
+                    { backgroundColor: theme.backgroundElement },
+                  ]}
+                  contentFit="cover"
+                  transition={200}
+                />
+              </View>
+            </Link.AppleZoomTarget>
+            {children}
           </View>
-        </Link.AppleZoomTarget>
-        {children}
-      </View>
-    </Animated.ScrollView>
+        </View>
+      </Animated.ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  viewContainer: {
+    flex: 1,
+    position: "relative",
+  },
   header: {
     width: "100%",
     overflow: "hidden",
   },
+  contentChildren: {
+    position: "relative",
+    width: "100%",
+  },
   body: {
-    marginTop: -POSTER_OVERLAP,
-    paddingHorizontal: SPACING.MD,
     gap: SPACING.SM,
+    paddingHorizontal: SPACING.MD,
   },
   posterShadow: {
     alignSelf: "center",

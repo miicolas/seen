@@ -84,6 +84,7 @@ export function Button({
   const { accentHex } = useAccentColor();
   const tintColor = color ? getColorValue(color, isDark ? 400 : 500) : accentHex;
   const isDisabled = disabled || loading;
+  const height = HEIGHT_FOR_FRAME[size];
 
   function handlePress() {
     if (isDisabled) return;
@@ -92,7 +93,9 @@ export function Button({
   }
 
   return (
-    <Host matchContents>
+    <Host
+      matchContents={width ? { vertical: true } : true}
+      style={width ? { width } : undefined}>
       <UIButton
         onPress={handlePress}
         modifiers={[
@@ -104,10 +107,7 @@ export function Button({
         ]}>
         <HStack
           modifiers={[
-            frame({
-              height: HEIGHT_FOR_FRAME[size],
-              ...(width ? { width } : {}),
-            }),
+            frame({ height, ...(width ? { maxWidth: Infinity } : {}) }),
           ]}>
           <SwiftUIText
             modifiers={[

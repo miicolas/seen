@@ -1,12 +1,12 @@
 import { supabase } from "@/lib/supabase";
-import type { MediaType } from "@/lib/tmdb";
+import { currentUserId } from "@/services/core";
 
-import { currentUserId } from "../current-user";
+import type { MediaRef } from "../types";
 
-export async function deleteReview(
-  tmdbId: number,
-  mediaType: MediaType,
-): Promise<void> {
+export async function deleteReview({
+  tmdbId,
+  mediaType,
+}: MediaRef): Promise<void> {
   const user_id = await currentUserId();
   const { error } = await supabase
     .from("reviews")

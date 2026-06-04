@@ -2,7 +2,9 @@ import "@/lib/i18n";
 
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useTranslation } from "react-i18next";
 import "react-native-reanimated";
+import { useTheme } from "@/hooks/use-theme";
 
 import { SplashScreenController } from "@/components/splash-screen-controller";
 
@@ -12,6 +14,8 @@ import AuthProvider from "@/providers/auth-provider";
 
 function RootNavigator() {
   const { isLoggedIn } = useAuthContext();
+  const theme = useTheme();
+  const { t } = useTranslation();
 
   return (
     <Stack>
@@ -27,11 +31,17 @@ function RootNavigator() {
       <Stack.Screen
         name="review"
         options={{
-          title: "",
+          title: t("review.screenTitle"),
           presentation: "formSheet",
-          headerShown: true,
-          sheetGrabberVisible: true,
-          sheetAllowedDetents: [0.6, 0.95],
+          contentStyle: { backgroundColor: theme.background },
+        }}
+      />
+      <Stack.Screen
+        name="reviews"
+        options={{
+          title: t("mediaDetail.allReviews"),
+          presentation: "formSheet",
+          contentStyle: { backgroundColor: theme.background },
         }}
       />
       <Stack.Screen name="+not-found" />

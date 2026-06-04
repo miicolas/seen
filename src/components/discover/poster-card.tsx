@@ -24,12 +24,7 @@ export function PosterCard({ movie, width, showMeta = true }: PosterCardProps) {
   );
 
   const title = truncate(movie.title ?? movie.original_title ?? "Untitled", 22);
-  const year = movie.release_date?.slice(0, 4);
-  const rating =
-    typeof movie.vote_average === "number" && movie.vote_average > 0
-      ? movie.vote_average.toFixed(1)
-      : undefined;
-  const meta = [year, rating ? `★ ${rating}` : null].filter(Boolean).join("  ·  ");
+  const meta = movie.release_date?.slice(0, 4);
 
   function handlePress() {
     hapticTap();

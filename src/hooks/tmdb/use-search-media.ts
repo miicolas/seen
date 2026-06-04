@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { errorMessage } from "@/lib/format";
-import { searchMedia, type MediaFilter, type TmdbMovieSummary } from "@/lib/tmdb";
+import {
+  hasRating,
+  searchMedia,
+  type MediaFilter,
+  type TmdbMovieSummary,
+} from "@/lib/tmdb";
 
 interface SearchState {
   results: TmdbMovieSummary[];
@@ -38,7 +43,7 @@ export function useSearchMedia(
       setError(null);
       try {
         const data = await searchMedia(trimmed, filter);
-        if (!cancelled) setResults(data);
+        if (!cancelled) setResults(data.filter(hasRating));
       } catch (err) {
         if (!cancelled) setError(errorMessage(err, "Search failed"));
       } finally {

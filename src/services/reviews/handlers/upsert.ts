@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { getMovieDetail } from "@/lib/tmdb";
 
-import { currentUserId } from "../current-user";
+import { currentUserId } from "@/services/core";
 import type { Review, ReviewInput } from "../types";
 
 // Create or update the current user's review for a movie. The movie must exist
@@ -20,6 +20,7 @@ export async function upsertReview(input: ReviewInput): Promise<Review> {
         tmdb_id: input.tmdb_id,
         media_type: input.media_type,
         rating: input.rating ?? null,
+        title: input.title ?? null,
         comment: input.comment ?? null,
       },
       { onConflict: "user_id,tmdb_id,media_type" },

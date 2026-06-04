@@ -35,8 +35,11 @@ export function useMyReview(
     setError,
     refetch,
   } = useAsyncResource<Review | null>(
-    () => (user ? getMyReview(tmdbId, mediaType) : Promise.resolve(null)),
-    [tmdbId, mediaType, user],
+    () =>
+      user && Number.isFinite(tmdbId)
+        ? getMyReview({ tmdbId, mediaType })
+        : Promise.resolve(null),
+    [tmdbId, mediaType, user?.id],
     null,
     "Failed to load your review",
   );
@@ -68,7 +71,7 @@ export function useMyReview(
     setIsSaving(true);
     setError(null);
     try {
-      await deleteReview(tmdbId, mediaType);
+      await deleteReview({ tmdbId, mediaType });
       setReview(null);
     } catch (err) {
       setError(errorMessage(err, "Failed to delete your review"));

@@ -103,3 +103,13 @@ The starter left behind some `*.web.tsx`/`*.web.ts` files (e.g. `app-tabs.web.ts
 - User-facing screen text is in **English**. (The legacy login screen is still in French and is being migrated.)
 - Build UI with Expo UI SwiftUI per the `expo-ui-swiftui` skill; reach for plain RN views only when there's no native equivalent.
 - Source layout under `src/`: `app/` (routes), `components/` (+ `components/ui/`), `hooks/`, `providers/`, `lib/`, `constants/`, and `store/` (Zustand). Add `types/` and `utils/` when those layers are introduced (typed API client, shared helpers).
+
+### File structure & complexity (mandatory)
+
+Follow the global **File structure & complexity** rules in `~/.claude/CLAUDE.md` (one unit per file, extract reusables, analyze before writing, no duplication, short/flat files, group siblings into folders). The codebase has accumulated files that are too long, complex, and duplicated — keep it small, flat, and DRY.
+
+Seen-specific concretions of those rules:
+
+- Files are **kebab-case**; a single primary export per file.
+- Reusable UI/logic goes in `components/`, `components/ui/`, or `hooks/`.
+- When a feature has 2+ siblings, co-locate them: several hooks → `hooks/<feature>/` (`use-*.ts`), a split screen → `components/screens/<screen>/` (with `index.tsx`), backend client code → `services/<feature>/handlers/`.

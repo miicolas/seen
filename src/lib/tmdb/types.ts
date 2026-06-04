@@ -20,8 +20,61 @@ export interface TmdbMovieSummary {
 export interface TmdbMovieDetail extends TmdbMovieSummary {
   runtime?: number;
   genres?: { id: number; name: string }[];
+  number_of_seasons?: number;
+  seasons?: TmdbTvSeasonSummary[];
   _cache?: "hit" | "miss";
   [key: string]: unknown;
+}
+
+export interface TmdbCredit {
+  id: number;
+  name: string;
+  original_name?: string;
+  character?: string;
+  job?: string;
+  department?: string;
+  profile_path?: string | null;
+}
+
+export interface TmdbTvSeasonSummary {
+  id: number;
+  name?: string;
+  overview?: string;
+  air_date?: string;
+  episode_count?: number;
+  poster_path?: string | null;
+  season_number: number;
+  vote_average?: number;
+}
+
+export interface TmdbTvEpisodeSummary {
+  id: number;
+  air_date?: string;
+  episode_number: number;
+  episode_type?: string;
+  name?: string;
+  overview?: string;
+  production_code?: string;
+  runtime?: number;
+  season_number: number;
+  show_id?: number;
+  still_path?: string | null;
+  vote_average?: number;
+  vote_count?: number;
+  crew?: TmdbCredit[];
+  guest_stars?: TmdbCredit[];
+}
+
+export interface TmdbTvSeasonDetail extends TmdbTvSeasonSummary {
+  episodes?: TmdbTvEpisodeSummary[];
+}
+
+export interface TmdbTvEpisodeDetail extends TmdbTvEpisodeSummary {
+  credits?: {
+    cast?: TmdbCredit[];
+    crew?: TmdbCredit[];
+    guest_stars?: TmdbCredit[];
+  };
 }
 
 export interface RawTmdbItem {

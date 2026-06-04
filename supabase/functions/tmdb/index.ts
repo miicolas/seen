@@ -30,7 +30,10 @@ Deno.serve(async (req) => {
   const handler = body.action && handlers[body.action];
   if (!handler) {
     return jsonResponse(
-      { error: "Unknown action. Use search | discover | find | movie | trending." },
+      {
+        error:
+          "Unknown action. Use search | discover | find | movie | trending | tv_season | tv_episode.",
+      },
       400,
     );
   }

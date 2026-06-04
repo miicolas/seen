@@ -19,16 +19,18 @@ export function MediaActions({
   hasReview,
   accentHex,
   onRate,
-  onShare,
+  reviewedLabel = "Rated",
+  unreviewedLabel = "Mark as seen",
 }: {
   hasReview: boolean;
   accentHex: string;
   onRate: () => void;
-  onShare: () => void;
+  reviewedLabel?: string;
+  unreviewedLabel?: string;
 }) {
   return (
-    <View style={styles.row}>
-      <Host matchContents useViewportSizeMeasurement>
+    <View style={styles.actionContainer}>
+      <Host matchContents>
         <Button
           modifiers={[
             buttonStyle("glassProminent"),
@@ -36,20 +38,11 @@ export function MediaActions({
             tint(accentHex),
           ]}
           onPress={onRate}>
-          <HStack spacing={8} modifiers={[frame({ height: 20 })]}>
+          <HStack spacing={8} modifiers={[frame({ width: 180, height: 16 })]}>
             <Image systemName={hasReview ? "checkmark" : "star.fill"} size={16} />
-            <SwiftUIText>{hasReview ? "Rated" : "Mark as seen"}</SwiftUIText>
-          </HStack>
-        </Button>
-      </Host>
-
-      <Host matchContents useViewportSizeMeasurement>
-        <Button
-          modifiers={[buttonStyle("glass"), controlSize("large")]}
-          onPress={onShare}>
-          <HStack spacing={8} modifiers={[frame({ height: 20 })]}>
-            <Image systemName="square.and.arrow.up" size={16} />
-            <SwiftUIText>Share</SwiftUIText>
+            <SwiftUIText>
+              {hasReview ? reviewedLabel : unreviewedLabel}
+            </SwiftUIText>
           </HStack>
         </Button>
       </Host>
@@ -58,12 +51,11 @@ export function MediaActions({
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    justifyContent: "center",
+  actionContainer: {
+    height: 56,
     alignItems: "center",
-    flexWrap: "wrap",
-    gap: SPACING.SM,
-    paddingTop: SPACING.SM,
+    justifyContent: "center",
+    marginBottom: SPACING.MD,
+    marginTop: SPACING.SM,
   },
 });

@@ -5,6 +5,17 @@ export default function DiscoverLayout() {
     <Stack screenOptions={{ title: "Discover", headerLargeTitle: true }}>
       <Stack.Screen name="index" />
       <Stack.Screen
+        name="episode"
+        options={{
+          title: "",
+          headerShown: true,
+          headerLargeTitle: false,
+          headerTransparent: true,
+          headerShadowVisible: false,
+          headerBackButtonDisplayMode: "minimal",
+        }}
+      />
+      <Stack.Screen
         name="[id]"
         options={{
           title: "",

@@ -20,12 +20,21 @@ export type GradientColors = readonly [
   ColorValue,
 ];
 
+export type GradientLocations = readonly [number, number, number, number];
+
+// Stops the scrim transparent across the top half of the artwork, then ramps to
+// near-opaque black in the bottom quarter — a crisp dark band behind the title
+// instead of dimming the whole image.
 export const DARK_SCRIM: GradientColors = [
   "transparent",
   "#00000040",
-  "#00000090",
-  "#000000E6",
+  "#000000B3",
+  "#000000F2",
 ];
+
+const DEFAULT_LOCATIONS: GradientLocations = [0, 0.25, 0.5, 0.75];
+
+export const BOTTOM_SCRIM_LOCATIONS: GradientLocations = [0, 0.5, 0.78, 1];
 
 export interface LinearGradientImageBlurProps {
   showBlur?: boolean;
@@ -40,13 +49,20 @@ export interface LinearGradientImageBlurProps {
   solidColor?: string;
   containerStyle?: ViewStyle;
   imageStyle?: ImageStyle;
+  gradientLocations?: GradientLocations;
 }
 
-function GradientView({ colors }: { colors: GradientColors }) {
+function GradientView({
+  colors,
+  locations,
+}: {
+  colors: GradientColors;
+  locations: GradientLocations;
+}) {
   return (
     <LinearGradient
       colors={colors as [ColorValue, ColorValue, ColorValue, ColorValue]}
-      locations={[0, 0.25, 0.5, 0.75]}
+      locations={locations as [number, number, number, number]}
       style={[styles.absolute, styles.sizeFull, styles.gradient]}
     />
   );
@@ -54,17 +70,19 @@ function GradientView({ colors }: { colors: GradientColors }) {
 
 function ProgressiveBlurView({
   colors,
+  locations,
   blurIntensity,
   tintColor,
 }: {
   colors: GradientColors;
+  locations: GradientLocations;
   blurIntensity: number;
   tintColor: BlurTint;
 }) {
   return (
     <MaskedView
       style={[styles.absolute, styles.sizeFull, styles.maskedView]}
-      maskElement={<GradientView colors={colors} />}
+      maskElement={<GradientView colors={colors} locations={locations} />}
     >
       <BlurView intensity={blurIntensity} tint={tintColor} style={styles.sizeFull} />
     </MaskedView>
@@ -94,6 +112,7 @@ export function LinearGradientImageBlur({
   solidColor,
   containerStyle,
   imageStyle,
+  gradientLocations = DEFAULT_LOCATIONS,
 }: LinearGradientImageBlurProps) {
   const isDarkMode = useColorScheme() === "dark";
   const selectedColors = isDarkMode ? darkGradientColors : lightGradientColors;
@@ -124,7 +143,7 @@ export function LinearGradientImageBlur({
 
       {showGradient ? (
         <View style={[styles.absolute, styles.sizeFull, styles.gradientLayer]}>
-          <GradientView colors={selectedColors} />
+          <GradientView colors={selectedColors} locations={gradientLocations} />
         </View>
       ) : null}
 
@@ -141,6 +160,7 @@ export function LinearGradientImageBlur({
       {showProgressiveBlur ? (
         <ProgressiveBlurView
           colors={selectedColors}
+          locations={gradientLocations}
           blurIntensity={blurIntensity}
           tintColor={tintColor}
         />

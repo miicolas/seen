@@ -1,6 +1,7 @@
 import { Image } from "expo-image";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
+import { HorizontalScrollRow } from "@/components/ui/horizontal-scroll-row";
 import { Text } from "@/components/ui/text";
 import { SPACING } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
@@ -15,18 +16,11 @@ export function CastSection({ cast }: { cast: CastMember[] }) {
 
   return (
     <DetailSection title="Cast">
-      <ScrollView
-        horizontal
-        style={styles.edgeToEdgeScroll}
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={[
-          styles.castRow,
-          styles.edgeToEdgeScrollContent,
-        ]}>
+      <HorizontalScrollRow gap={SPACING.MD} edgeToEdge>
         {cast.map((member) => (
           <CastAvatar key={member.id} member={member} />
         ))}
-      </ScrollView>
+      </HorizontalScrollRow>
     </DetailSection>
   );
 }
@@ -68,16 +62,6 @@ function CastAvatar({ member }: { member: CastMember }) {
 }
 
 const styles = StyleSheet.create({
-  castRow: {
-    gap: SPACING.MD,
-    paddingVertical: SPACING.XS,
-  },
-  edgeToEdgeScroll: {
-    marginHorizontal: -SPACING.MD,
-  },
-  edgeToEdgeScrollContent: {
-    paddingHorizontal: SPACING.MD,
-  },
   castItem: {
     width: 88,
     gap: SPACING.XS,

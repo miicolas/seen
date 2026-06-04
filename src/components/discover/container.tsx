@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 
 import { Text } from "@/components/ui/text";
 import { SPACING } from "@/constants/design-tokens";
-import { useDiscoverMedia } from "@/hooks/use-discover-media";
+import { useDiscoverMedia } from "@/hooks/tmdb/use-discover-media";
 import type { MediaFilter, TmdbMovieSummary } from "@/lib/tmdb";
 
 import { DiscoverSkeleton } from "./discover-skeleton";

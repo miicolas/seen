@@ -18,10 +18,6 @@ interface RankingCardProps {
 export function RankingCard({ movie, rank, width }: RankingCardProps) {
   const uri = tmdbImageUrl(movie.poster_path ?? movie.backdrop_path, "w500");
   const name = truncate(movie.title ?? movie.original_title ?? "Untitled", 20);
-  const rating =
-    typeof movie.vote_average === "number" && movie.vote_average > 0
-      ? movie.vote_average.toFixed(1)
-      : undefined;
 
   return (
     <ScrimArtworkCard
@@ -36,11 +32,6 @@ export function RankingCard({ movie, rank, width }: RankingCardProps) {
         <Text size="sm" weight="bold" color="#ffffff">
           {name}
         </Text>
-        {rating ? (
-          <Text size="xs" weight="medium" color="#ffffff">
-            {`★ ${rating}`}
-          </Text>
-        ) : null}
       </View>
     </ScrimArtworkCard>
   );
