@@ -99,6 +99,7 @@ The starter left behind some `*.web.tsx`/`*.web.ts` files (e.g. `app-tabs.web.ts
 
 ### Conventions
 
+- **Naming is governed by the `naming` skill** (`.agents/skills/naming/SKILL.md`) — the single source of truth for which word to use per concept (`media`/`movie`/`tv`, `rating`/`review`, `profile`/`user`; `note` and `film` are banned) and where each kind of file lives. Read it before naming or renaming anything.
 - Files are named **kebab-case**; the path alias `@/` is used for all internal imports.
 - User-facing screen text is in **English**. (The legacy login screen is still in French and is being migrated.)
 - Build UI with Expo UI SwiftUI per the `expo-ui-swiftui` skill; reach for plain RN views only when there's no native equivalent.

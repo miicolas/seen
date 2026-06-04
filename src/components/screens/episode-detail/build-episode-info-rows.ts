@@ -1,6 +1,6 @@
 import type { TFunction } from "i18next";
 
-import { formatDate } from "../media-detail/utils";
+import { formatDate } from "@/lib/format";
 import type { CrewMember, InfoRowData } from "../media-detail/types";
 
 interface EpisodeInfoData {

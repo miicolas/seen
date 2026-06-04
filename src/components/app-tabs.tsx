@@ -18,14 +18,6 @@ export default function AppTabs() {
       screenListeners={{ tabPress: () => hapticSelection() }}
       minimizeBehavior="automatic"
     >
-      <NativeTabs.Trigger name="index">
-        <NativeTabs.Trigger.Label>{t("tabs.home")}</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require("@/assets/images/tabIcons/home.png")}
-          renderingMode="template"
-        />
-      </NativeTabs.Trigger>
-
       <NativeTabs.Trigger name="discover">
         <NativeTabs.Trigger.Label>
           {t("tabs.discover")}
@@ -33,6 +25,15 @@ export default function AppTabs() {
         <NativeTabs.Trigger.Icon
           src={require("@/assets/images/tabIcons/explore.png")}
           renderingMode="template"
+        />
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="profile">
+        <NativeTabs.Trigger.Label>
+          {t("tabs.profile")}
+        </NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon
+          sf={{ default: "person", selected: "person.fill" }}
         />
       </NativeTabs.Trigger>
     </NativeTabs>

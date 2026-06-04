@@ -5,10 +5,9 @@ import { StarRating } from "@/components/ui/star-rating";
 import { Text } from "@/components/ui/text";
 import { BORDER_WIDTH, SPACING } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
+import { formatDate } from "@/lib/format";
 import { ratingToStars } from "@/services/core";
 import type { Review } from "@/services/reviews";
-
-import { formatDate } from "../utils";
 
 type ReviewCardVariant = "preview" | "full";
 

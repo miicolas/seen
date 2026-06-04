@@ -18,6 +18,9 @@ const SIZE_TO_GLYPH: Record<UISize, number> = {
   lg: 30,
   xl: 36,
   "2xl": 44,
+  "3xl": 52,
+  "4xl": 60,
+  "5xl": 68,
 };
 
 function symbolFor(value: number, index: number): SFSymbol {

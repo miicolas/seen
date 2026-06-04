@@ -39,6 +39,12 @@
       "expo-router",
       "expo-apple-authentication",
       [
+        "expo-image-picker",
+        {
+          "photosPermission": "Seen utilise ta photothèque pour choisir ta photo de profil."
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "backgroundColor": "#208AEF",

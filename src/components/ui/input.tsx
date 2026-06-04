@@ -64,6 +64,9 @@ const SIZE_TO_HEIGHT: Record<UISize, number> = {
   lg: COMPONENT_HEIGHT.LG,
   xl: COMPONENT_HEIGHT.XL,
   "2xl": COMPONENT_HEIGHT.XXL,
+  "3xl": COMPONENT_HEIGHT.XXXL,
+  "4xl": COMPONENT_HEIGHT.XXXXL,
+  "5xl": COMPONENT_HEIGHT.XXXXXL,
 };
 
 export function Input({

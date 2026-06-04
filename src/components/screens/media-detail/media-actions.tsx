@@ -1,18 +1,6 @@
-import {
-  Button,
-  Host,
-  HStack,
-  Image,
-  Text as SwiftUIText,
-} from "@expo/ui/swift-ui";
-import {
-  buttonStyle,
-  controlSize,
-  frame,
-  tint,
-} from "@expo/ui/swift-ui/modifiers";
 import { StyleSheet, View } from "react-native";
 
+import { Button } from "@/components/ui/button";
 import { SPACING } from "@/constants/design-tokens";
 
 export function MediaActions({
@@ -30,22 +18,15 @@ export function MediaActions({
 }) {
   return (
     <View style={styles.actionContainer}>
-      <Host matchContents>
-        <Button
-          modifiers={[
-            buttonStyle("glassProminent"),
-            controlSize("large"),
-            tint(accentHex),
-          ]}
-          onPress={onRate}>
-          <HStack spacing={8} modifiers={[frame({ width: 180, height: 16 })]}>
-            <Image systemName={hasReview ? "checkmark" : "star.fill"} size={16} />
-            <SwiftUIText>
-              {hasReview ? reviewedLabel : unreviewedLabel}
-            </SwiftUIText>
-          </HStack>
-        </Button>
-      </Host>
+      <Button
+        variant="glass"
+        icon={hasReview ? "checkmark" : "star.fill"}
+        title={hasReview ? reviewedLabel : unreviewedLabel}
+        tintColor={accentHex}
+        onPress={onRate}
+        width={180}
+        haptic={false}
+      />
     </View>
   );
 }

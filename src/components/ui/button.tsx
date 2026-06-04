@@ -2,11 +2,11 @@ import {
   Button as UIButton,
   Host,
   HStack,
+  Image,
   Text as SwiftUIText,
 } from "@expo/ui/swift-ui";
 import {
   buttonStyle,
-  clipShape,
   controlSize,
   disabled as disabledModifier,
   font,
@@ -14,6 +14,7 @@ import {
   tint,
 } from "@expo/ui/swift-ui/modifiers";
 import { useColorScheme } from "react-native";
+import type { SFSymbol } from "sf-symbols-typescript";
 
 import { getColorValue } from "@/constants/colors";
 import { FONT_SIZE } from "@/constants/design-tokens";
@@ -21,23 +22,20 @@ import { useAccentColor } from "@/hooks/use-accent-color";
 import { hapticTap } from "@/lib/haptics";
 import type { UIColor, UISize } from "@/types/ui";
 
-export type ButtonVariant =
-  | "solid"
-  | "glass"
-  | "soft"
-  | "outline"
-  | "link";
+export type ButtonVariant = "solid" | "glass" | "soft" | "outline" | "link";
 
 export interface ButtonProps {
   title: string;
   onPress: () => void;
   variant?: ButtonVariant;
   color?: UIColor;
+  tintColor?: string;
   size?: UISize;
+  icon?: SFSymbol;
   disabled?: boolean;
   loading?: boolean;
   haptic?: boolean;
-  width?: number;
+  width?: number | "fill";
 }
 
 const VARIANT_TO_STYLE: Record<
@@ -58,15 +56,9 @@ const SIZE_TO_FONT: Record<UISize, number> = {
   lg: FONT_SIZE.MD,
   xl: FONT_SIZE.LG,
   "2xl": FONT_SIZE.XL,
-};
-
-const HEIGHT_FOR_FRAME: Record<UISize, number> = {
-  xs: 32,
-  sm: 38,
-  md: 44,
-  lg: 48,
-  xl: 52,
-  "2xl": 56,
+  "3xl": FONT_SIZE.XXL,
+  "4xl": FONT_SIZE.XXXL,
+  "5xl": FONT_SIZE.XXXXL,
 };
 
 export function Button({
@@ -74,7 +66,9 @@ export function Button({
   onPress,
   variant = "glass",
   color,
+  tintColor,
   size = "md",
+  icon,
   disabled = false,
   loading = false,
   haptic = true,
@@ -82,9 +76,9 @@ export function Button({
 }: ButtonProps) {
   const isDark = useColorScheme() === "dark";
   const { accentHex } = useAccentColor();
-  const tintColor = color ? getColorValue(color, isDark ? 400 : 500) : accentHex;
+  const tintValue =
+    tintColor ?? (color ? getColorValue(color, isDark ? 400 : 500) : accentHex);
   const isDisabled = disabled || loading;
-  const height = HEIGHT_FOR_FRAME[size];
 
   function handlePress() {
     if (isDisabled) return;
@@ -92,27 +86,32 @@ export function Button({
     onPress();
   }
 
+  const stretch = width === "fill";
+  const contentFrame = stretch
+    ? frame({ height: 16, maxWidth: Infinity })
+    : width != null
+      ? frame({ width, height: 16 })
+      : frame({ height: 16 });
+
   return (
     <Host
-      matchContents={width ? { vertical: true } : true}
-      style={width ? { width } : undefined}>
+      matchContents={stretch ? { vertical: true } : true}
+      style={stretch ? { width: "100%" } : undefined}
+    >
       <UIButton
         onPress={handlePress}
         modifiers={[
           buttonStyle(VARIANT_TO_STYLE[variant]),
-          controlSize("mini"),
-          tint(tintColor),
-          clipShape("capsule"),
+          controlSize("large"),
+          tint(tintValue),
           disabledModifier(isDisabled),
-        ]}>
-        <HStack
-          modifiers={[
-            frame({ height, ...(width ? { maxWidth: Infinity } : {}) }),
-          ]}>
+        ]}
+      >
+        <HStack spacing={8} modifiers={[contentFrame]}>
+          {icon ? <Image systemName={icon} size={16} /> : null}
           <SwiftUIText
-            modifiers={[
-              font({ size: SIZE_TO_FONT[size], weight: "semibold" }),
-            ]}>
+            modifiers={[font({ size: SIZE_TO_FONT[size], weight: "semibold" })]}
+          >
             {loading ? "…" : title}
           </SwiftUIText>
         </HStack>

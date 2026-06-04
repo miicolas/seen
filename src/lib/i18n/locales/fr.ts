@@ -6,6 +6,39 @@ export const fr: typeof en = {
     signedInAs: "Connecté en tant que",
     signOut: "Se déconnecter",
   },
+  profile: {
+    menuTitle: "Profil",
+    signOut: "Se déconnecter",
+    untitled: "Profil",
+    edit: "Modifier",
+    editTitle: "Modifier le profil",
+    activityTitle: "Activité récente",
+    emptyActivity: "Tes notes et critiques apparaîtront ici.",
+    ratingAdded: "Note ajoutée",
+    activityFallback: "Activité",
+    retry: "Réessayer",
+    cancel: "Annuler",
+    fullNameLabel: "Nom",
+    fullNamePlaceholder: "Ton nom",
+    usernameLabel: "Username",
+    usernamePlaceholder: "username",
+    usernameHelp: "3 à 20 lettres minuscules, chiffres, points ou underscores.",
+    usernameInvalid:
+      "Utilise 3 à 20 lettres minuscules, chiffres, points ou underscores.",
+    photoPermissionError:
+      "L'accès à la photothèque est nécessaire pour choisir une photo de profil.",
+    saveError: "La mise à jour du profil a échoué. Réessaie.",
+    deleteError: "La suppression du compte a échoué. Réessaie.",
+    deleteAccount: "Supprimer le compte",
+    deletingAccount: "Suppression...",
+    deleteAccountTitle: "Supprimer ton compte ?",
+    deleteAccountMessage:
+      "Ton profil, tes notes et tes critiques seront supprimés définitivement.",
+    continueDelete: "Continuer",
+    deleteAccountFinalTitle: "Cette action est irréversible",
+    deleteAccountFinalMessage:
+      "Ton compte Seen et les données de ton profil seront supprimés définitivement.",
+  },
   onboarding: {
     title: "Tout ce que tu as vu, au même endroit",
     subtitle: "Note, critique et garde une trace de tes films et séries",
@@ -88,7 +121,7 @@ export const fr: typeof en = {
     writing: "Scénario",
   },
   tabs: {
-    home: "Accueil",
     discover: "Découvrir",
+    profile: "Profil",
   },
 };

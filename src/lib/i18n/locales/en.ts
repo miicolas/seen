@@ -4,6 +4,39 @@ export const en = {
     signedInAs: "Signed in as",
     signOut: "Sign out",
   },
+  profile: {
+    menuTitle: "Profile",
+    signOut: "Sign out",
+    untitled: "Profile",
+    edit: "Edit",
+    editTitle: "Edit Profile",
+    activityTitle: "Recent Activity",
+    emptyActivity: "Your ratings and reviews will appear here.",
+    ratingAdded: "Rating added",
+    activityFallback: "Activity",
+    retry: "Retry",
+    cancel: "Cancel",
+    fullNameLabel: "Name",
+    fullNamePlaceholder: "Your name",
+    usernameLabel: "Username",
+    usernamePlaceholder: "username",
+    usernameHelp: "3-20 lowercase letters, numbers, dots or underscores.",
+    usernameInvalid:
+      "Use 3-20 lowercase letters, numbers, dots or underscores.",
+    photoPermissionError:
+      "Photo library access is required to choose a profile picture.",
+    saveError: "Profile update failed. Please try again.",
+    deleteError: "Account deletion failed. Please try again.",
+    deleteAccount: "Delete Account",
+    deletingAccount: "Deleting...",
+    deleteAccountTitle: "Delete your account?",
+    deleteAccountMessage:
+      "This will permanently delete your profile, ratings and reviews.",
+    continueDelete: "Continue",
+    deleteAccountFinalTitle: "This cannot be undone",
+    deleteAccountFinalMessage:
+      "Your Seen account and profile data will be permanently removed.",
+  },
   onboarding: {
     title: "Everything you've watched, in one place",
     subtitle: "Rate, review and keep track of your movies and series",
@@ -85,7 +118,7 @@ export const en = {
     writing: "Writing",
   },
   tabs: {
-    home: "Home",
     discover: "Discover",
+    profile: "Profile",
   },
 };

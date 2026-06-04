@@ -23,7 +23,9 @@ import {
   type MovieReviewStats,
 } from "@/services/reviews";
 
-import { formatDate, metaLine } from "./utils";
+import { formatDate } from "@/lib/format";
+
+import { metaLine } from "./utils";
 import type { CastMember, CrewMember, InfoRowData } from "./types";
 
 // 10 half-star buckets: index 0 = 0.5★ … index 9 = 5★ (DB rating is 1..10).

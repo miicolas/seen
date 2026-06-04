@@ -75,7 +75,7 @@ export function ReviewsSheet() {
           <Button
             title={t("mediaDetail.retry")}
             onPress={refresh}
-            variant="soft"
+            variant="glass"
             size="sm"
           />
         </View>

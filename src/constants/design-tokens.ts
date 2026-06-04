@@ -33,6 +33,9 @@ export const COMPONENT_HEIGHT = {
   LG: 56,
   XL: 64,
   XXL: 72,
+  XXXL: 80,
+  XXXXL: 88,
+  XXXXXL: 96,
 } as const;
 
 export const FONT_SIZE = {

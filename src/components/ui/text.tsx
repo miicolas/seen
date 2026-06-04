@@ -44,6 +44,9 @@ const SIZE_TO_FONT: Record<UISize, number> = {
   lg: FONT_SIZE.LG,
   xl: FONT_SIZE.XL,
   "2xl": FONT_SIZE.XXL,
+  "3xl": FONT_SIZE.XXXL,
+  "4xl": FONT_SIZE.XXXXL,
+  "5xl": FONT_SIZE.HEADING_LG,
 };
 
 const SIZE_TO_LINE_HEIGHT: Record<UISize, number> = {
@@ -53,6 +56,9 @@ const SIZE_TO_LINE_HEIGHT: Record<UISize, number> = {
   lg: LINE_HEIGHT.LG,
   xl: LINE_HEIGHT.XL,
   "2xl": LINE_HEIGHT.XXL,
+  "3xl": LINE_HEIGHT.XXXL,
+  "4xl": LINE_HEIGHT.XXXXL,
+  "5xl": LINE_HEIGHT.HEADING_LG,
 };
 
 const WEIGHT_TO_FONT_WEIGHT: Record<FontWeight, TextStyle["fontWeight"]> = {
