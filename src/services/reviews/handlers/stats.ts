@@ -1,11 +1,11 @@
 import { supabase } from "@/lib/supabase";
 
-import type { MediaRef, MovieReviewStats } from "../types";
+import type { MediaRef, MediaReviewStats } from "../types";
 
-export async function getMovieStats({
+export async function getMediaStats({
   tmdbId,
   mediaType,
-}: MediaRef): Promise<MovieReviewStats | null> {
+}: MediaRef): Promise<MediaReviewStats | null> {
   const table =
     mediaType === "tv" ? "series_episode_review_stats" : "movie_review_stats";
   const { data, error } = await supabase
@@ -14,5 +14,5 @@ export async function getMovieStats({
     .match({ tmdb_id: tmdbId, media_type: mediaType })
     .maybeSingle();
   if (error) throw error;
-  return data as MovieReviewStats | null;
+  return data as MediaReviewStats | null;
 }

@@ -24,7 +24,7 @@ import { starsToRating } from "@/services/core";
 import { ReviewForm } from "./review-form";
 import type { ReviewController } from "./use-review-controller";
 
-export function ReviewSheetContainer({
+export function ReviewComposeContainer({
   controller,
 }: {
   controller: ReviewController;

@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 
-export async function getSeriesEpisodeRatings(
+export async function getTvEpisodeRatings(
   seriesTmdbId: number,
 ): Promise<number[]> {
   const { data, error } = await supabase

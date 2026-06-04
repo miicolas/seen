@@ -1,5 +1,5 @@
-import { ReviewsSheet } from "@/components/screens/reviews-sheet";
+import { ReviewsListSheet } from "@/components/screens/reviews-list-sheet";
 
 export default function ReviewsRoute() {
-  return <ReviewsSheet />;
+  return <ReviewsListSheet />;
 }

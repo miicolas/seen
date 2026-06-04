@@ -1,6 +1,6 @@
 import type { MediaType } from "@/lib/tmdb";
 
-// Identifies one movie/series across the review handlers.
+// Identifies one media item across the review handlers.
 export interface MediaRef {
   tmdbId: number;
   mediaType: MediaType;
@@ -32,7 +32,7 @@ export interface ReviewInput {
   comment?: string | null;
 }
 
-export interface MovieReviewStats {
+export interface MediaReviewStats {
   tmdb_id: number;
   media_type: MediaType;
   rating_count: number;
@@ -40,7 +40,7 @@ export interface MovieReviewStats {
   review_count: number;
 }
 
-export interface MovieReviewsPage {
+export interface MediaReviewsPage {
   reviews: Review[];
   count: number;
 }

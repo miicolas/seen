@@ -4,16 +4,16 @@ import { useAsyncResource } from "@/hooks/use-async-resource";
 import { errorMessage } from "@/lib/format";
 import type { MediaType } from "@/lib/tmdb";
 import {
-  getMovieReviewRatings,
-  getMovieReviewsPage,
-  type MovieReviewsPage,
+  getMediaReviewRatings,
+  getMediaReviewsPage,
+  type MediaReviewsPage,
   type Review,
 } from "@/services/reviews";
 
 const REVIEW_PREVIEW_LIMIT = 3;
 export const REVIEW_PAGE_SIZE = 25;
 
-interface MovieReviewPreviewState {
+interface MediaReviewPreviewState {
   reviews: Review[];
   count: number;
   isLoading: boolean;
@@ -21,14 +21,14 @@ interface MovieReviewPreviewState {
   refetch: () => void;
 }
 
-interface MovieReviewRatingsState {
+interface MediaReviewRatingsState {
   ratings: number[];
   isLoading: boolean;
   error: string | null;
   refetch: () => void;
 }
 
-interface PaginatedMovieReviewsState {
+interface PaginatedMediaReviewsState {
   reviews: Review[];
   count: number;
   hasMore: boolean;
@@ -40,7 +40,7 @@ interface PaginatedMovieReviewsState {
   loadMore: () => void;
 }
 
-function emptyPage(): MovieReviewsPage {
+function emptyPage(): MediaReviewsPage {
   return { reviews: [], count: 0 };
 }
 
@@ -48,19 +48,19 @@ function canLoadReviews(tmdbId: number, mediaType: MediaType): boolean {
   return Number.isFinite(tmdbId) && mediaType === "movie";
 }
 
-export function useMovieReviewPreview(
+export function useMediaReviewPreview(
   tmdbId: number,
   mediaType: MediaType,
-): MovieReviewPreviewState {
+): MediaReviewPreviewState {
   const {
     data,
     isLoading,
     error,
     refetch,
-  } = useAsyncResource<MovieReviewsPage>(
+  } = useAsyncResource<MediaReviewsPage>(
     () =>
       canLoadReviews(tmdbId, mediaType)
-        ? getMovieReviewsPage({
+        ? getMediaReviewsPage({
             tmdbId,
             mediaType,
             limit: REVIEW_PREVIEW_LIMIT,
@@ -81,10 +81,10 @@ export function useMovieReviewPreview(
   };
 }
 
-export function useMovieReviewRatings(
+export function useMediaReviewRatings(
   tmdbId: number,
   mediaType: MediaType,
-): MovieReviewRatingsState {
+): MediaReviewRatingsState {
   const {
     data: ratings,
     isLoading,
@@ -93,7 +93,7 @@ export function useMovieReviewRatings(
   } = useAsyncResource<number[]>(
     () =>
       canLoadReviews(tmdbId, mediaType)
-        ? getMovieReviewRatings({ tmdbId, mediaType })
+        ? getMediaReviewRatings({ tmdbId, mediaType })
         : Promise.resolve([]),
     [tmdbId, mediaType],
     [],
@@ -103,10 +103,10 @@ export function useMovieReviewRatings(
   return { ratings, isLoading, error, refetch };
 }
 
-export function usePaginatedMovieReviews(
+export function usePaginatedMediaReviews(
   tmdbId: number,
   mediaType: MediaType,
-): PaginatedMovieReviewsState {
+): PaginatedMediaReviewsState {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [count, setCount] = useState(0);
   const [isLoadingInitial, setIsLoadingInitial] = useState(true);
@@ -138,7 +138,7 @@ export function usePaginatedMovieReviews(
       setError(null);
 
       try {
-        const page = await getMovieReviewsPage({
+        const page = await getMediaReviewsPage({
           tmdbId,
           mediaType,
           limit: REVIEW_PAGE_SIZE,
@@ -179,7 +179,7 @@ export function usePaginatedMovieReviews(
     setIsLoadingMore(true);
 
     try {
-      const page = await getMovieReviewsPage({
+      const page = await getMediaReviewsPage({
         tmdbId,
         mediaType,
         limit: REVIEW_PAGE_SIZE,

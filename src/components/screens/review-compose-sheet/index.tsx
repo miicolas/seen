@@ -1,14 +1,14 @@
 import { useLocalSearchParams } from "expo-router";
 
-import { ReviewSheetContainer } from "./review-sheet-container";
+import { ReviewComposeContainer } from "./review-compose-container";
 import {
   useReviewController,
   type ReviewSheetParams,
 } from "./use-review-controller";
 
-export function ReviewSheet() {
+export function ReviewComposeSheet() {
   const params = useLocalSearchParams<ReviewSheetParams>();
   const controller = useReviewController(params);
 
-  return <ReviewSheetContainer controller={controller} />;
+  return <ReviewComposeContainer controller={controller} />;
 }

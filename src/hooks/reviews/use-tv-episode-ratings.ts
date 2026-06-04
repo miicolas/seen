@@ -1,17 +1,17 @@
 import { useAsyncResource } from "@/hooks/use-async-resource";
-import { getSeriesEpisodeRatings } from "@/services/episode-reviews";
+import { getTvEpisodeRatings } from "@/services/episode-reviews";
 
-interface SeriesEpisodeRatingsState {
+interface TvEpisodeRatingsState {
   ratings: number[];
   isLoading: boolean;
   error: string | null;
   refetch: () => void;
 }
 
-export function useSeriesEpisodeRatings(
+export function useTvEpisodeRatings(
   seriesTmdbId: number,
   enabled: boolean,
-): SeriesEpisodeRatingsState {
+): TvEpisodeRatingsState {
   const {
     data: ratings,
     isLoading,
@@ -20,7 +20,7 @@ export function useSeriesEpisodeRatings(
   } = useAsyncResource<number[]>(
     () =>
       enabled && Number.isFinite(seriesTmdbId) && seriesTmdbId > 0
-        ? getSeriesEpisodeRatings(seriesTmdbId)
+        ? getTvEpisodeRatings(seriesTmdbId)
         : Promise.resolve([]),
     [seriesTmdbId, enabled],
     [],

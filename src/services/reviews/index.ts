@@ -1,6 +1,6 @@
 export type {
-  MovieReviewsPage,
-  MovieReviewStats,
+  MediaReviewsPage,
+  MediaReviewStats,
   PaginatedMediaRef,
   Review,
   ReviewInput,
@@ -10,9 +10,9 @@ export { upsertReview } from "./handlers/upsert";
 export { deleteReview } from "./handlers/delete";
 export { getMyReview } from "./handlers/get-my-review";
 export {
-  getMovieReviewRatings,
-  getMovieReviews,
-  getMovieReviewsPage,
+  getMediaReviewRatings,
+  getMediaReviews,
+  getMediaReviewsPage,
 } from "./handlers/list";
-export { getMovieStats } from "./handlers/stats";
+export { getMediaStats } from "./handlers/stats";
 export { starsToRating, ratingToStars } from "@/services/core";

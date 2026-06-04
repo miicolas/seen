@@ -1,5 +1,5 @@
-import { ReviewSheet } from "@/components/screens/review-sheet";
+import { ReviewComposeSheet } from "@/components/screens/review-compose-sheet";
 
 export default function ReviewRoute() {
-  return <ReviewSheet />;
+  return <ReviewComposeSheet />;
 }

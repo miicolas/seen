@@ -5,11 +5,11 @@ import { Linking, Share, useWindowDimensions } from "react-native";
 import { useAccentColor } from "@/hooks/use-accent-color";
 import { useMediaDetail } from "@/hooks/tmdb/use-media-detail";
 import {
-  useMovieReviewPreview,
-  useMovieReviewRatings,
-} from "@/hooks/reviews/use-movie-reviews";
+  useMediaReviewPreview,
+  useMediaReviewRatings,
+} from "@/hooks/reviews/use-media-reviews";
 import { useMyReview } from "@/hooks/reviews/use-my-review";
-import { useSeriesEpisodeRatings } from "@/hooks/reviews/use-series-episode-ratings";
+import { useTvEpisodeRatings } from "@/hooks/reviews/use-tv-episode-ratings";
 import { hapticTap } from "@/lib/haptics";
 import { reviewSheetHref, reviewsSheetHref } from "@/lib/navigation";
 import {
@@ -18,9 +18,9 @@ import {
   type TmdbTvSeasonSummary,
 } from "@/lib/tmdb";
 import {
-  getMovieStats,
+  getMediaStats,
   ratingToStars,
-  type MovieReviewStats,
+  type MediaReviewStats,
 } from "@/services/reviews";
 
 import { formatDate } from "@/lib/format";
@@ -68,22 +68,22 @@ export function useMediaDetailViewModel() {
     reviews,
     count: reviewCount,
     refetch: refetchReviews,
-  } = useMovieReviewPreview(tmdbId, mediaType);
+  } = useMediaReviewPreview(tmdbId, mediaType);
   const {
     ratings: movieReviewRatings,
     refetch: refetchReviewRatings,
-  } = useMovieReviewRatings(
+  } = useMediaReviewRatings(
     tmdbId,
     mediaType,
   );
   const {
     ratings: seriesEpisodeRatings,
     refetch: refetchSeriesEpisodeRatings,
-  } = useSeriesEpisodeRatings(tmdbId, mediaType === "tv");
-  const [stats, setStats] = useState<MovieReviewStats | null>(null);
+  } = useTvEpisodeRatings(tmdbId, mediaType === "tv");
+  const [stats, setStats] = useState<MediaReviewStats | null>(null);
 
   const loadStats = useCallback(() => {
-    getMovieStats({ tmdbId, mediaType })
+    getMediaStats({ tmdbId, mediaType })
       .then(setStats)
       .catch(() => setStats(null));
   }, [tmdbId, mediaType]);

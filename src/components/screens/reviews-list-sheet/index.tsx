@@ -16,7 +16,7 @@ import { SPACING } from "@/constants/design-tokens";
 import { MaxContentWidth } from "@/constants/theme";
 import { useAccentColor } from "@/hooks/use-accent-color";
 import { useTheme } from "@/hooks/use-theme";
-import { usePaginatedMovieReviews } from "@/hooks/reviews/use-movie-reviews";
+import { usePaginatedMediaReviews } from "@/hooks/reviews/use-media-reviews";
 import type { MediaType } from "@/lib/tmdb";
 import type { Review } from "@/services/reviews";
 
@@ -24,7 +24,7 @@ function pluralSuffix(count: number): string {
   return count === 1 ? "" : "s";
 }
 
-export function ReviewsSheet() {
+export function ReviewsListSheet() {
   const params = useLocalSearchParams<{
     id: string;
     mediaType?: MediaType;
@@ -47,7 +47,7 @@ export function ReviewsSheet() {
     error,
     refresh,
     loadMore,
-  } = usePaginatedMovieReviews(tmdbId, mediaType);
+  } = usePaginatedMediaReviews(tmdbId, mediaType);
 
   const renderReview = ({ item }: { item: Review }) => (
     <ReviewCard review={item} variant="full" />

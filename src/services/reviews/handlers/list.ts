@@ -2,17 +2,17 @@ import { supabase } from "@/lib/supabase";
 
 import type {
   MediaRef,
-  MovieReviewsPage,
+  MediaReviewsPage,
   PaginatedMediaRef,
   Review,
 } from "../types";
 
-export async function getMovieReviewsPage({
+export async function getMediaReviewsPage({
   tmdbId,
   mediaType,
   limit,
   offset,
-}: PaginatedMediaRef): Promise<MovieReviewsPage> {
+}: PaginatedMediaRef): Promise<MediaReviewsPage> {
   const from = Math.max(0, offset);
   const pageSize = Math.max(1, limit);
   const to = from + pageSize - 1;
@@ -28,11 +28,11 @@ export async function getMovieReviewsPage({
   return { reviews: (data ?? []) as Review[], count: count ?? 0 };
 }
 
-export async function getMovieReviews({
+export async function getMediaReviews({
   tmdbId,
   mediaType,
 }: MediaRef): Promise<Review[]> {
-  const page = await getMovieReviewsPage({
+  const page = await getMediaReviewsPage({
     tmdbId,
     mediaType,
     limit: 3,
@@ -41,7 +41,7 @@ export async function getMovieReviews({
   return page.reviews;
 }
 
-export async function getMovieReviewRatings({
+export async function getMediaReviewRatings({
   tmdbId,
   mediaType,
 }: MediaRef): Promise<number[]> {

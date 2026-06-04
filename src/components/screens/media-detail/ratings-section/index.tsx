@@ -7,7 +7,7 @@ import { StarRating } from "@/components/ui/star-rating";
 import { Text } from "@/components/ui/text";
 import { BORDER_WIDTH, OPACITY, SPACING } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
-import type { MovieReviewStats, Review } from "@/services/reviews";
+import type { MediaReviewStats, Review } from "@/services/reviews";
 
 import { DetailSection } from "../detail-section";
 import { ReviewCard } from "./review-card";
@@ -24,7 +24,7 @@ export function RatingsSection({
   onOpenReviews,
 }: {
   title?: string;
-  stats: MovieReviewStats | null;
+  stats: MediaReviewStats | null;
   histogram: number[];
   accentHex: string;
   reviews: Review[];
