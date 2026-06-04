@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { FieldRow } from "@/components/ui/field-row";
+import { type ObservableText } from "@/components/ui/input";
 import { StarRating } from "@/components/ui/star-rating";
 import { LAYOUT } from "@/constants/design-tokens";
 import { useAccentColor } from "@/hooks/use-accent-color";
@@ -16,10 +17,10 @@ export interface ReviewFormProps {
   posterUri?: string;
   stars: number;
   onStarsChange: (value: number) => void;
-  reviewTitle: string;
-  onReviewTitleChange: (value: string) => void;
-  comment: string;
-  onCommentChange: (value: string) => void;
+  reviewTitleState: ObservableText;
+  onTitleChange?: (value: string) => void;
+  commentState: ObservableText;
+  onCommentChange?: (value: string) => void;
   nickname: string | null;
   error: string | null;
 }
@@ -30,9 +31,9 @@ export function ReviewForm({
   posterUri,
   stars,
   onStarsChange,
-  reviewTitle,
-  onReviewTitleChange,
-  comment,
+  reviewTitleState,
+  onTitleChange,
+  commentState,
   onCommentChange,
   nickname,
   error,
@@ -107,8 +108,8 @@ export function ReviewForm({
           <FieldRow
             label={t("review.titleLabel")}
             placeholder={t("review.optional")}
-            value={reviewTitle}
-            onChangeText={onReviewTitleChange}
+            state={reviewTitleState}
+            onChangeText={onTitleChange}
           />
           <View
             style={[
@@ -120,7 +121,7 @@ export function ReviewForm({
             label={t("review.reviewLabel")}
             multiline
             placeholder={t("review.optional")}
-            value={comment}
+            state={commentState}
             onChangeText={onCommentChange}
           />
         </View>

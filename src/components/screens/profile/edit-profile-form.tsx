@@ -1,15 +1,10 @@
+import { useNativeState } from "@expo/ui/swift-ui";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Alert,
-  Pressable,
-  StyleSheet,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { Alert, Pressable, StyleSheet, View } from "react-native";
 
 import { Button } from "@/components/ui/button";
 import { FieldRow } from "@/components/ui/field-row";
@@ -58,26 +53,35 @@ export function EditProfileForm({
   const { t } = useTranslation();
   const router = useRouter();
   const theme = useTheme();
-  const { width } = useWindowDimensions();
 
-  const [fullName, setFullName] = useState(initialProfile.full_name);
-  const [username, setUsername] = useState(initialProfile.username);
+  const fullNameState = useNativeState(initialProfile.full_name);
+  const usernameState = useNativeState(initialProfile.username);
   const [avatar, setAvatar] = useState<AvatarUploadInput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Live initials in the avatar track the typed name; the field text itself
+  // lives in `fullNameState`.
+  const [displayName, setDisplayName] = useState(initialProfile.full_name);
+  // Validity hint stays reactive off a cheap boolean that only flips when the
+  // normalized username crosses the valid↔invalid boundary.
+  const [usernameLooksInvalid, setUsernameLooksInvalid] = useState(() => {
+    const normalized = normalizeUsername(initialProfile.username);
+    return normalized.length > 0 && !isValidUsername(normalized);
+  });
+
+  const onUsernameChange = useCallback((value: string) => {
+    const normalized = normalizeUsername(value);
+    const invalid = normalized.length > 0 && !isValidUsername(normalized);
+    setUsernameLooksInvalid((prev) => (prev === invalid ? prev : invalid));
+  }, []);
 
   const initialAvatarUrl = useMemo(
     () => profileAvatarUrl(initialProfile),
     [initialProfile],
   );
   const avatarUri = avatar?.uri ?? initialAvatarUrl;
-  const normalizedUsername = useMemo(
-    () => normalizeUsername(username),
-    [username],
-  );
-  const usernameLooksInvalid =
-    normalizedUsername.length > 0 && !isValidUsername(normalizedUsername);
 
   const close = useCallback(() => {
     hapticTap();
@@ -124,6 +128,8 @@ export function EditProfileForm({
 
     let uploadedPath: string | null = null;
     const previousAvatarPath = initialProfile.avatar_path ?? null;
+    const fullName = fullNameState.value;
+    const username = normalizeUsername(usernameState.value);
 
     try {
       if (avatar) {
@@ -157,13 +163,13 @@ export function EditProfileForm({
     }
   }, [
     avatar,
-    fullName,
+    fullNameState,
+    usernameState,
     isDeleting,
     isSaving,
     initialProfile.avatar_path,
     router,
     t,
-    username,
   ]);
 
   const deleteConfirmed = useCallback(async () => {
@@ -212,10 +218,6 @@ export function EditProfileForm({
   }, [deleteConfirmed, t]);
 
   const isBusy = isSaving || isDeleting;
-  const buttonWidth = Math.min(
-    LAYOUT.CONTENT_MAX_WIDTH,
-    Math.max(0, width - LAYOUT.SCREEN_PADDING * 2),
-  );
 
   return (
     <EditSheetScaffold
@@ -234,7 +236,7 @@ export function EditProfileForm({
             { opacity: pressed ? OPACITY.DISABLED : 1 },
           ]}
         >
-          <ProfileAvatar uri={avatarUri} name={fullName} size={150} />
+          <ProfileAvatar uri={avatarUri} name={displayName} size={150} />
           <View style={styles.cameraBadge}>
             <SymbolView name="camera.fill" size={28} tintColor="#000000" />
           </View>
@@ -249,8 +251,8 @@ export function EditProfileForm({
           <FieldRow
             label={t("profile.fullNameLabel")}
             placeholder={t("profile.fullNamePlaceholder")}
-            value={fullName}
-            onChangeText={setFullName}
+            state={fullNameState}
+            onChangeText={setDisplayName}
           />
           <View
             style={[
@@ -261,8 +263,8 @@ export function EditProfileForm({
           <FieldRow
             label={t("profile.usernameLabel")}
             placeholder={t("profile.usernamePlaceholder")}
-            value={username}
-            onChangeText={(value) => setUsername(normalizeUsername(value))}
+            state={usernameState}
+            onChangeText={onUsernameChange}
           />
         </View>
 
@@ -298,7 +300,7 @@ export function EditProfileForm({
             variant="glass"
             color="red"
             size="lg"
-            width={buttonWidth}
+            width="fill"
             disabled={isBusy}
           />
         </View>
@@ -350,6 +352,7 @@ const styles = StyleSheet.create({
   },
   destructive: {
     paddingTop: SPACING.XL,
+    paddingHorizontal: SPACING.MD,
     alignItems: "center",
   },
 });

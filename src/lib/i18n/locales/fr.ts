@@ -20,7 +20,7 @@ export const fr: typeof en = {
     cancel: "Annuler",
     fullNameLabel: "Nom",
     fullNamePlaceholder: "Ton nom",
-    usernameLabel: "Username",
+    usernameLabel: "Identifiant",
     usernamePlaceholder: "username",
     usernameHelp: "3 à 20 lettres minuscules, chiffres, points ou underscores.",
     usernameInvalid:

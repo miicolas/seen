@@ -3,17 +3,18 @@ import {
   HStack,
   Text as SwiftUIText,
   TextField,
-  useNativeState,
 } from "@expo/ui/swift-ui";
 import {
   font,
   foregroundStyle,
   frame,
+  lineLimit,
   padding,
   textInputAutocapitalization,
 } from "@expo/ui/swift-ui/modifiers";
 import { useWindowDimensions } from "react-native";
 
+import { type ObservableText } from "./input";
 import { FONT_SIZE, LAYOUT } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
 
@@ -22,26 +23,27 @@ const MULTILINE_MIN_HEIGHT = 88;
 
 interface FieldRowProps {
   label: string;
-  value: string;
-  onChangeText: (text: string) => void;
+  // Externally-owned native text state (`useNativeState`). The owner seeds it and
+  // reads `.value` lazily; binding it keeps typing on the native side without a
+  // per-keystroke React re-render.
+  state: ObservableText;
+  // Optional change signal — forward only when the owner derives reactive state
+  // (e.g. an enable/disable flag or a validity hint) from the text.
+  onChangeText?: (text: string) => void;
   placeholder: string;
   multiline?: boolean;
 }
 
-// Native label + TextField row. The field is seeded once from `value` (the row
-// mounts only after its data has loaded, so the seed is the right initial value)
-// and reports edits through `onChangeText` — a controlled re-push would go stale
-// against the native text state.
+// Native label + TextField row, driven by an external observable text state.
 export function FieldRow({
   label,
-  value,
+  state,
   onChangeText,
   placeholder,
   multiline = false,
 }: FieldRowProps) {
   const theme = useTheme();
   const { width } = useWindowDimensions();
-  const text = useNativeState(value);
 
   const contentWidth = Math.min(
     LAYOUT.CONTENT_MAX_WIDTH,
@@ -66,6 +68,7 @@ export function FieldRow({
           modifiers={[
             font({ size: FONT_SIZE.MD, weight: "semibold" }),
             foregroundStyle(theme.text),
+            lineLimit(1),
             frame({ width: LAYOUT.FIELD_LABEL_WIDTH, alignment: "leading" }),
           ]}
         >
@@ -73,7 +76,7 @@ export function FieldRow({
         </SwiftUIText>
         <TextField
           placeholder={placeholder}
-          text={text}
+          text={state}
           onTextChange={onChangeText}
           axis={multiline ? "vertical" : "horizontal"}
           modifiers={[
