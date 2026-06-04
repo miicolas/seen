@@ -5,6 +5,12 @@ export const profileKeys = {
   activity: () => ["profile", "activity"] as const,
 };
 
+export const accountKeys = {
+  session: () => ["account", "session"] as const,
+  sessions: () => ["account", "sessions"] as const,
+  linked: () => ["account", "linked"] as const,
+};
+
 export const discoverKeys = {
   list: (filter: string, locale: string) => ["discover", filter, locale] as const,
 };

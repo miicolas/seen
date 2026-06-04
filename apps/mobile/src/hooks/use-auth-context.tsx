@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
 
 export type AuthData = {
-  session?: unknown | null;
+  session?: { id: string; token: string } | null;
   user?: {
     id: string;
     name?: string | null;

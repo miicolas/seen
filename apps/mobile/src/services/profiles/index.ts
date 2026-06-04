@@ -15,4 +15,6 @@ export {
   uploadProfileAvatar,
 } from "./handlers/upload-avatar";
 export { getMyProfileActivity } from "./handlers/get-my-profile-activity";
-export { deleteAccount } from "./handlers/delete-account";
+// Account deletion lives in the account service (server-side auth.api.deleteUser);
+// re-exported here so existing `@/services/profiles` imports keep working.
+export { deleteAccount } from "@/services/account";

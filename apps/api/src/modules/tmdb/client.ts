@@ -1,22 +1,25 @@
 import { db } from "@seen/db";
 import { movies as moviesTable } from "@seen/db/schema";
-import { and, eq } from "drizzle-orm";
 
 import { env } from "../../env";
 import { HttpError } from "../../lib/http-error";
 import { redisGetJson, redisSetJson, withRedisLock } from "../../lib/redis";
 
-const TMDB_BASE = "https://api.themoviedb.org/3";
-const DEFAULT_LANGUAGE = "fr-FR";
-const HOT_TTL_SECONDS = 5 * 60;
-const DETAIL_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+// Shared TMDB HTTP + cache client used by the query endpoints. Holds the fetch,
+// normalization, and movie-cache-warming primitives; the per-endpoint handlers
+// live in ./queries.
 
-const DETAIL_APPEND: Record<MediaType, string> = {
+const TMDB_BASE = "https://api.themoviedb.org/3";
+export const DEFAULT_LANGUAGE = "fr-FR";
+const HOT_TTL_SECONDS = 5 * 60;
+export const DETAIL_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+
+export const DETAIL_APPEND: Record<MediaType, string> = {
   movie: "credits,videos,images,release_dates",
   tv: "credits,videos,images,content_ratings",
 };
 
-const MEDIA_GENRE_SHELVES = [
+export const MEDIA_GENRE_SHELVES = [
   { key: "Action", name: "Action", movieGenreId: 28, tvGenreId: 10759 },
   { key: "Comedy", name: "Comedy", movieGenreId: 35, tvGenreId: 35 },
   {
@@ -95,7 +98,8 @@ export interface DiscoverFeed {
 type TmdbParams = Record<string, string | number | boolean | undefined>;
 
 function tmdbAuthHeaders(): Record<string, string> {
-  if (!env.tmdbToken) return { "Content-Type": "application/json;charset=utf-8" };
+  if (!env.tmdbToken)
+    return { "Content-Type": "application/json;charset=utf-8" };
   return {
     Authorization: `Bearer ${env.tmdbToken}`,
     "Content-Type": "application/json;charset=utf-8",
@@ -104,12 +108,15 @@ function tmdbAuthHeaders(): Record<string, string> {
 
 function cacheKey(path: string, params: TmdbParams) {
   const sorted = Object.entries(params)
-    .filter((entry): entry is [string, string | number | boolean] => entry[1] !== undefined)
+    .filter(
+      (entry): entry is [string, string | number | boolean] =>
+        entry[1] !== undefined,
+    )
     .sort(([left], [right]) => left.localeCompare(right));
   return `tmdb:${path}:${JSON.stringify(sorted)}`;
 }
 
-async function tmdbFetch<T>(
+export async function tmdbFetch<T>(
   path: string,
   params: TmdbParams = {},
   ttlSeconds = HOT_TTL_SECONDS,
@@ -190,7 +197,7 @@ export function normalizeSummary(
   };
 }
 
-function hasRating(item: TmdbMovieSummary) {
+export function hasRating(item: TmdbMovieSummary) {
   return typeof item.vote_average === "number" && item.vote_average > 0;
 }
 
@@ -207,7 +214,7 @@ function interleave(
   return out;
 }
 
-function combine(
+export function combine(
   movies: TmdbMovieSummary[],
   series: TmdbMovieSummary[],
   filter: MediaFilter,
@@ -235,7 +242,7 @@ function movieSummaryValues(summary: TmdbMovieSummary, language: string) {
   };
 }
 
-async function upsertMovieList(
+export async function upsertMovieList(
   summaries: TmdbMovieSummary[],
   language: string,
 ): Promise<void> {
@@ -255,7 +262,7 @@ async function upsertMovieList(
   );
 }
 
-async function upsertMovieDetail(
+export async function upsertMovieDetail(
   detail: TmdbMovieDetail,
   language: string,
 ): Promise<void> {
@@ -280,9 +287,14 @@ export async function discover(
   mediaType: MediaType,
   params: TmdbParams,
 ): Promise<TmdbMovieSummary[]> {
-  const result = await tmdbFetch<TmdbPagedResult>(`/discover/${mediaType}`, params);
+  const result = await tmdbFetch<TmdbPagedResult>(
+    `/discover/${mediaType}`,
+    params,
+  );
   const language = String(params.language ?? DEFAULT_LANGUAGE);
-  const normalized = result.results.map((item) => normalizeSummary(item, mediaType));
+  const normalized = result.results.map((item) =>
+    normalizeSummary(item, mediaType),
+  );
   void upsertMovieList(normalized, language).catch((error) =>
     console.error("movie list cache warm failed", error),
   );
@@ -294,9 +306,12 @@ export async function trending(
   timeWindow: "day" | "week",
   language = DEFAULT_LANGUAGE,
 ): Promise<TmdbMovieSummary[]> {
-  const result = await tmdbFetch<TmdbPagedResult>(`/trending/${filter}/${timeWindow}`, {
-    language,
-  });
+  const result = await tmdbFetch<TmdbPagedResult>(
+    `/trending/${filter}/${timeWindow}`,
+    {
+      language,
+    },
+  );
   const fallbackType: MediaType = filter === "tv" ? "tv" : "movie";
   const normalized = result.results
     .filter((item) => item.media_type !== "person")
@@ -307,164 +322,6 @@ export async function trending(
   return normalized;
 }
 
-export async function search(
-  filter: MediaFilter,
-  query: string,
-  page = 1,
-  language = DEFAULT_LANGUAGE,
-): Promise<TmdbMovieSummary[]> {
-  if (!query.trim()) return [];
-  const path =
-    filter === "all" ? "/search/multi" : filter === "tv" ? "/search/tv" : "/search/movie";
-  const result = await tmdbFetch<TmdbPagedResult>(path, { query, page, language });
-  const fallbackType: MediaType = filter === "tv" ? "tv" : "movie";
-  const normalized = result.results
-    .filter((item) => item.media_type !== "person")
-    .map((item) => normalizeSummary(item, fallbackType));
-  void upsertMovieList(normalized, language).catch((error) =>
-    console.error("search cache warm failed", error),
-  );
-  return normalized;
-}
-
-export async function getMediaDetail(
-  mediaType: MediaType,
-  tmdbId: number,
-  language = DEFAULT_LANGUAGE,
-): Promise<TmdbMovieDetail> {
-  const [row] = await db
-    .select({
-      detail: moviesTable.detail,
-      detailFetchedAt: moviesTable.detailFetchedAt,
-      language: moviesTable.language,
-    })
-    .from(moviesTable)
-    .where(and(eq(moviesTable.tmdbId, tmdbId), eq(moviesTable.mediaType, mediaType)))
-    .limit(1);
-
-  if (
-    row?.detail &&
-    row.detailFetchedAt &&
-    (!row.language || row.language === language) &&
-    Date.now() - row.detailFetchedAt.getTime() < DETAIL_TTL_MS
-  ) {
-    return { ...(row.detail as TmdbMovieDetail), _cache: "hit" };
-  }
-
-  const detail = await tmdbFetch<TmdbMovieDetail>(
-    `/${mediaType}/${tmdbId}`,
-    {
-      language,
-      append_to_response: DETAIL_APPEND[mediaType],
-    },
-    60 * 60,
-  );
-  const normalized = {
-    ...detail,
-    ...normalizeSummary({ ...detail, media_type: mediaType }, mediaType),
-    _cache: "miss" as const,
-  };
-  await upsertMovieDetail(normalized, language);
-  return normalized;
-}
-
-export function getTvSeasonDetail(
-  seriesId: number,
-  seasonNumber: number,
-  language = DEFAULT_LANGUAGE,
-): Promise<Record<string, unknown>> {
-  return tmdbFetch<Record<string, unknown>>(
-    `/tv/${seriesId}/season/${seasonNumber}`,
-    { language },
-    60 * 60,
-  );
-}
-
-export function getTvEpisodeDetail(
-  seriesId: number,
-  seasonNumber: number,
-  episodeNumber: number,
-  language = DEFAULT_LANGUAGE,
-): Promise<Record<string, unknown>> {
-  return tmdbFetch<Record<string, unknown>>(
-    `/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}`,
-    { language, append_to_response: "credits" },
-    60 * 60,
-  );
-}
-
-function today() {
+export function today() {
   return new Date().toISOString().slice(0, 10);
-}
-
-export async function discoverFeed(
-  filter: MediaFilter,
-  language = DEFAULT_LANGUAGE,
-): Promise<DiscoverFeed> {
-  const wantMovie = filter !== "tv";
-  const wantTv = filter !== "movie";
-  const none = Promise.resolve<TmdbMovieSummary[]>([]);
-  const date = today();
-
-  const trendingWeekP = trending(filter, "week", language);
-  const trendingDayP = trending(filter, "day", language);
-  const newMoviesP = wantMovie
-    ? discover("movie", {
-        language,
-        sort_by: "primary_release_date.desc",
-        "primary_release_date.lte": date,
-        "vote_count.gte": 50,
-      })
-    : none;
-  const newSeriesP = wantTv
-    ? discover("tv", {
-        language,
-        sort_by: "first_air_date.desc",
-        "first_air_date.lte": date,
-        "vote_count.gte": 50,
-      })
-    : none;
-
-  const genreP = MEDIA_GENRE_SHELVES.map((genre) => ({
-    key: genre.key,
-    name: genre.name,
-    movies: wantMovie
-      ? discover("movie", {
-          language,
-          with_genres: genre.movieGenreId,
-          sort_by: "popularity.desc",
-          "vote_count.gte": 100,
-        })
-      : none,
-    series: wantTv
-      ? discover("tv", {
-          language,
-          with_genres: genre.tvGenreId,
-          sort_by: "popularity.desc",
-          "vote_count.gte": 100,
-        })
-      : none,
-  }));
-
-  const [trendingWeek, trendingDay, newMovies, newSeries, genres] =
-    await Promise.all([
-      trendingWeekP,
-      trendingDayP,
-      newMoviesP,
-      newSeriesP,
-      Promise.all(
-        genreP.map(async (genre) => ({
-          key: genre.key,
-          name: genre.name,
-          media: combine(await genre.movies, await genre.series, filter),
-        })),
-      ),
-    ]);
-
-  return {
-    trending: trendingWeek.filter(hasRating),
-    topToday: trendingDay.filter(hasRating),
-    newReleases: combine(newMovies, newSeries, filter),
-    genres,
-  };
 }
