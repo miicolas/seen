@@ -2,6 +2,7 @@ import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, View } from "react-native";
+import type { SFSymbol } from "sf-symbols-typescript";
 
 import { Text } from "@/components/ui/text";
 import {
@@ -15,12 +16,44 @@ import { tmdbImageUrl, type TmdbTvEpisodeSummary } from "@/lib/tmdb";
 
 import { formatEpisodeDate } from "./utils";
 
+// Small pill used for runtime, community average, and the user's own rating.
+function MetricPill({
+  icon,
+  iconSize = 12,
+  label,
+  tint,
+  background,
+}: {
+  icon: SFSymbol;
+  iconSize?: number;
+  label: string;
+  tint: string;
+  background: string;
+}) {
+  return (
+    <View style={[styles.metricPill, { backgroundColor: background }]}>
+      <SymbolView
+        name={icon}
+        size={iconSize}
+        type="monochrome"
+        tintColor={tint}
+      />
+      <Text size="xs" weight="bold" color={tint}>
+        {label}
+      </Text>
+    </View>
+  );
+}
+
 interface EpisodeRowProps {
   accentHex: string;
   episode: TmdbTvEpisodeSummary;
   fallbackImageUri?: string | null;
   onPress: () => void;
   showDivider: boolean;
+  avg?: number; // community average, display stars 0.5..5
+  ratingCount?: number;
+  myRating?: number; // signed-in user's rating, display stars 0.5..5
 }
 
 export function EpisodeRow({
@@ -29,6 +62,9 @@ export function EpisodeRow({
   fallbackImageUri,
   onPress,
   showDivider,
+  avg,
+  ratingCount = 0,
+  myRating,
 }: EpisodeRowProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -91,26 +127,33 @@ export function EpisodeRow({
             </Text>
           ) : null}
         </View>
-        <View style={styles.durationSlot}>
+        <View style={styles.metaRow}>
           {duration ? (
-            <View
-              style={[
-                styles.durationPill,
-                { backgroundColor: theme.backgroundElement },
-              ]}
-            >
-              <View style={styles.playIconSlot}>
-                <SymbolView
-                  name="play.fill"
-                  size={12}
-                  type="monochrome"
-                  tintColor={accentHex}
-                />
-              </View>
-              <Text size="xs" weight="bold" color={accentHex}>
-                {duration}
-              </Text>
-            </View>
+            <MetricPill
+              icon="play.fill"
+              label={duration}
+              tint={accentHex}
+              background={theme.backgroundElement}
+            />
+          ) : null}
+
+          {avg != null && ratingCount > 0 ? (
+            <MetricPill
+              icon="star.fill"
+              label={avg.toFixed(1)}
+              tint={accentHex}
+              background={theme.backgroundElement}
+            />
+          ) : null}
+
+          {myRating != null ? (
+            <MetricPill
+              icon="person.fill"
+              iconSize={11}
+              label={myRating.toFixed(1)}
+              tint={theme.textSecondary}
+              background={theme.backgroundElement}
+            />
           ) : null}
         </View>
       </View>
@@ -150,11 +193,13 @@ const styles = StyleSheet.create({
   overviewSlot: {
     height: LINE_HEIGHT.SM * 2,
   },
-  durationSlot: {
+  metaRow: {
     height: 30,
-    justifyContent: "center",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.SM,
   },
-  durationPill: {
+  metricPill: {
     alignSelf: "flex-start",
     height: 30,
     flexDirection: "row",
@@ -162,12 +207,6 @@ const styles = StyleSheet.create({
     gap: SPACING.XS,
     paddingHorizontal: SPACING.SM,
     borderRadius: BORDER_RADIUS.FULL,
-  },
-  playIconSlot: {
-    width: 12,
-    height: 12,
-    alignItems: "center",
-    justifyContent: "center",
   },
   chevronSlot: {
     width: 20,

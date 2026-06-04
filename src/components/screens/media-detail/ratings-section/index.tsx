@@ -7,7 +7,8 @@ import { StarRating } from "@/components/ui/star-rating";
 import { Text } from "@/components/ui/text";
 import { BORDER_WIDTH, OPACITY, SPACING } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
-import type { MediaReviewStats, Review } from "@/services/reviews";
+import type { ReviewLike } from "@/services/core";
+import { EMPTY_HISTOGRAM, type MediaReviewStats } from "@/services/reviews";
 
 import { DetailSection } from "../detail-section";
 import { ReviewCard } from "./review-card";
@@ -17,7 +18,6 @@ const STAR_ROWS = [5, 4, 3, 2, 1] as const;
 export function RatingsSection({
   title = "Ratings & Reviews",
   stats,
-  histogram,
   accentHex,
   reviews,
   reviewCount = reviews.length,
@@ -25,9 +25,8 @@ export function RatingsSection({
 }: {
   title?: string;
   stats: MediaReviewStats | null;
-  histogram: number[];
   accentHex: string;
-  reviews: Review[];
+  reviews: ReviewLike[];
   reviewCount?: number;
   onOpenReviews?: () => void;
 }) {
@@ -50,6 +49,7 @@ export function RatingsSection({
   );
 
   // Collapse the 10 half-star buckets into 5 whole-star rows (index 0 = 1★ … 4 = 5★).
+  const histogram = stats?.histogram ?? EMPTY_HISTOGRAM;
   const { starCounts, maxStar } = useMemo(() => {
     const counts = [1, 2, 3, 4, 5].map(
       (star) => (histogram[star * 2 - 2] ?? 0) + (histogram[star * 2 - 1] ?? 0),

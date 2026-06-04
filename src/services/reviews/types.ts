@@ -38,9 +38,14 @@ export interface MediaReviewStats {
   rating_count: number;
   avg_rating: number | null; // 0.5..5 scale
   review_count: number;
+  // 10 half-star buckets (index 0 = 0.5★ … 9 = 5★), maintained server-side.
+  histogram: number[] | null;
 }
 
 export interface MediaReviewsPage {
   reviews: Review[];
   count: number;
 }
+
+// Zeroed 10 half-star buckets — fallback when a stats row has no histogram yet.
+export const EMPTY_HISTOGRAM: number[] = new Array(10).fill(0);

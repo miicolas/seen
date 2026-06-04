@@ -2,20 +2,23 @@ import { useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 
 import { ReviewsListView } from "@/components/screens/reviews-list-view";
-import { usePaginatedMediaReviews } from "@/hooks/reviews/use-media-reviews";
-import type { MediaType } from "@/lib/tmdb";
+import { usePaginatedEpisodeReviews } from "@/hooks/reviews/use-episode-reviews";
 
-export function ReviewsListSheet() {
+export function EpisodeReviewsListSheet() {
   const params = useLocalSearchParams<{
-    id: string;
-    mediaType?: MediaType;
+    seriesId: string;
+    seasonNumber: string;
+    episodeNumber: string;
     title?: string;
   }>();
   const { t } = useTranslation();
-  const mediaType: MediaType = params.mediaType === "tv" ? "tv" : "movie";
   const title = params.title ?? t("mediaDetail.allReviews");
 
-  const state = usePaginatedMediaReviews(Number(params.id), mediaType);
+  const state = usePaginatedEpisodeReviews({
+    seriesTmdbId: Number(params.seriesId),
+    seasonNumber: Number(params.seasonNumber),
+    episodeNumber: Number(params.episodeNumber),
+  });
 
   return <ReviewsListView title={title} {...state} />;
 }

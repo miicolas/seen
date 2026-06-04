@@ -3,12 +3,22 @@ import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useAccentColor } from "@/hooks/use-accent-color";
+import { useEpisodeReviewPreview } from "@/hooks/reviews/use-episode-reviews";
 import { useMyEpisodeReview } from "@/hooks/reviews/use-my-episode-review";
+import { useAsyncResource } from "@/hooks/use-async-resource";
 import { useTvEpisodeDetail } from "@/hooks/tmdb/use-tv-episode-detail";
 import { hapticTap } from "@/lib/haptics";
-import { episodeReviewSheetHref } from "@/lib/navigation";
+import {
+  episodeReviewSheetHref,
+  episodeReviewsListHref,
+} from "@/lib/navigation";
 import { tmdbImageUrl } from "@/lib/tmdb";
 import { ratingToStars } from "@/services/core";
+import {
+  getEpisodeStats,
+  type EpisodeStats,
+} from "@/services/episode-reviews";
+import type { MediaReviewStats } from "@/services/reviews";
 
 import { buildEpisodeInfoRows } from "./build-episode-info-rows";
 import type { CastMember, CrewMember } from "../media-detail/types";
@@ -47,6 +57,38 @@ export function useEpisodeDetailViewModel() {
     seasonNumber,
     episodeNumber,
   });
+
+  const statsEnabled = Number.isFinite(seriesId) && seriesId > 0;
+  const { data: episodeStats, refetch: refetchStats } =
+    useAsyncResource<EpisodeStats | null>(
+      () =>
+        statsEnabled
+          ? getEpisodeStats(seriesId, seasonNumber, episodeNumber)
+          : Promise.resolve(null),
+      [seriesId, seasonNumber, episodeNumber],
+      null,
+      "Failed to load episode stats",
+    );
+  const {
+    reviews: previewReviews,
+    count: reviewCount,
+    refetch: refetchPreview,
+  } = useEpisodeReviewPreview({
+    seriesTmdbId: seriesId,
+    seasonNumber,
+    episodeNumber,
+  });
+
+  const stats: MediaReviewStats | null = episodeStats
+    ? {
+        tmdb_id: episodeTmdbId,
+        media_type: "tv",
+        rating_count: episodeStats.rating_count,
+        avg_rating: episodeStats.avg_rating,
+        review_count: reviewCount,
+        histogram: episodeStats.histogram,
+      }
+    : null;
 
   const title =
     episode?.name?.trim() ||
@@ -138,10 +180,19 @@ export function useEpisodeDetailViewModel() {
     title,
   ]);
 
+  const openReviews = useCallback(() => {
+    hapticTap();
+    router.push(
+      episodeReviewsListHref({ seriesId, seasonNumber, episodeNumber, title }),
+    );
+  }, [seriesId, seasonNumber, episodeNumber, title]);
+
   useFocusEffect(
     useCallback(() => {
       refetchEpisodeReview();
-    }, [refetchEpisodeReview]),
+      refetchStats();
+      refetchPreview();
+    }, [refetchEpisodeReview, refetchStats, refetchPreview]),
   );
 
   return {
@@ -159,6 +210,10 @@ export function useEpisodeDetailViewModel() {
     infoRows,
     overview: episode?.overview,
     episodeTmdbId,
+    stats,
+    reviews: previewReviews,
+    reviewCount,
+    openReviews,
     isLoading,
     error,
     hasEpisode: episode != null,

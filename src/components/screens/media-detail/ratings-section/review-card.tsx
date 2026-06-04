@@ -6,8 +6,7 @@ import { Text } from "@/components/ui/text";
 import { BORDER_WIDTH, SPACING } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
 import { formatDate } from "@/lib/format";
-import { ratingToStars } from "@/services/core";
-import type { Review } from "@/services/reviews";
+import { ratingToStars, type ReviewLike } from "@/services/core";
 
 type ReviewCardVariant = "preview" | "full";
 
@@ -15,7 +14,7 @@ export function ReviewCard({
   review,
   variant = "preview",
 }: {
-  review: Review;
+  review: ReviewLike;
   variant?: ReviewCardVariant;
 }) {
   const theme = useTheme();

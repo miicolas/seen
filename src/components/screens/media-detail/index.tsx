@@ -98,7 +98,6 @@ export function MediaDetail() {
                 : t("mediaDetail.ratingsAndReviews")
             }
             stats={vm.stats}
-            histogram={vm.histogram}
             accentHex={vm.accentHex}
             reviews={vm.reviews}
             reviewCount={vm.reviewCount}

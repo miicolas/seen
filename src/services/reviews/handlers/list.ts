@@ -6,6 +6,8 @@ import type {
   PaginatedMediaRef,
   Review,
 } from "../types";
+// Histograms now come denormalized on the stats row (see getMediaStats); the
+// client no longer pulls every raw rating.
 
 export async function getMediaReviewsPage({
   tmdbId,
@@ -39,18 +41,4 @@ export async function getMediaReviews({
     offset: 0,
   });
   return page.reviews;
-}
-
-export async function getMediaReviewRatings({
-  tmdbId,
-  mediaType,
-}: MediaRef): Promise<number[]> {
-  const { data, error } = await supabase
-    .from("reviews")
-    .select("rating")
-    .eq("tmdb_id", tmdbId)
-    .eq("media_type", mediaType)
-    .not("rating", "is", null);
-  if (error) throw error;
-  return (data ?? []).map((row) => Number(row.rating));
 }

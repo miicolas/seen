@@ -95,6 +95,23 @@ export function episodeDetailHref(params: {
   } as Href;
 }
 
+export function episodeReviewsListHref(params: {
+  seriesId: number;
+  seasonNumber: number;
+  episodeNumber: number;
+  title: string;
+}): Href {
+  return {
+    pathname: "/episode-reviews",
+    params: {
+      seriesId: String(params.seriesId),
+      seasonNumber: String(params.seasonNumber),
+      episodeNumber: String(params.episodeNumber),
+      title: params.title,
+    },
+  } as Href;
+}
+
 export function episodeReviewSheetHref(params: {
   seriesId: number;
   episodeTmdbId: number;

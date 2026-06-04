@@ -44,6 +44,14 @@ function RootNavigator() {
           contentStyle: { backgroundColor: theme.background },
         }}
       />
+      <Stack.Screen
+        name="episode-reviews"
+        options={{
+          title: t("mediaDetail.allReviews"),
+          presentation: "formSheet",
+          contentStyle: { backgroundColor: theme.background },
+        }}
+      />
       <Stack.Screen name="+not-found" />
     </Stack>
   );

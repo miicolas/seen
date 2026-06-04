@@ -1,15 +1,11 @@
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Linking, Share, useWindowDimensions } from "react-native";
 
 import { useAccentColor } from "@/hooks/use-accent-color";
 import { useMediaDetail } from "@/hooks/tmdb/use-media-detail";
-import {
-  useMediaReviewPreview,
-  useMediaReviewRatings,
-} from "@/hooks/reviews/use-media-reviews";
+import { useMediaReviewPreview } from "@/hooks/reviews/use-media-reviews";
 import { useMyReview } from "@/hooks/reviews/use-my-review";
-import { useTvEpisodeRatings } from "@/hooks/reviews/use-tv-episode-ratings";
 import { hapticTap } from "@/lib/haptics";
 import { reviewSheetHref, reviewsSheetHref } from "@/lib/navigation";
 import {
@@ -27,24 +23,6 @@ import { formatDate } from "@/lib/format";
 
 import { metaLine } from "./utils";
 import type { CastMember, CrewMember, InfoRowData } from "./types";
-
-// 10 half-star buckets: index 0 = 0.5★ … index 9 = 5★ (DB rating is 1..10).
-// Series aggregate per-episode ratings; movies use their own reviews.
-function buildHistogram(
-  mediaType: MediaType,
-  movieReviewRatings: number[],
-  seriesEpisodeRatings: number[],
-): number[] {
-  const buckets = new Array(10).fill(0) as number[];
-  const ratings =
-    mediaType === "tv" ? seriesEpisodeRatings : movieReviewRatings;
-
-  for (const rating of ratings) {
-    const index = Math.min(9, Math.max(0, Math.round(rating) - 1));
-    buckets[index] += 1;
-  }
-  return buckets;
-}
 
 export function useMediaDetailViewModel() {
   const params = useLocalSearchParams<{
@@ -69,17 +47,6 @@ export function useMediaDetailViewModel() {
     count: reviewCount,
     refetch: refetchReviews,
   } = useMediaReviewPreview(tmdbId, mediaType);
-  const {
-    ratings: movieReviewRatings,
-    refetch: refetchReviewRatings,
-  } = useMediaReviewRatings(
-    tmdbId,
-    mediaType,
-  );
-  const {
-    ratings: seriesEpisodeRatings,
-    refetch: refetchSeriesEpisodeRatings,
-  } = useTvEpisodeRatings(tmdbId, mediaType === "tv");
   const [stats, setStats] = useState<MediaReviewStats | null>(null);
 
   const loadStats = useCallback(() => {
@@ -94,16 +61,8 @@ export function useMediaDetailViewModel() {
     useCallback(() => {
       refetch();
       refetchReviews();
-      refetchReviewRatings();
-      refetchSeriesEpisodeRatings();
       loadStats();
-    }, [
-      refetch,
-      refetchReviews,
-      refetchReviewRatings,
-      refetchSeriesEpisodeRatings,
-      loadStats,
-    ]),
+    }, [refetch, refetchReviews, loadStats]),
   );
 
   const title = detail?.title ?? params.title ?? "Untitled";
@@ -166,11 +125,6 @@ export function useMediaDetailViewModel() {
       ? ratingToStars(review.rating)
       : 0;
   const hasReview = mediaType === "movie" && review != null;
-
-  const histogram = useMemo(
-    () => buildHistogram(mediaType, movieReviewRatings, seriesEpisodeRatings),
-    [mediaType, movieReviewRatings, seriesEpisodeRatings],
-  );
 
   const infoRows: InfoRowData[] = [
     director
@@ -246,7 +200,6 @@ export function useMediaDetailViewModel() {
     cast,
     infoRows,
     stats,
-    histogram,
     reviews: mediaType === "tv" ? [] : reviews,
     reviewCount: mediaType === "tv" ? 0 : reviewCount,
     myStars,

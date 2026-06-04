@@ -6,6 +6,7 @@ import { StyleSheet, View } from "react-native";
 import { HorizontalScrollRow } from "@/components/ui/horizontal-scroll-row";
 import { PillButton } from "@/components/ui/pill-button";
 import { Text } from "@/components/ui/text";
+import { useSeasonEpisodeStats } from "@/hooks/reviews/use-season-episode-stats";
 import { useTheme } from "@/hooks/use-theme";
 import { useTvSeasonDetail } from "@/hooks/tmdb/use-tv-season-detail";
 import { hapticSelection, hapticTap } from "@/lib/haptics";
@@ -55,6 +56,10 @@ export function EpisodesSection({
 
   const { season, isLoading, error } = useTvSeasonDetail(seriesId, selectedSeason);
   const episodes = season?.episodes ?? [];
+  const { statsByEpisode, myRatingByEpisode } = useSeasonEpisodeStats(
+    seriesId,
+    selectedSeason,
+  );
 
   if (seasonOptions.length === 0) return null;
 
@@ -101,16 +106,22 @@ export function EpisodesSection({
         <View
           style={[styles.episodeList, { borderTopColor: theme.backgroundSelected }]}
         >
-          {episodes.map((episode, index) => (
-            <EpisodeRow
-              accentHex={accentHex}
-              episode={episode}
-              fallbackImageUri={posterUri}
-              key={`${episode.season_number}-${episode.episode_number}`}
-              onPress={() => openEpisode(episode)}
-              showDivider={index < episodes.length - 1}
-            />
-          ))}
+          {episodes.map((episode, index) => {
+            const stat = statsByEpisode.get(episode.episode_number);
+            return (
+              <EpisodeRow
+                accentHex={accentHex}
+                episode={episode}
+                fallbackImageUri={posterUri}
+                key={`${episode.season_number}-${episode.episode_number}`}
+                onPress={() => openEpisode(episode)}
+                showDivider={index < episodes.length - 1}
+                avg={stat?.avg}
+                ratingCount={stat?.ratingCount}
+                myRating={myRatingByEpisode.get(episode.episode_number)}
+              />
+            );
+          })}
         </View>
       ) : null}
 

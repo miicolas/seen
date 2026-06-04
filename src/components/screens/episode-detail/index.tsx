@@ -12,6 +12,7 @@ import { MediaActions } from "../media-detail/media-actions";
 import { MediaParallaxHeader } from "../media-detail/media-parallax-header";
 import { MediaSummary } from "../media-detail/media-summary";
 import { OverviewSection } from "../media-detail/overview-section";
+import { RatingsSection } from "../media-detail/ratings-section";
 import { useEpisodeDetailViewModel } from "./use-episode-detail-view-model";
 
 export function EpisodeDetail() {
@@ -65,6 +66,15 @@ export function EpisodeDetail() {
           ) : null}
 
           <OverviewSection overview={vm.overview} />
+
+          <RatingsSection
+            title={t("mediaDetail.episodeRatings")}
+            stats={vm.stats}
+            accentHex={vm.accentHex}
+            reviews={vm.reviews}
+            reviewCount={vm.reviewCount}
+            onOpenReviews={vm.openReviews}
+          />
 
           <CastSection cast={vm.cast.slice(0, 16)} />
 
