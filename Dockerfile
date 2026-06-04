@@ -4,17 +4,10 @@
 FROM oven/bun:1.3-alpine
 WORKDIR /app
 
-# Copy every workspace manifest first so `bun install` is cached until deps change.
-COPY package.json bun.lock ./
-COPY apps/api/package.json apps/api/
-COPY apps/mobile/package.json apps/mobile/
-COPY packages/db/package.json packages/db/
-COPY packages/shared/package.json packages/shared/
-
-RUN bun install --frozen-lockfile
-
-# Copy the rest of the source (the start command runs the TS entry directly).
+# Copy the whole workspace, then install. `.dockerignore` keeps node_modules,
+# .git and build caches out of the context.
 COPY . .
+RUN bun install --frozen-lockfile
 
 ENV NODE_ENV=production
 EXPOSE 3000
