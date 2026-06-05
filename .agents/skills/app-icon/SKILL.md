@@ -1,6 +1,6 @@
 ---
-name: app-icon
-description: Generate app icons for your React Native Expo app with iOS 26 support
+name: "app-icon"
+description: "Generate app icons for your React Native Expo app with iOS 26 support"
 ---
 
 # App Icon Generation Workflow

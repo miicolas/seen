@@ -11,6 +11,7 @@ const summary = t.Object({
   original_title: t.Optional(t.String()),
   overview: t.Optional(t.String()),
   release_date: t.Optional(t.String()),
+  runtime: t.Optional(t.Nullable(t.Number())),
   poster_path: t.Optional(t.Nullable(t.String())),
   backdrop_path: t.Optional(t.Nullable(t.String())),
   vote_average: t.Optional(t.Number()),

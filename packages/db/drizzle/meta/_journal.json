@@ -8,6 +8,13 @@
       "when": 1780601974340,
       "tag": "0000_silky_kree",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1780674395309,
+      "tag": "0002_watchlist",
+      "breakpoints": true
     }
   ]
 }

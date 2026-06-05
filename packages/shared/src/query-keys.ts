@@ -26,6 +26,11 @@ export const reviewKeys = {
   stats: (mediaType: MediaType, tmdbId: number) => ["reviews", "stats", mediaType, tmdbId] as const,
 };
 
+export const watchlistKeys = {
+  my: (mediaType: MediaType, tmdbId: number) => ["watchlist", "my", mediaType, tmdbId] as const,
+  list: (filter: string = "all") => ["watchlist", "list", filter] as const,
+};
+
 export const episodeReviewKeys = {
   my: (seriesTmdbId: number, seasonNumber: number, episodeNumber: number) =>
     ["episode-reviews", "my", seriesTmdbId, seasonNumber, episodeNumber] as const,

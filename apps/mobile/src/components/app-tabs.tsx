@@ -25,6 +25,11 @@ export default function AppTabs() {
         />
       </NativeTabs.Trigger>
 
+      <NativeTabs.Trigger name="watchlist">
+        <NativeTabs.Trigger.Label>{t("tabs.watchlist")}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf={{ default: "bookmark", selected: "bookmark.fill" }} />
+      </NativeTabs.Trigger>
+
       <NativeTabs.Trigger name="profile">
         <NativeTabs.Trigger.Label>{t("tabs.profile")}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf={{ default: "person", selected: "person.fill" }} />

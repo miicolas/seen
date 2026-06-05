@@ -60,6 +60,7 @@ export interface TmdbMovieSummary {
   original_title?: string;
   overview?: string;
   release_date?: string;
+  runtime?: number | null;
   poster_path?: string | null;
   backdrop_path?: string | null;
   vote_average?: number;

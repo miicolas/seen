@@ -1,4 +1,4 @@
-import { profileKeys, reviewKeys } from "@seen/shared";
+import { profileKeys, reviewKeys, watchlistKeys } from "@seen/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
@@ -42,6 +42,8 @@ export function useMyReview(tmdbId: number, mediaType: MediaType): MyReviewState
     queryClient.invalidateQueries({
       queryKey: reviewKeys.stats(mediaType, tmdbId),
     });
+    queryClient.setQueryData(watchlistKeys.my(mediaType, tmdbId), null);
+    queryClient.invalidateQueries({ queryKey: ["watchlist", "list"] });
     queryClient.invalidateQueries({ queryKey: profileKeys.activity() });
   }, [mediaType, queryClient, tmdbId]);
 

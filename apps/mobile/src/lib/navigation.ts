@@ -2,13 +2,18 @@ import type { Href } from "expo-router";
 
 import type { MediaType, TmdbMovieSummary } from "@/lib/tmdb";
 
+// Which tab Stack owns the media-detail route tree. The detail screen lives in
+// both the discover and watchlist stacks so navigation (and the back/zoom
+// transition) stays within the tab the user came from.
+export type MediaRouteBase = "discover" | "watchlist";
+
 export function mediaTitle(media: { title?: string; original_title?: string }): string {
   return media.title ?? media.original_title ?? "Untitled";
 }
 
-export function mediaDetailHref(media: TmdbMovieSummary): Href {
+export function mediaDetailHref(media: TmdbMovieSummary, base: MediaRouteBase = "discover"): Href {
   return {
-    pathname: "/(tabs)/discover/[id]",
+    pathname: `/(tabs)/${base}/[id]`,
     params: {
       id: String(media.id),
       mediaType: media.media_type,
@@ -19,9 +24,9 @@ export function mediaDetailHref(media: TmdbMovieSummary): Href {
   } as Href;
 }
 
-export function imageViewerHref(uri: string): Href {
+export function imageViewerHref(uri: string, base: MediaRouteBase = "discover"): Href {
   return {
-    pathname: "/(tabs)/discover/image",
+    pathname: `/(tabs)/${base}/image`,
     params: { uri },
   } as Href;
 }
@@ -74,18 +79,21 @@ export function reviewsSheetHref(params: {
   } as Href;
 }
 
-export function episodeDetailHref(params: {
-  seriesId: number;
-  episodeTmdbId: number;
-  seasonNumber: number;
-  episodeNumber: number;
-  seriesTitle: string;
-  episodeTitle?: string;
-  poster_path?: string | null;
-  still_path?: string | null;
-}): Href {
+export function episodeDetailHref(
+  params: {
+    seriesId: number;
+    episodeTmdbId: number;
+    seasonNumber: number;
+    episodeNumber: number;
+    seriesTitle: string;
+    episodeTitle?: string;
+    poster_path?: string | null;
+    still_path?: string | null;
+  },
+  base: MediaRouteBase = "discover",
+): Href {
   return {
-    pathname: "/(tabs)/discover/episode",
+    pathname: `/(tabs)/${base}/episode`,
     params: {
       seriesId: String(params.seriesId),
       episodeTmdbId: String(params.episodeTmdbId),

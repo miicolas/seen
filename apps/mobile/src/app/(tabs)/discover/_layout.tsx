@@ -1,8 +1,17 @@
 import { Stack } from "expo-router";
 
+import { useTheme } from "@/hooks/use-theme";
+
 export default function DiscoverLayout() {
+  const theme = useTheme();
+
   return (
-    <Stack screenOptions={{ title: "Discover", headerLargeTitle: true }}>
+    <Stack
+      screenOptions={{
+        title: "Discover",
+        headerLargeTitle: true,
+        contentStyle: { backgroundColor: theme.background },
+      }}>
       <Stack.Screen name="index" />
       <Stack.Screen
         name="episode"

@@ -14,6 +14,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { SPACING } from "@/constants/design-tokens";
+import { useMediaRouteBase } from "@/hooks/use-media-route-base";
 import { useTheme } from "@/hooks/use-theme";
 import { hapticTap } from "@/lib/haptics";
 import { imageViewerHref } from "@/lib/navigation";
@@ -37,6 +38,7 @@ export function MediaParallaxHeader({
 }>) {
   const theme = useTheme();
   const router = useRouter();
+  const routeBase = useMediaRouteBase();
   const { top } = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   // Real backdrop renders sharp; when missing, blur the poster so it reads as an
@@ -89,7 +91,7 @@ export function MediaParallaxHeader({
             <PressableScale
               onPress={() => {
                 hapticTap();
-                router.push(imageViewerHref(heroUri));
+                router.push(imageViewerHref(heroUri, routeBase));
               }}
               style={StyleSheet.absoluteFill}>
               <Image

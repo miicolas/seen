@@ -5,6 +5,7 @@ import {
   disabled as disabledModifier,
   font,
   frame,
+  lineLimit,
   padding,
   tint,
 } from "@expo/ui/swift-ui/modifiers";
@@ -101,7 +102,11 @@ export function Button({
           <Label
             title={labelTitle}
             systemImage={icon}
-            modifiers={[font({ size: SIZE_TO_FONT[size], weight: "semibold" }), labelFrame]}
+            modifiers={[
+              font({ size: SIZE_TO_FONT[size], weight: "semibold" }),
+              lineLimit(1),
+              labelFrame,
+            ]}
           />
         </UIButton>
       </Host>

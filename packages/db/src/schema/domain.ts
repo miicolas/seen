@@ -95,6 +95,27 @@ export const reviews = pgTable(
   ],
 );
 
+export const watchlist = pgTable(
+  "watchlist",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    tmdbId: bigint("tmdb_id", { mode: "number" }).notNull(),
+    mediaType: text("media_type").notNull(),
+    addedAt: timestamp("added_at", { withTimezone: true }).notNull().defaultNow(),
+    visibility: text("visibility").notNull().default("private"),
+  },
+  (table) => [
+    unique("watchlist_user_media_unique").on(table.userId, table.tmdbId, table.mediaType),
+    index("watchlist_user_added_idx").on(table.userId, table.addedAt),
+    index("watchlist_user_media_type_added_idx").on(table.userId, table.mediaType, table.addedAt),
+    check("watchlist_media_type_check", sql`${table.mediaType} in ('movie', 'tv')`),
+    check("watchlist_visibility_check", sql`${table.visibility} in ('private')`),
+  ],
+);
+
 export const episodeReviews = pgTable(
   "episode_reviews",
   {

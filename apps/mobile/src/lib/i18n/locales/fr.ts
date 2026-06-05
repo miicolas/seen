@@ -88,6 +88,8 @@ export const fr: typeof en = {
     deleted: "Critique supprimée",
   },
   mediaDetail: {
+    markAsSeen: "Marquer comme vu",
+    seen: "Vu",
     about: "À propos",
     readFullSynopsis: "Lire le synopsis complet",
     more: "PLUS",
@@ -112,6 +114,18 @@ export const fr: typeof en = {
     noReviewsYet: "Aucune critique pour le moment.",
     noReviewsHint: "Sois le premier à partager ton avis.",
     retry: "Réessayer",
+  },
+  watchlist: {
+    title: "Watchlist",
+    add: "Ajouter à la Watchlist",
+    remove: "Retirer de la Watchlist",
+    saved: "Dans la Watchlist",
+    filterAll: "Tout",
+    filterMovies: "Films",
+    filterSeries: "Séries",
+    emptyTitle: "Ta Watchlist est vide",
+    emptySubtitle: "Ajoute des films et séries depuis Découvrir pour les retrouver ici.",
+    removeError: "Impossible de retirer cet élément.",
   },
   episode: {
     fallbackTitle: "Épisode {{number}}",
@@ -172,6 +186,7 @@ export const fr: typeof en = {
   },
   tabs: {
     discover: "Découvrir",
+    watchlist: "Watchlist",
     profile: "Profil",
   },
 };

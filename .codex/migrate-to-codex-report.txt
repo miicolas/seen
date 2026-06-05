@@ -1,0 +1,41 @@
+Migration inventory:
+  inactive: instruction files - none found
+  active: skills - 10 found
+    - app-icon
+    - app-store-preflight-skills
+    - apple-search-ads
+    - aso-audit
+    - building-native-ui
+    - expo-tailwind-setup
+    - grill-me
+    - improve-codebase-architecture
+    - refactor
+    - to-prd
+  inactive: command sources - none found
+  inactive: subagents - none found
+Migration surfaces:
+  inactive: AGENTS.md - No supported instruction file found.
+  active: skills - 10 skill(s) converted.
+  inactive: MCP config - No settings or MCP config found.
+  inactive: subagents - No subagents found.
+Migration report:
+  rewritten: .agents/skills/app-icon/SKILL.md - Converted Claude skill.
+  rewritten: .agents/skills/app-store-preflight-skills/SKILL.md - Converted Claude skill.
+  manual_fix_required: .agents/skills/apple-search-ads/SKILL.md - Manual review required for Claude skill fields: `metadata`, `version`.
+  manual_fix_required: .agents/skills/aso-audit/SKILL.md - Manual review required for Claude skill fields: `metadata`, `version`.
+  manual_fix_required: .agents/skills/building-native-ui/SKILL.md - Manual review required for Claude skill fields: `license`, `version`.
+  manual_fix_required: .agents/skills/expo-tailwind-setup/SKILL.md - Manual review required for Claude skill fields: `license`, `version`.
+  rewritten: .agents/skills/grill-me/SKILL.md - Converted Claude skill.
+  rewritten: .agents/skills/improve-codebase-architecture/SKILL.md - Converted Claude skill.
+  manual_fix_required: .agents/skills/refactor/SKILL.md - Manual review required for Claude skill fields: `license`.
+  rewritten: .agents/skills/to-prd/SKILL.md - Converted Claude skill.
+  overwritten: .agents/skills/aso-audit - Existing Codex skill will be replaced.
+  overwritten: .agents/skills/app-store-preflight-skills - Existing Codex skill will be replaced.
+  overwritten: .agents/skills/refactor - Existing Codex skill will be replaced.
+  overwritten: .agents/skills/app-icon - Existing Codex skill will be replaced.
+  overwritten: .agents/skills/building-native-ui - Existing Codex skill will be replaced.
+  overwritten: .agents/skills/improve-codebase-architecture - Existing Codex skill will be replaced.
+  overwritten: .agents/skills/to-prd - Existing Codex skill will be replaced.
+  overwritten: .agents/skills/expo-tailwind-setup - Existing Codex skill will be replaced.
+  overwritten: .agents/skills/grill-me - Existing Codex skill will be replaced.
+  overwritten: .agents/skills/apple-search-ads - Existing Codex skill will be replaced.

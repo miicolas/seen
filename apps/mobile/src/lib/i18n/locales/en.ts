@@ -84,6 +84,8 @@ export const en = {
     deleted: "Review deleted",
   },
   mediaDetail: {
+    markAsSeen: "Mark as seen",
+    seen: "Rated",
     about: "About",
     readFullSynopsis: "Read full synopsis",
     more: "MORE",
@@ -108,6 +110,18 @@ export const en = {
     noReviewsYet: "No reviews yet.",
     noReviewsHint: "Be the first to share what you thought.",
     retry: "Retry",
+  },
+  watchlist: {
+    title: "Watchlist",
+    add: "Add to Watchlist",
+    remove: "Remove from Watchlist",
+    saved: "Saved to Watchlist",
+    filterAll: "All",
+    filterMovies: "Movies",
+    filterSeries: "Series",
+    emptyTitle: "Your Watchlist is empty",
+    emptySubtitle: "Save movies and series from Discover to find them here.",
+    removeError: "Couldn't remove this item.",
   },
   episode: {
     fallbackTitle: "Episode {{number}}",
@@ -168,6 +182,7 @@ export const en = {
   },
   tabs: {
     discover: "Discover",
+    watchlist: "Watchlist",
     profile: "Profile",
   },
 };

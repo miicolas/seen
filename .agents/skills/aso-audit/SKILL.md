@@ -1,8 +1,6 @@
 ---
-name: aso-audit
-description: When the user wants a full ASO health audit, review their App Store listing quality, or diagnose why their app isn't ranking. Also use when the user mentions "ASO audit", "ASO score", "why am I not ranking", "listing review", or "optimize my app store page". For keyword-specific research, see keyword-research. For metadata writing, see metadata-optimization.
-metadata:
-  version: 1.0.0
+name: "aso-audit"
+description: "When the user wants a full ASO health audit, review their App Store listing quality, or diagnose why their app isn't ranking. Also use when the user mentions \"ASO audit\", \"ASO score\", \"why am I not ranking\", \"listing review\", or \"optimize my app store page\". For keyword-specific research, see keyword-research. For metadata writing, see metadata-optimization."
 ---
 
 # ASO Audit

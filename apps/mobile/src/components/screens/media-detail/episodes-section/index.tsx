@@ -6,6 +6,7 @@ import { StyleSheet, View } from "react-native";
 import { HorizontalScrollRow } from "@/components/ui/horizontal-scroll-row";
 import { PillButton } from "@/components/ui/pill-button";
 import { Text } from "@/components/ui/text";
+import { useMediaRouteBase } from "@/hooks/use-media-route-base";
 import { useSeasonEpisodeStats } from "@/hooks/reviews/use-season-episode-stats";
 import { useTheme } from "@/hooks/use-theme";
 import { useTvSeasonDetail } from "@/hooks/tmdb/use-tv-season-detail";
@@ -36,6 +37,7 @@ export function EpisodesSection({
 }: EpisodesSectionProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const routeBase = useMediaRouteBase();
   const seasonOptions = useMemo(() => normalizeSeasons(seasons), [seasons]);
   const defaultSeason = useMemo(
     () =>
@@ -77,7 +79,7 @@ export function EpisodesSection({
         episodeTitle: episode.name,
         poster_path: posterPath,
         still_path: episode.still_path,
-      }),
+      }, routeBase),
     );
   }
 

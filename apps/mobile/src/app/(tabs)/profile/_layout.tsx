@@ -8,7 +8,12 @@ export default function ProfileLayout() {
   const theme = useTheme();
 
   return (
-    <Stack screenOptions={{ title: t("tabs.profile"), headerLargeTitle: true }}>
+    <Stack
+      screenOptions={{
+        title: t("tabs.profile"),
+        headerLargeTitle: true,
+        contentStyle: { backgroundColor: theme.background },
+      }}>
       <Stack.Screen name="index" />
       <Stack.Screen
         name="edit"

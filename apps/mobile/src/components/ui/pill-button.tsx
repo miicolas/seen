@@ -24,7 +24,12 @@ export function PillButton({ label, selected, onPress, accentHex }: PillButtonPr
         styles.pill,
         { backgroundColor: selected ? accentHex : theme.backgroundElement },
       ])}>
-      <Text size="sm" weight="bold" color={selected ? theme.onAccent : theme.text}>
+      <Text
+        size="sm"
+        weight="bold"
+        align="center"
+        fillWidth
+        color={selected ? theme.onAccent : theme.text}>
         {label}
       </Text>
     </PressableScale>

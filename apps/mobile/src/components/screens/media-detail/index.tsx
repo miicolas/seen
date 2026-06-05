@@ -47,9 +47,19 @@ export function MediaDetail() {
             hasReview={vm.hasReview}
           />
 
-          {vm.mediaType === "movie" ? (
-            <MediaActions hasRating={vm.hasRating} accentHex={vm.accentHex} onRate={handleRate} />
-          ) : null}
+          <MediaActions
+            hasRating={vm.hasRating}
+            accentHex={vm.accentHex}
+            onRate={handleRate}
+            showReviewAction={vm.mediaType === "movie"}
+            showWatchlistAction
+            isInWatchlist={vm.isInWatchlist}
+            isWatchlistSaving={vm.isWatchlistSaving}
+            onToggleWatchlist={vm.toggleWatchlist}
+            watchlistLabel={vm.isInWatchlist ? t("watchlist.remove") : t("watchlist.add")}
+            reviewedLabel={t("mediaDetail.seen")}
+            unreviewedLabel={t("mediaDetail.markAsSeen")}
+          />
 
           {vm.error && !vm.detail ? (
             <Text size="sm" weight="regular" color={theme.textSecondary} fillWidth>

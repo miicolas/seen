@@ -7,6 +7,7 @@ import { useMediaDetail } from "@/hooks/tmdb/use-media-detail";
 import { useMediaReviewPreview } from "@/hooks/reviews/use-media-reviews";
 import { useMediaStats } from "@/hooks/reviews/use-media-stats";
 import { useMyReview } from "@/hooks/reviews/use-my-review";
+import { useWatchlistMembership } from "@/hooks/watchlist/use-watchlist-membership";
 import { hapticTap } from "@/lib/haptics";
 import { reviewSheetHref, reviewsSheetHref } from "@/lib/navigation";
 import { tmdbImageUrl, type MediaType } from "@/lib/tmdb";
@@ -35,6 +36,9 @@ export function useMediaDetailViewModel() {
 
   const { detail, isLoading, error } = useMediaDetail(tmdbId, mediaType);
   const { review, refetch } = useMyReview(tmdbId, mediaType);
+  const watchlist = useWatchlistMembership(tmdbId, mediaType);
+  const refetchWatchlist = watchlist.refetch;
+  const toggleWatchlistMutation = watchlist.toggle;
   const {
     reviews,
     count: reviewCount,
@@ -45,9 +49,10 @@ export function useMediaDetailViewModel() {
   useFocusEffect(
     useCallback(() => {
       refetch();
+      refetchWatchlist();
       refetchReviews();
       refetchStats();
-    }, [refetch, refetchReviews, refetchStats]),
+    }, [refetch, refetchReviews, refetchStats, refetchWatchlist]),
   );
 
   const title = detail?.title ?? params.title ?? "Untitled";
@@ -138,6 +143,10 @@ export function useMediaDetailViewModel() {
     );
   }, [mediaType, router, title, tmdbId]);
 
+  const toggleWatchlist = useCallback(() => {
+    toggleWatchlistMutation().catch(() => {});
+  }, [toggleWatchlistMutation]);
+
   const shareTitle = useCallback(() => {
     Share.share({ message: title }).catch(() => {});
   }, [title]);
@@ -172,6 +181,9 @@ export function useMediaDetailViewModel() {
     myStars,
     hasRating,
     hasReview,
+    isInWatchlist: watchlist.isInWatchlist,
+    isWatchlistSaving: watchlist.isSaving,
+    toggleWatchlist,
     openReview,
     openReviews,
     shareTitle,

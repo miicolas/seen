@@ -30,6 +30,12 @@ export interface TextProps {
   color?: string;
   align?: TextAlign;
   fillWidth?: boolean;
+  /**
+   * Render as a self-sized React Native text instead of a SwiftUI `Host`.
+   * Use for short labels placed inside an RN flex row (next to an icon),
+   * where a `Host` text would not vertically align with its RN siblings.
+   */
+  inline?: boolean;
   numberOfLines?: number;
 }
 
@@ -82,14 +88,15 @@ export function Text({
   color,
   align = "leading",
   fillWidth = false,
+  inline = false,
   numberOfLines,
 }: TextProps) {
-  if (fillWidth) {
+  if (fillWidth || inline) {
     return (
       <RNText
         numberOfLines={numberOfLines}
         style={[
-          styles.fillWidthText,
+          fillWidth ? styles.fillWidthText : null,
           {
             color,
             fontSize: SIZE_TO_FONT[size],

@@ -1,5 +1,6 @@
 # CLAUDE.md
 
+<<<<<<< ours
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 @AGENTS.md
@@ -114,3 +115,14 @@ Seen-specific concretions of those rules:
 - Files are **kebab-case**; a single primary export per file.
 - Reusable UI/logic goes in `components/`, `components/ui/`, or `hooks/`.
 - When a feature has 2+ siblings, co-locate them: several hooks → `hooks/<feature>/` (`use-*.ts`), a split screen → `components/screens/<screen>/` (with `index.tsx`), backend client code → `services/<feature>/handlers/`.
+=======
+This file is the Claude Code entry point for this repository.
+
+@AGENTS.md
+
+## Claude Code Notes
+
+- Use the shared project instructions from `AGENTS.md` as the source of truth.
+- Project skills are available through `.claude/skills`, which links to the same skill bodies used by Codex under `.agents/skills`.
+- Keep Claude-specific settings in `.claude/settings.json` or `.claude/settings.local.json`; keep Codex-facing instructions and skills in `AGENTS.md`, `.agents/skills`, and `.codex/`.
+>>>>>>> theirs

@@ -3,37 +3,13 @@ import { SymbolView } from "expo-symbols";
 import { PressableScale } from "pressto";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
-import type { SFSymbol } from "sf-symbols-typescript";
 
+import { MetricPill } from "@/components/ui/metric-pill";
 import { Text } from "@/components/ui/text";
 import { BORDER_RADIUS, LINE_HEIGHT, SPACING } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
 import { formatDate } from "@/lib/format";
 import { tmdbImageUrl, type TmdbTvEpisodeSummary } from "@/lib/tmdb";
-
-// Small pill used for runtime, community average, and the user's own rating.
-function MetricPill({
-  icon,
-  iconSize = 12,
-  label,
-  tint,
-  background,
-}: {
-  icon: SFSymbol;
-  iconSize?: number;
-  label: string;
-  tint: string;
-  background: string;
-}) {
-  return (
-    <View style={[styles.metricPill, { backgroundColor: background }]}>
-      <SymbolView name={icon} size={iconSize} type="monochrome" tintColor={tint} />
-      <Text size="xs" weight="bold" color={tint}>
-        {label}
-      </Text>
-    </View>
-  );
-}
 
 interface EpisodeRowProps {
   accentHex: string;
@@ -182,15 +158,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: SPACING.SM,
-  },
-  metricPill: {
-    alignSelf: "flex-start",
-    height: 30,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: SPACING.XS,
-    paddingHorizontal: SPACING.SM,
-    borderRadius: BORDER_RADIUS.FULL,
   },
   chevronSlot: {
     width: 20,

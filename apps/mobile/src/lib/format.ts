@@ -14,6 +14,15 @@ export function releaseYear(value?: string | null): string | undefined {
   return match ? match[0] : undefined;
 }
 
+export function formatRuntime(minutes?: number | null): string | undefined {
+  if (typeof minutes !== "number" || minutes <= 0) return undefined;
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  if (hours === 0) return `${mins}m`;
+  if (mins === 0) return `${hours}h`;
+  return `${hours}h ${mins}m`;
+}
+
 export function formatDate(
   value?: string | null,
   style: "long" | "short" = "long",
