@@ -105,7 +105,12 @@ export function ActivityRow({ item }: { item: ProfileActivityItem }) {
             </Text>
           ) : null}
           {fallback ? (
-            <Text size="sm" weight="regular" color={theme.textSecondary} fillWidth numberOfLines={1}>
+            <Text
+              size="sm"
+              weight="regular"
+              color={theme.textSecondary}
+              fillWidth
+              numberOfLines={1}>
               {fallback}
             </Text>
           ) : null}
