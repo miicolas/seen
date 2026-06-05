@@ -59,10 +59,7 @@ async function saveAppleNameMetadata(fullName: AppleAuthenticationFullName | nul
 
 async function createAppleNonce() {
   const rawNonce = Crypto.randomUUID();
-  const hashedNonce = await Crypto.digestStringAsync(
-    Crypto.CryptoDigestAlgorithm.SHA256,
-    rawNonce,
-  );
+  const hashedNonce = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, rawNonce);
 
   return { rawNonce, hashedNonce };
 }

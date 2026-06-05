@@ -29,10 +29,7 @@ function RootNavigator() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack.Protected>
       <Stack.Protected guard={!isLoggedIn}>
-        <Stack.Screen
-          name="(onboarding)/index"
-          options={{ headerShown: false }}
-        />
+        <Stack.Screen name="(onboarding)/index" options={{ headerShown: false }} />
       </Stack.Protected>
       <Stack.Screen
         name="review"
@@ -70,9 +67,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={styles.root}>
       <KeyboardProvider>
         <PressablesConfig config={{ minScale: 0.97 }}>
-          <ThemeProvider
-            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-          >
+          <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
             <QueryProvider>
               <AuthProvider>
                 <SplashScreenController />

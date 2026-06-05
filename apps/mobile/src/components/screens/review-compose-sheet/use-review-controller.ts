@@ -69,14 +69,13 @@ export function useReviewController(params: ReviewSheetParams): ReviewController
 
   const active = isEpisode ? episode : media;
   const review = active.review;
-  const initialStars =
-    review?.rating != null ? ratingToStars(review.rating) : initialPresetRating;
+  const initialStars = review?.rating != null ? ratingToStars(review.rating) : initialPresetRating;
 
   const mediaSubtitle = isEpisode
-    ? params.mediaSubtitle ??
+    ? (params.mediaSubtitle ??
       (Number.isInteger(seasonNumber) && Number.isInteger(episodeNumber)
         ? `S${seasonNumber} E${episodeNumber}`
-        : undefined)
+        : undefined))
     : params.mediaSubtitle;
 
   return {
@@ -107,7 +106,5 @@ function userNickname(user: ReturnType<typeof useAuthContext>["user"]) {
 }
 
 function stringValue(value: unknown) {
-  return typeof value === "string" && value.trim().length > 0
-    ? value.trim()
-    : null;
+  return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
 }

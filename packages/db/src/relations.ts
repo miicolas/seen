@@ -1,11 +1,6 @@
 import { relations } from "drizzle-orm";
 
-import {
-  episodeReviews,
-  profiles,
-  reviews,
-  user,
-} from "./schema";
+import { episodeReviews, profiles, reviews, user } from "./schema";
 
 export const userDomainRelations = relations(user, ({ many, one }) => ({
   profile: one(profiles),

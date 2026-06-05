@@ -6,9 +6,7 @@ import { toApiRow } from "../../../lib/rows";
 
 type MediaType = "movie" | "tv";
 
-async function getMoviesForActivity(
-  keys: { tmdbId: number; mediaType: MediaType }[],
-) {
+async function getMoviesForActivity(keys: { tmdbId: number; mediaType: MediaType }[]) {
   const ids = [...new Set(keys.map((key) => key.tmdbId))];
   const allowed = new Set(keys.map((key) => `${key.tmdbId}:${key.mediaType}`));
   if (!ids.length) return new Map<string, typeof movies.$inferSelect>();
@@ -22,10 +20,7 @@ async function getMoviesForActivity(
   );
 }
 
-function mediaSubtitle(
-  movie: typeof movies.$inferSelect | undefined,
-  mediaType: MediaType,
-) {
+function mediaSubtitle(movie: typeof movies.$inferSelect | undefined, mediaType: MediaType) {
   const label = mediaType === "tv" ? "Series" : "Movie";
   const year = movie?.releaseDate?.slice(0, 4);
   return year ? `${label} - ${year}` : label;
@@ -97,9 +92,7 @@ export async function getMyProfileActivity(userId: string, limit = 12) {
 
   return [...mediaItems, ...episodeItems]
     .sort(
-      (left, right) =>
-        new Date(right.created_at).getTime() -
-        new Date(left.created_at).getTime(),
+      (left, right) => new Date(right.created_at).getTime() - new Date(left.created_at).getTime(),
     )
     .slice(0, pageSize);
 }

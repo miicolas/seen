@@ -2,22 +2,11 @@ import { useMemo } from "react";
 import { useColorScheme } from "react-native";
 
 import { getColorValue, getContrastText } from "@/constants/colors";
-import {
-  BORDER_WIDTH,
-  COLOR_SHADES,
-  OPACITY,
-  THEME_SHADES,
-} from "@/constants/design-tokens";
+import { BORDER_WIDTH, COLOR_SHADES, OPACITY, THEME_SHADES } from "@/constants/design-tokens";
 import { useAccentColor } from "@/hooks/use-accent-color";
 import type { ColorConfig, InputColorConfig, UIColor } from "@/types/ui";
 
-export type BaseVariant =
-  | "solid"
-  | "outline"
-  | "soft"
-  | "subtle"
-  | "link"
-  | "underline";
+export type BaseVariant = "solid" | "outline" | "soft" | "subtle" | "link" | "underline";
 
 interface VariantConfigOptions {
   includePlaceholderColor?: boolean;
@@ -162,12 +151,7 @@ export function useVariantConfig<T extends BaseVariant>(
     const placeholderColor = `${baseHex}${
       isDark ? OPACITY.PLACEHOLDER_DARK : OPACITY.PLACEHOLDER_LIGHT
     }`;
-    return createVariantConfig(
-      baseHex,
-      highContrastText,
-      baseHex,
-      placeholderColor,
-    );
+    return createVariantConfig(baseHex, highContrastText, baseHex, placeholderColor);
   }, [color, colorScheme, accentHex, includePlaceholderColor]);
 
   return useMemo(() => {

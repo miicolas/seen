@@ -6,9 +6,7 @@ import { queryClient } from "@/lib/query-client";
 // Credential users pass a password; Apple/OAuth users rely on a fresh session.
 // On success the server session is destroyed; we clear the local cache and let
 // the auth listener flip the guard back to the login screen.
-export async function deleteAccount(input?: {
-  password?: string;
-}): Promise<void> {
+export async function deleteAccount(input?: { password?: string }): Promise<void> {
   await unwrapEden<{ ok: boolean }>(
     eden.account.delete(input?.password ? { password: input.password } : {}),
   );

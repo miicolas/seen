@@ -10,12 +10,7 @@ import { ScreenToolbar } from "@/components/navigation";
 import { Button } from "@/components/ui/button";
 import { LAYOUT } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
-import {
-  hapticDelete,
-  hapticError,
-  hapticSuccess,
-  hapticTap,
-} from "@/lib/haptics";
+import { hapticDelete, hapticError, hapticSuccess, hapticTap } from "@/lib/haptics";
 import { starsToRating } from "@/services/core";
 
 import { ReviewForm } from "./review-form";
@@ -42,12 +37,8 @@ export function ReviewFormBody({
   const [stars, setStars] = useState(controller.initialStars);
   // Cheap emptiness signals so `canSave` stays reactive without mirroring the
   // full text into React: they only flip at the empty↔non-empty boundary.
-  const [titleHasText, setTitleHasText] = useState(
-    controller.initialTitle.trim().length > 0,
-  );
-  const [commentHasText, setCommentHasText] = useState(
-    controller.initialComment.trim().length > 0,
-  );
+  const [titleHasText, setTitleHasText] = useState(controller.initialTitle.trim().length > 0);
+  const [commentHasText, setCommentHasText] = useState(controller.initialComment.trim().length > 0);
 
   const onTitleChange = useCallback((text: string) => {
     setTitleHasText((prev) => {
@@ -134,8 +125,7 @@ export function ReviewFormBody({
               backgroundColor: theme.background,
               paddingBottom: Math.max(insets.bottom, LAYOUT.SCREEN_PADDING),
             },
-          ]}
-        >
+          ]}>
           <Button
             title={t("review.deleteReview")}
             onPress={handleDelete}

@@ -3,7 +3,7 @@ name: Promote tag to main
 on:
   push:
     tags:
-      - '*' # any tag promotes its commit to main
+      - "*" # any tag promotes its commit to main
 
 jobs:
   promote:

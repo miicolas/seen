@@ -12,8 +12,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         user: data?.user ?? null,
         isLoading: isPending,
         isLoggedIn: !!data?.session,
-      }}
-    >
+      }}>
       {children}
     </AuthContext.Provider>
   );

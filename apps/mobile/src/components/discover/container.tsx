@@ -18,15 +18,8 @@ const keyOf = (media: TmdbMovieSummary, index: number) =>
 
 export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
   const { t } = useTranslation();
-  const {
-    trending,
-    topToday,
-    newReleases,
-    genres,
-    isLoading,
-    error,
-    isOffline,
-  } = useDiscoverMedia(filter);
+  const { trending, topToday, newReleases, genres, isLoading, error, isOffline } =
+    useDiscoverMedia(filter);
 
   if (isOffline) {
     return (
@@ -77,9 +70,7 @@ export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
         data={featured}
         keyExtractor={keyOf}
         visibleCards={1.05}
-        renderItem={(media, _index, cardWidth) => (
-          <HeroCard movie={media} width={cardWidth} />
-        )}
+        renderItem={(media, _index, cardWidth) => <HeroCard movie={media} width={cardWidth} />}
       />
 
       <Shelf
@@ -88,9 +79,7 @@ export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
         data={trendingRow}
         keyExtractor={keyOf}
         visibleCards={2.2}
-        renderItem={(media, _index, cardWidth) => (
-          <PosterCard movie={media} width={cardWidth} />
-        )}
+        renderItem={(media, _index, cardWidth) => <PosterCard movie={media} width={cardWidth} />}
       />
 
       <Shelf
@@ -110,9 +99,7 @@ export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
         data={newReleases}
         keyExtractor={keyOf}
         visibleCards={1.6}
-        renderItem={(media, _index, cardWidth) => (
-          <PosterCard movie={media} width={cardWidth} />
-        )}
+        renderItem={(media, _index, cardWidth) => <PosterCard movie={media} width={cardWidth} />}
       />
 
       {genres.map((genre) => (
@@ -122,9 +109,7 @@ export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
           data={genre.media}
           keyExtractor={keyOf}
           visibleCards={2.2}
-          renderItem={(media, _index, cardWidth) => (
-            <PosterCard movie={media} width={cardWidth} />
-          )}
+          renderItem={(media, _index, cardWidth) => <PosterCard movie={media} width={cardWidth} />}
         />
       ))}
     </View>

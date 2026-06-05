@@ -5,11 +5,7 @@ import { StyleSheet, View } from "react-native";
 
 import { StarRating } from "@/components/ui/star-rating";
 import { Text } from "@/components/ui/text";
-import {
-  BORDER_RADIUS,
-  BORDER_WIDTH,
-  SPACING,
-} from "@/constants/design-tokens";
+import { BORDER_RADIUS, BORDER_WIDTH, SPACING } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
 import { formatDate } from "@/lib/format";
 import { tmdbImageUrl } from "@/lib/tmdb";
@@ -26,14 +22,9 @@ export function ActivityRow({ item }: { item: ProfileActivityItem }) {
     (item.rating ? t("profile.ratingAdded") : t("profile.activityFallback"));
 
   return (
-    <View
-      style={[styles.activityRow, { borderTopColor: theme.backgroundSelected }]}>
+    <View style={[styles.activityRow, { borderTopColor: theme.backgroundSelected }]}>
       {posterUri ? (
-        <Image
-          source={{ uri: posterUri }}
-          contentFit="cover"
-          style={styles.poster}
-        />
+        <Image source={{ uri: posterUri }} contentFit="cover" style={styles.poster} />
       ) : (
         <View
           style={[
@@ -47,12 +38,7 @@ export function ActivityRow({ item }: { item: ProfileActivityItem }) {
 
       <View style={styles.activityCopy}>
         <View style={styles.activityTopLine}>
-          <Text
-            size="sm"
-            weight="bold"
-            color={theme.text}
-            fillWidth
-            numberOfLines={1}>
+          <Text size="sm" weight="bold" color={theme.text} fillWidth numberOfLines={1}>
             {item.media_title}
           </Text>
           <Text size="xs" weight="regular" color={theme.textSecondary}>
@@ -73,12 +59,7 @@ export function ActivityRow({ item }: { item: ProfileActivityItem }) {
               readOnly
             />
           ) : null}
-          <Text
-            size="xs"
-            weight="medium"
-            color={theme.text}
-            fillWidth
-            numberOfLines={1}>
+          <Text size="xs" weight="medium" color={theme.text} fillWidth numberOfLines={1}>
             {title}
           </Text>
         </View>

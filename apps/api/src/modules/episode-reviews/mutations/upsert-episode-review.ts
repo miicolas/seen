@@ -11,10 +11,7 @@ export function assertEpisodeReviewInput(input: EpisodeReviewInput) {
   }
 }
 
-export async function upsertEpisodeReview(
-  userId: string,
-  input: EpisodeReviewInput,
-) {
+export async function upsertEpisodeReview(userId: string, input: EpisodeReviewInput) {
   assertEpisodeReviewInput(input);
   const rating = input.rating;
   if (rating == null) {

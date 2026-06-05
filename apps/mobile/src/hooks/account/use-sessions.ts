@@ -22,8 +22,7 @@ export function useSessions() {
     queryFn: listMySessions,
   });
 
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: accountKeys.sessions() });
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: accountKeys.sessions() });
 
   const revoke = useMutation({
     mutationFn: (token: string) => revokeSession(token),
@@ -42,9 +41,7 @@ export function useSessions() {
   return {
     sessions,
     isLoading: query.isLoading,
-    error: query.error
-      ? errorMessage(query.error, "Couldn't load your sessions.")
-      : null,
+    error: query.error ? errorMessage(query.error, "Couldn't load your sessions.") : null,
     refetch: query.refetch,
     revoke: (token: string) => revoke.mutateAsync(token),
     revokeOthers: () => revokeOthers.mutateAsync(),

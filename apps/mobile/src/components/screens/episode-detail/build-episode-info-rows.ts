@@ -7,15 +7,12 @@ interface EpisodeInfoData {
   episodeNumber: number;
   seasonNumber: number;
   seriesTitle: string;
-  airDate?: string;
+  airDate?: string | null;
   runtime?: string;
   crew: CrewMember[];
 }
 
-export function buildEpisodeInfoRows(
-  data: EpisodeInfoData,
-  t: TFunction,
-): InfoRowData[] {
+export function buildEpisodeInfoRows(data: EpisodeInfoData, t: TFunction): InfoRowData[] {
   const directors = crewNames(data.crew, ["Director"]);
   const writers = crewNames(data.crew, ["Writer", "Screenplay", "Teleplay"]);
 
@@ -27,9 +24,7 @@ export function buildEpisodeInfoRows(
     Number.isInteger(data.episodeNumber)
       ? { label: t("episode.episode"), value: `${data.episodeNumber}` }
       : null,
-    data.airDate
-      ? { label: t("episode.airDate"), value: formatDate(data.airDate)! }
-      : null,
+    data.airDate ? { label: t("episode.airDate"), value: formatDate(data.airDate)! } : null,
     data.runtime ? { label: t("episode.runtime"), value: data.runtime } : null,
     directors ? { label: t("episode.directing"), value: directors } : null,
     writers ? { label: t("episode.writing"), value: writers } : null,

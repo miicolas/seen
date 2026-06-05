@@ -1,24 +1,6 @@
-export type UISize =
-  | "xs"
-  | "sm"
-  | "md"
-  | "lg"
-  | "xl"
-  | "2xl"
-  | "3xl"
-  | "4xl"
-  | "5xl";
+export type UISize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl";
 
-export type UIRadius =
-  | "none"
-  | "xxs"
-  | "xs"
-  | "sm"
-  | "md"
-  | "default"
-  | "lg"
-  | "xl"
-  | "full";
+export type UIRadius = "none" | "xxs" | "xs" | "sm" | "md" | "default" | "lg" | "xl" | "full";
 
 export type UIColor =
   | "slate"

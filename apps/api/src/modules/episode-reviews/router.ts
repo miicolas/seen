@@ -17,28 +17,20 @@ export const episodeReviewController = new Elysia({
 })
   .use(authGuard)
   .use(EpisodeReviewModel)
-  .get(
-    "/my",
-    ({ user, query }) => getMyEpisodeReview(user.id, query),
-    {
-      auth: true,
-      query: "episodeReview.RefQuery",
-      response: {
-        200: "episodeReview.NullableReview",
-      },
+  .get("/my", ({ user, query }) => getMyEpisodeReview(user.id, query), {
+    auth: true,
+    query: "episodeReview.RefQuery",
+    response: {
+      200: "episodeReview.NullableReview",
     },
-  )
-  .put(
-    "/my",
-    ({ user, body }) => upsertEpisodeReview(user.id, body),
-    {
-      auth: true,
-      body: "episodeReview.Input",
-      response: {
-        200: "episodeReview.Review",
-      },
+  })
+  .put("/my", ({ user, body }) => upsertEpisodeReview(user.id, body), {
+    auth: true,
+    body: "episodeReview.Input",
+    response: {
+      200: "episodeReview.Review",
     },
-  )
+  })
   .delete(
     "/my",
     async ({ user, query }) => {
@@ -53,26 +45,18 @@ export const episodeReviewController = new Elysia({
       },
     },
   )
-  .get(
-    "/",
-    ({ query }) => getEpisodeReviewsPage(query, query.limit, query.offset),
-    {
-      query: "episodeReview.ListQuery",
-      response: {
-        200: "episodeReview.Page",
-      },
+  .get("/", ({ query }) => getEpisodeReviewsPage(query, query.limit, query.offset), {
+    query: "episodeReview.ListQuery",
+    response: {
+      200: "episodeReview.Page",
     },
-  )
-  .get(
-    "/stats",
-    ({ query }) => getEpisodeStats(query),
-    {
-      query: "episodeReview.RefQuery",
-      response: {
-        200: "episodeReview.Stats",
-      },
+  })
+  .get("/stats", ({ query }) => getEpisodeStats(query), {
+    query: "episodeReview.RefQuery",
+    response: {
+      200: "episodeReview.Stats",
     },
-  )
+  })
   .get(
     "/season/stats",
     ({ query }) => getSeasonEpisodeStats(query.seriesTmdbId, query.seasonNumber),
@@ -85,8 +69,7 @@ export const episodeReviewController = new Elysia({
   )
   .get(
     "/season/my",
-    ({ user, query }) =>
-      getMySeasonEpisodeRatings(user.id, query.seriesTmdbId, query.seasonNumber),
+    ({ user, query }) => getMySeasonEpisodeRatings(user.id, query.seriesTmdbId, query.seasonNumber),
     {
       auth: true,
       query: "episodeReview.SeasonQuery",

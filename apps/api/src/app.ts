@@ -22,12 +22,7 @@ export const app = new Elysia()
       return { error: error.message, code: error.code };
     }
 
-    if (
-      error &&
-      typeof error === "object" &&
-      "code" in error &&
-      error.code === "23505"
-    ) {
+    if (error && typeof error === "object" && "code" in error && error.code === "23505") {
       set.status = 409;
       return { error: "Conflict", code: "conflict" };
     }

@@ -38,15 +38,9 @@ function canLoad(ref: EpisodeRef): boolean {
   );
 }
 
-export function useEpisodeReviewPreview(
-  ref: EpisodeRef,
-): EpisodeReviewPreviewState {
+export function useEpisodeReviewPreview(ref: EpisodeRef): EpisodeReviewPreviewState {
   const query = useQuery({
-    queryKey: episodeReviewKeys.list(
-      ref.seriesTmdbId,
-      ref.seasonNumber,
-      ref.episodeNumber,
-    ),
+    queryKey: episodeReviewKeys.list(ref.seriesTmdbId, ref.seasonNumber, ref.episodeNumber),
     queryFn: () =>
       getEpisodeReviewsPage({
         ...ref,
@@ -68,15 +62,10 @@ export function useEpisodeReviewPreview(
   };
 }
 
-export function usePaginatedEpisodeReviews(
-  ref: EpisodeRef,
-): PaginatedReviewsState<EpisodeReview> {
+export function usePaginatedEpisodeReviews(ref: EpisodeRef): PaginatedReviewsState<EpisodeReview> {
   const { seriesTmdbId, seasonNumber, episodeNumber } = ref;
   return usePaginatedReviews<EpisodeReview>(
-    [
-      ...episodeReviewKeys.list(seriesTmdbId, seasonNumber, episodeNumber),
-      "pages",
-    ] as const,
+    [...episodeReviewKeys.list(seriesTmdbId, seasonNumber, episodeNumber), "pages"] as const,
     (offset, limit) =>
       getEpisodeReviewsPage({
         seriesTmdbId,
@@ -84,7 +73,7 @@ export function usePaginatedEpisodeReviews(
         episodeNumber,
         limit,
         offset,
-    }),
+      }),
     EPISODE_REVIEW_PAGE_SIZE,
     canLoad(ref),
   );

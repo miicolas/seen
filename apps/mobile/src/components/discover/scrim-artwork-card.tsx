@@ -51,10 +51,7 @@ export function ScrimArtworkCard({
     };
     return (
       <Link href={href} asChild>
-        <PressableScale
-          onPress={onPress ?? (() => hapticTap())}
-          style={containerStyle}
-        >
+        <PressableScale onPress={onPress ?? (() => hapticTap())} style={containerStyle}>
           <Link.AppleZoom>
             <View style={StyleSheet.absoluteFill}>{scrim}</View>
           </Link.AppleZoom>

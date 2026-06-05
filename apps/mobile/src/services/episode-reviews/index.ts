@@ -2,10 +2,7 @@ export type { EpisodeReview, EpisodeReviewInput } from "./types";
 
 export { deleteEpisodeReview } from "./handlers/delete-episode-review";
 export { getMyEpisodeReview } from "./handlers/get-my-episode-review";
-export {
-  getEpisodeStats,
-  type EpisodeStats,
-} from "./handlers/get-episode-stats";
+export { getEpisodeStats, type EpisodeStats } from "./handlers/get-episode-stats";
 export {
   getEpisodeReviewsPage,
   type EpisodeRef,

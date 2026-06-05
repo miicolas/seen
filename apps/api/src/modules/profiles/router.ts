@@ -24,17 +24,13 @@ export const profileController = new Elysia({
       200: "profile.Profile",
     },
   })
-  .get(
-    "/me/activity",
-    ({ user, query }) => getMyProfileActivity(user.id, query.limit),
-    {
-      auth: true,
-      query: "profile.ActivityQuery",
-      response: {
-        200: "profile.ActivityList",
-      },
+  .get("/me/activity", ({ user, query }) => getMyProfileActivity(user.id, query.limit), {
+    auth: true,
+    query: "profile.ActivityQuery",
+    response: {
+      200: "profile.ActivityList",
     },
-  )
+  })
   .post("/me/avatar", ({ user, body }) => uploadAvatar(user.id, body.file), {
     auth: true,
     body: "profile.AvatarUploadBody",
@@ -42,17 +38,13 @@ export const profileController = new Elysia({
       200: "profile.AvatarUploadResponse",
     },
   })
-  .delete(
-    "/me/avatar",
-    ({ user, query }) => deleteAvatar(user.id, query.path),
-    {
-      auth: true,
-      query: "profile.AvatarQuery",
-      response: {
-        200: "profile.DeleteResponse",
-      },
+  .delete("/me/avatar", ({ user, query }) => deleteAvatar(user.id, query.path), {
+    auth: true,
+    query: "profile.AvatarQuery",
+    response: {
+      200: "profile.DeleteResponse",
     },
-  )
+  })
   .get("/avatar", ({ user, query }) => getAvatar(user.id, query.path), {
     auth: true,
     query: "profile.AvatarQuery",

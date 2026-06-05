@@ -81,11 +81,7 @@ export function AccountSection({ hasCredential }: { hasCredential: boolean }) {
 
   return (
     <Section title={t("account.accountSection")}>
-      <SettingsRow
-        label={t("account.name")}
-        value={user?.name ?? "—"}
-        onPress={editName}
-      />
+      <SettingsRow label={t("account.name")} value={user?.name ?? "—"} onPress={editName} />
       <SettingsRow label={t("account.email")} value={user?.email ?? "—"} />
       <SettingsRow
         label={t("account.password")}

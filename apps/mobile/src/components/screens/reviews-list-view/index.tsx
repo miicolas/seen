@@ -1,12 +1,6 @@
 import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
-import {
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  View,
-} from "react-native";
+import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ReviewCard } from "@/components/screens/media-detail/ratings-section/review-card";
@@ -69,19 +63,10 @@ export function ReviewsListView({
     if (error) {
       return (
         <View style={styles.empty}>
-          <Text
-            size="sm"
-            weight="medium"
-            color={theme.textSecondary}
-            align="center">
+          <Text size="sm" weight="medium" color={theme.textSecondary} align="center">
             {error}
           </Text>
-          <Button
-            title={t("mediaDetail.retry")}
-            onPress={refresh}
-            variant="glass"
-            size="sm"
-          />
+          <Button title={t("mediaDetail.retry")} onPress={refresh} variant="glass" size="sm" />
         </View>
       );
     }
@@ -119,11 +104,7 @@ export function ReviewsListView({
             <Text size="xl" weight="heavy" fillWidth numberOfLines={2}>
               {title}
             </Text>
-            <Text
-              size="sm"
-              weight="regular"
-              color={theme.textSecondary}
-              fillWidth>
+            <Text size="sm" weight="regular" color={theme.textSecondary} fillWidth>
               {t("mediaDetail.reviewCount", {
                 count,
                 plural: pluralSuffix(count),
@@ -134,20 +115,13 @@ export function ReviewsListView({
         ListEmptyComponent={renderEmpty}
         ListFooterComponent={renderFooter}
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={[
-          styles.content,
-          { paddingBottom: insets.bottom + SPACING.LG },
-        ]}
+        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + SPACING.LG }]}
         initialNumToRender={8}
         maxToRenderPerBatch={8}
         onEndReached={loadMore}
         onEndReachedThreshold={0.6}
         refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={refresh}
-            tintColor={accentHex}
-          />
+          <RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor={accentHex} />
         }
         showsVerticalScrollIndicator={false}
       />

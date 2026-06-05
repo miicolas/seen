@@ -22,13 +22,7 @@ export function LoadingEditProfileSheet({ error }: { error: string | null }) {
     <EditSheetScaffold onClose={close} saveDisabled>
       <View style={styles.loading}>
         {error ? (
-          <Text
-            size="sm"
-            weight="semibold"
-            color={theme.error}
-            align="center"
-            fillWidth
-          >
+          <Text size="sm" weight="semibold" color={theme.error} align="center" fillWidth>
             {error}
           </Text>
         ) : (

@@ -15,13 +15,7 @@ interface CardProps {
   style?: ViewStyle;
 }
 
-export function Card({
-  children,
-  variant = "plain",
-  onPress,
-  onLongPress,
-  style,
-}: CardProps) {
+export function Card({ children, variant = "plain", onPress, onLongPress, style }: CardProps) {
   const isDark = useColorScheme() === "dark";
   const theme = isDark ? Colors.dark : Colors.light;
 

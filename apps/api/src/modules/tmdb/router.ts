@@ -18,8 +18,7 @@ export const tmdbController = new Elysia({
   .use(TmdbModel)
   .get(
     "/discover",
-    ({ query }) =>
-      discoverFeed(query.filter ?? "all", query.language ?? DEFAULT_LANGUAGE),
+    ({ query }) => discoverFeed(query.filter ?? "all", query.language ?? DEFAULT_LANGUAGE),
     {
       query: "tmdb.DiscoverQuery",
       response: {
@@ -30,12 +29,7 @@ export const tmdbController = new Elysia({
   .get(
     "/search",
     ({ query }) =>
-      search(
-        query.filter ?? "all",
-        query.query,
-        query.page,
-        query.language ?? DEFAULT_LANGUAGE,
-      ),
+      search(query.filter ?? "all", query.query, query.page, query.language ?? DEFAULT_LANGUAGE),
     {
       query: "tmdb.SearchQuery",
       response: {
@@ -46,32 +40,24 @@ export const tmdbController = new Elysia({
   .get(
     "/:mediaType/:tmdbId",
     ({ params, query }) =>
-      getMediaDetail(
-        params.mediaType,
-        params.tmdbId,
-        query.language ?? DEFAULT_LANGUAGE,
-      ),
+      getMediaDetail(params.mediaType, params.tmdbId, query.language ?? DEFAULT_LANGUAGE),
     {
       params: "tmdb.MediaParams",
       query: "tmdb.LanguageQuery",
       response: {
-        200: "tmdb.Detail",
+        200: "tmdb.MovieDetail",
       },
     },
   )
   .get(
     "/tv/:seriesId/season/:seasonNumber",
     ({ params, query }) =>
-      getTvSeasonDetail(
-        params.seriesId,
-        params.seasonNumber,
-        query.language ?? DEFAULT_LANGUAGE,
-      ),
+      getTvSeasonDetail(params.seriesId, params.seasonNumber, query.language ?? DEFAULT_LANGUAGE),
     {
       params: "tmdb.SeasonParams",
       query: "tmdb.LanguageQuery",
       response: {
-        200: "tmdb.Detail",
+        200: "tmdb.SeasonDetail",
       },
     },
   )
@@ -88,7 +74,7 @@ export const tmdbController = new Elysia({
       params: "tmdb.EpisodeParams",
       query: "tmdb.LanguageQuery",
       response: {
-        200: "tmdb.Detail",
+        200: "tmdb.EpisodeDetail",
       },
     },
   );

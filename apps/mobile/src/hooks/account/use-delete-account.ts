@@ -56,18 +56,14 @@ export function useDeleteAccount(options?: { requirePassword?: boolean }) {
         text: t("account.deleteContinue"),
         style: "destructive",
         onPress: () => {
-          Alert.alert(
-            t("account.deleteFinalTitle"),
-            t("account.deleteFinalMessage"),
-            [
-              { text: t("account.cancel"), style: "cancel" },
-              {
-                text: t("account.deleteAccount"),
-                style: "destructive",
-                onPress: final,
-              },
-            ],
-          );
+          Alert.alert(t("account.deleteFinalTitle"), t("account.deleteFinalMessage"), [
+            { text: t("account.cancel"), style: "cancel" },
+            {
+              text: t("account.deleteAccount"),
+              style: "destructive",
+              onPress: final,
+            },
+          ]);
         },
       },
     ]);

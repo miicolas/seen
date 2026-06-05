@@ -26,15 +26,7 @@ export function InfoSection({ rows }: { rows: InfoRowData[] }) {
   );
 }
 
-function InfoRow({
-  label,
-  value,
-  isLast,
-}: {
-  label: string;
-  value: string;
-  isLast: boolean;
-}) {
+function InfoRow({ label, value, isLast }: { label: string; value: string; isLast: boolean }) {
   const theme = useTheme();
 
   return (

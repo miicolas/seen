@@ -30,59 +30,39 @@ export const accountController = new Elysia({
     auth: true,
     response: { 200: "account.SessionList" },
   })
-  .post(
-    "/sessions/revoke",
-    ({ request, body }) => revokeSession(request.headers, body),
-    {
-      auth: true,
-      body: "account.RevokeSessionBody",
-      response: { 200: "account.OkResponse" },
-    },
-  )
-  .post(
-    "/sessions/revoke-others",
-    ({ request }) => revokeOtherSessions(request.headers),
-    {
-      auth: true,
-      response: { 200: "account.OkResponse" },
-    },
-  )
+  .post("/sessions/revoke", ({ request, body }) => revokeSession(request.headers, body), {
+    auth: true,
+    body: "account.RevokeSessionBody",
+    response: { 200: "account.OkResponse" },
+  })
+  .post("/sessions/revoke-others", ({ request }) => revokeOtherSessions(request.headers), {
+    auth: true,
+    response: { 200: "account.OkResponse" },
+  })
   .get("/accounts", ({ request }) => listMyAccounts(request.headers), {
     auth: true,
     response: { 200: "account.AccountList" },
   })
-  .post(
-    "/accounts/unlink",
-    ({ request, body }) => unlinkAccount(request.headers, body),
-    {
-      auth: true,
-      body: "account.UnlinkAccountBody",
-      response: { 200: "account.OkResponse" },
-    },
-  )
+  .post("/accounts/unlink", ({ request, body }) => unlinkAccount(request.headers, body), {
+    auth: true,
+    body: "account.UnlinkAccountBody",
+    response: { 200: "account.OkResponse" },
+  })
   .patch("/user", ({ request, body }) => updateMyUser(request.headers, body), {
     auth: true,
     body: "account.UpdateUserBody",
     response: { 200: "account.User" },
   })
-  .post(
-    "/change-password",
-    ({ request, body }) => changeMyPassword(request.headers, body),
-    {
-      auth: true,
-      body: "account.ChangePasswordBody",
-      response: { 200: "account.OkResponse" },
-    },
-  )
-  .post(
-    "/change-email",
-    ({ request, body }) => changeMyEmail(request.headers, body),
-    {
-      auth: true,
-      body: "account.ChangeEmailBody",
-      response: { 200: "account.OkResponse" },
-    },
-  )
+  .post("/change-password", ({ request, body }) => changeMyPassword(request.headers, body), {
+    auth: true,
+    body: "account.ChangePasswordBody",
+    response: { 200: "account.OkResponse" },
+  })
+  .post("/change-email", ({ request, body }) => changeMyEmail(request.headers, body), {
+    auth: true,
+    body: "account.ChangeEmailBody",
+    response: { 200: "account.OkResponse" },
+  })
   .delete("/", ({ request, body }) => deleteMyUser(request.headers, body), {
     auth: true,
     body: "account.DeleteBody",

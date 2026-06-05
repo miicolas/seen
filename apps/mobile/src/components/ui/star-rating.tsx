@@ -75,14 +75,8 @@ export function StarRating({
             />
             {readOnly ? null : (
               <View style={[StyleSheet.absoluteFill, styles.tapRow]}>
-                <Pressable
-                  style={styles.tapZone}
-                  onPress={() => select(index + 0.5)}
-                />
-                <Pressable
-                  style={styles.tapZone}
-                  onPress={() => select(index + 1)}
-                />
+                <Pressable style={styles.tapZone} onPress={() => select(index + 0.5)} />
+                <Pressable style={styles.tapZone} onPress={() => select(index + 1)} />
               </View>
             )}
           </View>

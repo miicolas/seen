@@ -13,12 +13,7 @@
       "usesAppleSignIn": true,
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
-        "CFBundleLocalizations": [
-          "en",
-          "fr",
-          "en",
-          "fr"
-        ],
+        "CFBundleLocalizations": ["en", "fr", "en", "fr"],
         "ITSAppUsesNonExemptEncryption": false
       }
     },
@@ -59,10 +54,7 @@
       [
         "expo-localization",
         {
-          "supportedLocales": [
-            "en",
-            "fr"
-          ]
+          "supportedLocales": ["en", "fr"]
         }
       ]
     ],

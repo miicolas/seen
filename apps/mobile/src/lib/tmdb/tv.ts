@@ -22,12 +22,8 @@ export function getTvEpisodeDetail(
   language = tmdbLanguage(),
 ): Promise<TmdbTvEpisodeDetail> {
   return unwrapEden<TmdbTvEpisodeDetail>(
-    eden.tmdb
-      .tv({ seriesId })
-      .season({ seasonNumber })
-      .episode({ episodeNumber })
-      .get({
-        query: { language },
-      }),
+    eden.tmdb.tv({ seriesId }).season({ seasonNumber }).episode({ episodeNumber }).get({
+      query: { language },
+    }),
   );
 }

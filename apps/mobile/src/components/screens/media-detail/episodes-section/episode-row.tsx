@@ -6,15 +6,10 @@ import { StyleSheet, View } from "react-native";
 import type { SFSymbol } from "sf-symbols-typescript";
 
 import { Text } from "@/components/ui/text";
-import {
-  BORDER_RADIUS,
-  LINE_HEIGHT,
-  SPACING,
-} from "@/constants/design-tokens";
+import { BORDER_RADIUS, LINE_HEIGHT, SPACING } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
+import { formatDate } from "@/lib/format";
 import { tmdbImageUrl, type TmdbTvEpisodeSummary } from "@/lib/tmdb";
-
-import { formatEpisodeDate } from "./utils";
 
 // Small pill used for runtime, community average, and the user's own rating.
 function MetricPill({
@@ -32,12 +27,7 @@ function MetricPill({
 }) {
   return (
     <View style={[styles.metricPill, { backgroundColor: background }]}>
-      <SymbolView
-        name={icon}
-        size={iconSize}
-        type="monochrome"
-        tintColor={tint}
-      />
+      <SymbolView name={icon} size={iconSize} type="monochrome" tintColor={tint} />
       <Text size="xs" weight="bold" color={tint}>
         {label}
       </Text>
@@ -69,12 +59,10 @@ export function EpisodeRow({
   const theme = useTheme();
   const { t } = useTranslation();
   const stillUri = tmdbImageUrl(episode.still_path, "w300") ?? fallbackImageUri;
-  const title = `${episode.episode_number}. ${
-    episode.name ?? t("mediaDetail.untitled")
-  }`;
+  const title = `${episode.episode_number}. ${episode.name ?? t("mediaDetail.untitled")}`;
   const overview = episode.overview?.trim();
   const duration = episode.runtime ? `${episode.runtime}m` : undefined;
-  const date = formatEpisodeDate(episode.air_date);
+  const date = formatDate(episode.air_date, "short");
 
   return (
     <PressableScale
@@ -88,8 +76,7 @@ export function EpisodeRow({
               borderBottomWidth: StyleSheet.hairlineWidth,
             }
           : null,
-      ])}
-    >
+      ])}>
       <Image
         source={stillUri ? { uri: stillUri } : undefined}
         style={[styles.episodeImage, { backgroundColor: theme.backgroundElement }]}
@@ -104,8 +91,7 @@ export function EpisodeRow({
               weight="semibold"
               color={theme.textSecondary}
               fillWidth
-              numberOfLines={1}
-            >
+              numberOfLines={1}>
               {date}
             </Text>
           ) : null}
@@ -120,8 +106,7 @@ export function EpisodeRow({
               weight="regular"
               color={theme.textSecondary}
               fillWidth
-              numberOfLines={2}
-            >
+              numberOfLines={2}>
               {overview}
             </Text>
           ) : null}

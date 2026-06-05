@@ -24,10 +24,7 @@ export function MediaDetail() {
   const insets = useSafeAreaInsets();
   const vm = useMediaDetailViewModel();
 
-  const handleRate = useCallback(
-    () => vm.openReview(vm.myStars || undefined),
-    [vm],
-  );
+  const handleRate = useCallback(() => vm.openReview(vm.myStars || undefined), [vm]);
 
   return (
     <>
@@ -39,8 +36,7 @@ export function MediaDetail() {
           backdropUri={vm.backdropUri}
           posterUri={vm.posterUri}
           headerHeight={370}
-          bottomInset={insets.bottom}
-        >
+          bottomInset={insets.bottom}>
           <MediaSummary
             title={vm.title}
             tagline={vm.tagline}
@@ -52,20 +48,11 @@ export function MediaDetail() {
           />
 
           {vm.mediaType === "movie" ? (
-            <MediaActions
-              hasReview={vm.hasReview}
-              accentHex={vm.accentHex}
-              onRate={handleRate}
-            />
+            <MediaActions hasReview={vm.hasReview} accentHex={vm.accentHex} onRate={handleRate} />
           ) : null}
 
           {vm.error && !vm.detail ? (
-            <Text
-              size="sm"
-              weight="regular"
-              color={theme.textSecondary}
-              fillWidth
-            >
+            <Text size="sm" weight="regular" color={theme.textSecondary} fillWidth>
               {vm.error}
             </Text>
           ) : null}
@@ -101,12 +88,7 @@ export function MediaDetail() {
           />
 
           {vm.isLoading && !vm.detail ? (
-            <Text
-              size="sm"
-              weight="regular"
-              color={theme.textSecondary}
-              fillWidth
-            >
+            <Text size="sm" weight="regular" color={theme.textSecondary} fillWidth>
               Loading…
             </Text>
           ) : null}

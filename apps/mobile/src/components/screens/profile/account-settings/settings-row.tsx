@@ -41,13 +41,12 @@ export function SettingsRow({
           </Text>
         ) : null}
       </View>
-      {trailing ?? (
-        value ? (
+      {trailing ??
+        (value ? (
           <Text size="md" color={theme.textSecondary} numberOfLines={1}>
             {value}
           </Text>
-        ) : null
-      )}
+        ) : null)}
     </View>
   );
 
@@ -63,8 +62,7 @@ export function SettingsRow({
       }}
       style={({ pressed }) => ({
         opacity: disabled ? OPACITY.DISABLED : pressed ? OPACITY.MUTED : 1,
-      })}
-    >
+      })}>
       {content}
     </Pressable>
   );

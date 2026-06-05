@@ -11,17 +11,13 @@ export const reviewController = new Elysia({
 })
   .use(authGuard)
   .use(ReviewModel)
-  .get(
-    "/my",
-    ({ user, query }) => getMyReview(user.id, query.tmdbId, query.mediaType),
-    {
-      auth: true,
-      query: "review.MediaRefQuery",
-      response: {
-        200: "review.NullableReview",
-      },
+  .get("/my", ({ user, query }) => getMyReview(user.id, query.tmdbId, query.mediaType), {
+    auth: true,
+    query: "review.MediaRefQuery",
+    response: {
+      200: "review.NullableReview",
     },
-  )
+  })
   .put(
     "/my",
     ({ user, body }) => {
@@ -52,13 +48,7 @@ export const reviewController = new Elysia({
   )
   .get(
     "/",
-    ({ query }) =>
-      getMediaReviewsPage(
-        query.tmdbId,
-        query.mediaType,
-        query.limit,
-        query.offset,
-      ),
+    ({ query }) => getMediaReviewsPage(query.tmdbId, query.mediaType, query.limit, query.offset),
     {
       query: "review.ListQuery",
       response: {
@@ -66,13 +56,9 @@ export const reviewController = new Elysia({
       },
     },
   )
-  .get(
-    "/stats",
-    ({ query }) => getMediaStats(query.tmdbId, query.mediaType),
-    {
-      query: "review.MediaRefQuery",
-      response: {
-        200: "review.Stats",
-      },
+  .get("/stats", ({ query }) => getMediaStats(query.tmdbId, query.mediaType), {
+    query: "review.MediaRefQuery",
+    response: {
+      200: "review.Stats",
     },
-  );
+  });

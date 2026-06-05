@@ -48,11 +48,7 @@ async function generateAppleClientSecret(
     .sign(key);
 }
 
-const appleEnabled =
-  env.appleClientId &&
-  env.appleTeamId &&
-  env.appleKeyId &&
-  env.applePrivateKey;
+const appleEnabled = env.appleClientId && env.appleTeamId && env.appleKeyId && env.applePrivateKey;
 
 const socialProviders = appleEnabled
   ? {
@@ -66,9 +62,7 @@ const socialProviders = appleEnabled
         ),
         // Native iOS sign-in sends an idToken whose `aud` is the app bundle ID
         // (not the Service ID). Better Auth needs this to accept that token.
-        ...(env.appleBundleIdentifier
-          ? { appBundleIdentifier: env.appleBundleIdentifier }
-          : {}),
+        ...(env.appleBundleIdentifier ? { appBundleIdentifier: env.appleBundleIdentifier } : {}),
       },
     }
   : undefined;

@@ -13,15 +13,12 @@ await pool.query(`
   )
 `);
 
-const files = (await readdir(migrationsDir))
-  .filter((file) => file.endsWith(".sql"))
-  .sort();
+const files = (await readdir(migrationsDir)).filter((file) => file.endsWith(".sql")).sort();
 
 for (const file of files) {
-  const applied = await pool.query(
-    "select 1 from public.schema_migrations where name = $1",
-    [file],
-  );
+  const applied = await pool.query("select 1 from public.schema_migrations where name = $1", [
+    file,
+  ]);
 
   if (applied.rowCount) {
     console.log(`Skipping ${file}`);
@@ -34,9 +31,7 @@ for (const file of files) {
   try {
     await client.query("begin");
     await client.query(sql);
-    await client.query("insert into public.schema_migrations (name) values ($1)", [
-      file,
-    ]);
+    await client.query("insert into public.schema_migrations (name) values ($1)", [file]);
     await client.query("commit");
   } catch (error) {
     await client.query("rollback");

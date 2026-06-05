@@ -2,10 +2,7 @@ import type { Href } from "expo-router";
 
 import type { MediaType, TmdbMovieSummary } from "@/lib/tmdb";
 
-export function mediaTitle(media: {
-  title?: string;
-  original_title?: string;
-}): string {
+export function mediaTitle(media: { title?: string; original_title?: string }): string {
   return media.title ?? media.original_title ?? "Untitled";
 }
 

@@ -1,0 +1,15 @@
+node_modules
+.expo
+.turbo
+dist
+web-build
+coverage
+ios
+android
+apps/mobile/ios
+apps/mobile/android
+*.tsbuildinfo
+*.ipa
+*.p8
+bun.lock
+packages/db/drizzle/meta

@@ -1,8 +1,4 @@
-import {
-  Host,
-  Picker,
-  Text as SwiftUIText,
-} from "@expo/ui/swift-ui";
+import { Host, Picker, Text as SwiftUIText } from "@expo/ui/swift-ui";
 import { pickerStyle, tag, tint } from "@expo/ui/swift-ui/modifiers";
 
 import { getColorValue } from "@/constants/colors";

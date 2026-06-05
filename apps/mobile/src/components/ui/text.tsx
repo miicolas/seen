@@ -5,11 +5,7 @@ import {
   lineLimit,
   multilineTextAlignment,
 } from "@expo/ui/swift-ui/modifiers";
-import {
-  StyleSheet,
-  Text as RNText,
-  type TextStyle,
-} from "react-native";
+import { StyleSheet, Text as RNText, type TextStyle } from "react-native";
 
 import { FONT_SIZE, LINE_HEIGHT } from "@/constants/design-tokens";
 import type { UISize } from "@/types/ui";

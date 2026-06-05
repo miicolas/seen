@@ -6,7 +6,7 @@ import { StyleSheet, View } from "react-native";
 import { Text } from "@/components/ui/text";
 import { BORDER_RADIUS, SPACING } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
-import { truncate } from "@/lib/format";
+import { releaseYear, truncate } from "@/lib/format";
 import { hapticTap } from "@/lib/haptics";
 import { mediaDetailHref } from "@/lib/navigation";
 import { tmdbImageUrl, type TmdbMovieSummary } from "@/lib/tmdb";
@@ -25,7 +25,7 @@ export function PosterCard({ movie, width, showMeta = true }: PosterCardProps) {
   );
 
   const title = truncate(movie.title ?? movie.original_title ?? "Untitled", 22);
-  const meta = movie.release_date?.slice(0, 4);
+  const meta = releaseYear(movie.release_date);
 
   function handlePress() {
     hapticTap();
@@ -33,10 +33,7 @@ export function PosterCard({ movie, width, showMeta = true }: PosterCardProps) {
 
   return (
     <Link href={mediaDetailHref(movie)} asChild>
-      <PressableScale
-        onPress={handlePress}
-        style={StyleSheet.flatten([styles.card, { width }])}
-      >
+      <PressableScale onPress={handlePress} style={StyleSheet.flatten([styles.card, { width }])}>
         <Link.AppleZoom>
           <Image
             source={uri ? { uri } : undefined}

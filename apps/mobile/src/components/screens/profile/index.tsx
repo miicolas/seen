@@ -2,26 +2,14 @@ import { Stack, useFocusEffect, useRouter } from "expo-router";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
-} from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { GlassButton } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Text } from "@/components/ui/text";
 import { BottomTabInset } from "@/constants/theme";
-import {
-  BORDER_RADIUS,
-  BORDER_WIDTH,
-  LAYOUT,
-  OPACITY,
-  SPACING,
-} from "@/constants/design-tokens";
+import { BORDER_RADIUS, BORDER_WIDTH, LAYOUT, OPACITY, SPACING } from "@/constants/design-tokens";
 import { useProfileActivity } from "@/hooks/profiles/use-profile-activity";
 import { useMyProfile } from "@/hooks/profiles/use-my-profile";
 import { useAccentColor } from "@/hooks/use-accent-color";
@@ -89,8 +77,7 @@ export function ProfileScreen() {
           </Stack.Toolbar.MenuAction>
           <Stack.Toolbar.MenuAction
             icon="rectangle.portrait.and.arrow.right"
-            onPress={handleSignOut}
-          >
+            onPress={handleSignOut}>
             {t("profile.signOut")}
           </Stack.Toolbar.MenuAction>
         </Stack.Toolbar.Menu>
@@ -101,8 +88,7 @@ export function ProfileScreen() {
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{
           paddingBottom: insets.bottom + BottomTabInset + SPACING.LG,
-        }}
-      >
+        }}>
         <View style={styles.content}>
           {isLoading ? (
             <View style={styles.loading}>
@@ -111,20 +97,12 @@ export function ProfileScreen() {
           ) : (
             <>
               <View style={styles.header}>
-                <View
-                  style={[styles.avatarShadow, { shadowColor: theme.text }]}
-                >
+                <View style={[styles.avatarShadow, { shadowColor: theme.text }]}>
                   <ProfileAvatar uri={avatarUri} name={fullName} size={136} />
                 </View>
 
                 <View style={styles.identity}>
-                  <Text
-                    size="5xl"
-                    color={theme.text}
-                    align="center"
-                    fillWidth
-                    numberOfLines={2}
-                  >
+                  <Text size="5xl" color={theme.text} align="center" fillWidth numberOfLines={2}>
                     {fullName ?? t("profile.untitled")}
                   </Text>
                   {username ? (
@@ -133,13 +111,8 @@ export function ProfileScreen() {
                     </Text>
                   ) : null}
                 </View>
-                
 
-                <GlassButton
-                  title={t("profile.edit")}
-                  onPress={handleEdit}
-                  size="sm"
-                />
+                <GlassButton title={t("profile.edit")} onPress={handleEdit} size="sm" />
               </View>
 
               {profile.error ? (
@@ -159,25 +132,13 @@ export function ProfileScreen() {
                   </View>
                 ) : activity.data.length > 0 ? (
                   <View
-                    style={[
-                      styles.activityList,
-                      { borderBottomColor: theme.backgroundSelected },
-                    ]}
-                  >
+                    style={[styles.activityList, { borderBottomColor: theme.backgroundSelected }]}>
                     {activity.data.map((item) => (
-                      <ActivityRow
-                        key={`${item.kind}:${item.id}`}
-                        item={item}
-                      />
+                      <ActivityRow key={`${item.kind}:${item.id}`} item={item} />
                     ))}
                   </View>
                 ) : (
-                  <View
-                    style={[
-                      styles.emptyState,
-                      { backgroundColor: theme.backgroundElement },
-                    ]}
-                  >
+                  <View style={[styles.emptyState, { backgroundColor: theme.backgroundElement }]}>
                     <EmptyState
                       icon="star"
                       title={t("profile.emptyActivity")}
@@ -200,8 +161,7 @@ export function ProfileScreen() {
                     style={({ pressed }) => [
                       styles.retry,
                       { opacity: pressed ? OPACITY.DISABLED : 1 },
-                    ]}
-                  >
+                    ]}>
                     <Text size="sm" weight="bold" color={accentHex}>
                       {t("profile.retry")}
                     </Text>

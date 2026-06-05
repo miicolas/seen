@@ -13,8 +13,7 @@ export function useLinkedAccounts() {
     queryFn: listMyLinkedAccounts,
   });
 
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: accountKeys.linked() });
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: accountKeys.linked() });
 
   const unlink = useMutation({
     mutationFn: (providerId: string) => unlinkAccount({ providerId }),
@@ -22,9 +21,7 @@ export function useLinkedAccounts() {
   });
 
   const accounts = query.data ?? [];
-  const hasCredential = accounts.some(
-    (account) => account.provider_id === "credential",
-  );
+  const hasCredential = accounts.some((account) => account.provider_id === "credential");
   const canUnlink = accounts.length > 1;
 
   return {
@@ -32,13 +29,10 @@ export function useLinkedAccounts() {
     hasCredential,
     canUnlink,
     isLoading: query.isLoading,
-    error: query.error
-      ? errorMessage(query.error, "Couldn't load your linked accounts.")
-      : null,
+    error: query.error ? errorMessage(query.error, "Couldn't load your linked accounts.") : null,
     refetch: query.refetch,
     unlink: (providerId: string) => unlink.mutateAsync(providerId),
-    link: (provider: "apple") =>
-      authClient.linkSocial({ provider, callbackURL: "/" }),
+    link: (provider: "apple") => authClient.linkSocial({ provider, callbackURL: "/" }),
     isMutating: unlink.isPending,
   };
 }

@@ -2,10 +2,7 @@ import { profileKeys } from "@seen/shared";
 import { useQuery } from "@tanstack/react-query";
 
 import { errorMessage } from "@/lib/format";
-import {
-  getMyProfileActivity,
-  type ProfileActivityItem,
-} from "@/services/profiles";
+import { getMyProfileActivity, type ProfileActivityItem } from "@/services/profiles";
 
 export function useProfileActivity(limit = 12) {
   const query = useQuery({
@@ -16,9 +13,7 @@ export function useProfileActivity(limit = 12) {
   return {
     data: query.data ?? [],
     isLoading: query.isLoading,
-    error: query.error
-      ? errorMessage(query.error, "Couldn't load your activity.")
-      : null,
+    error: query.error ? errorMessage(query.error, "Couldn't load your activity.") : null,
     refetch: query.refetch,
   } satisfies {
     data: ProfileActivityItem[];

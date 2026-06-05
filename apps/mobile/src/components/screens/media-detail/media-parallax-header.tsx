@@ -48,9 +48,7 @@ export function MediaParallaxHeader({
   // uncropped. Never grow past headerHeight (keeps a portrait fallback tall).
   const [heroRatio, setHeroRatio] = useState<number | null>(null);
   const resolvedHeight =
-    adaptToHero && heroRatio
-      ? Math.min(headerHeight, Math.round(width / heroRatio))
-      : headerHeight;
+    adaptToHero && heroRatio ? Math.min(headerHeight, Math.round(width / heroRatio)) : headerHeight;
   const onHeroLoad = (event: ImageLoadEventData) => {
     const { width: w, height: h } = event.source;
     if (w > 0 && h > 0) setHeroRatio(w / h);
@@ -65,16 +63,10 @@ export function MediaParallaxHeader({
   const headerAnimatedStyle = useAnimatedStyle(() => {
     const translateY =
       scrollOffset.value <= 0
-        ? interpolate(
-            scrollOffset.value,
-            [-resolvedHeight, 0],
-            [-resolvedHeight / 2, 0],
-          )
+        ? interpolate(scrollOffset.value, [-resolvedHeight, 0], [-resolvedHeight / 2, 0])
         : 0;
     const scale =
-      scrollOffset.value <= 0
-        ? interpolate(scrollOffset.value, [-resolvedHeight, 0], [2, 1])
-        : 1;
+      scrollOffset.value <= 0 ? interpolate(scrollOffset.value, [-resolvedHeight, 0], [2, 1]) : 1;
     return { transform: [{ translateY }, { scale }] };
   });
 
@@ -86,23 +78,20 @@ export function MediaParallaxHeader({
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="always"
-        contentContainerStyle={{ paddingBottom: bottomInset + SPACING.LG }}
-      >
+        contentContainerStyle={{ paddingBottom: bottomInset + SPACING.LG }}>
         <Animated.View
           style={[
             styles.header,
             { backgroundColor: theme.background, height: resolvedHeight },
             headerAnimatedStyle,
-          ]}
-        >
+          ]}>
           {heroUri ? (
             <PressableScale
               onPress={() => {
                 hapticTap();
                 router.push(imageViewerHref(heroUri));
               }}
-              style={StyleSheet.absoluteFill}
-            >
+              style={StyleSheet.absoluteFill}>
               <Image
                 source={{ uri: heroUri }}
                 placeholder={{ blurhash: BLURHASH }}
@@ -122,18 +111,13 @@ export function MediaParallaxHeader({
           />
         </Animated.View>
 
-        <View
-          style={[styles.contentChildren, { marginTop: -resolvedHeight }]}
-        >
+        <View style={[styles.contentChildren, { marginTop: -resolvedHeight }]}>
           <View style={[styles.body, { marginTop: top * 3 }]}>
             <Link.AppleZoomTarget>
               <View style={styles.posterShadow}>
                 <Image
                   source={posterUri ? { uri: posterUri } : undefined}
-                  style={[
-                    styles.posterCard,
-                    { backgroundColor: theme.backgroundElement },
-                  ]}
+                  style={[styles.posterCard, { backgroundColor: theme.backgroundElement }]}
                   contentFit="cover"
                   transition={200}
                 />

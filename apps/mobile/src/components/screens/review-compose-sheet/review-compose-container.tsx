@@ -1,11 +1,6 @@
 import { useRouter } from "expo-router";
 import { useCallback } from "react";
-import {
-  ActivityIndicator,
-  StyleSheet,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { ActivityIndicator, StyleSheet, useWindowDimensions, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 import { ScreenToolbar } from "@/components/navigation";
@@ -16,11 +11,7 @@ import { hapticTap } from "@/lib/haptics";
 import { ReviewFormBody } from "./review-form-body";
 import type { ReviewController } from "./use-review-controller";
 
-export function ReviewComposeContainer({
-  controller,
-}: {
-  controller: ReviewController;
-}) {
+export function ReviewComposeContainer({ controller }: { controller: ReviewController }) {
   const router = useRouter();
   const theme = useTheme();
   const { width } = useWindowDimensions();
@@ -44,8 +35,7 @@ export function ReviewComposeContainer({
 
       <KeyboardAwareScrollView
         bottomOffset={LAYOUT.SCREEN_PADDING}
-        contentInsetAdjustmentBehavior="automatic"
-      >
+        contentInsetAdjustmentBehavior="automatic">
         {controller.isLoading ? (
           <View style={[styles.loading, { backgroundColor: theme.background }]}>
             <ActivityIndicator />

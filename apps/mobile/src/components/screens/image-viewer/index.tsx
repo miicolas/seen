@@ -25,8 +25,7 @@ export function ImageViewer() {
       {uri ? <ZoomableImage uri={uri} /> : null}
       <PressableScale
         onPress={handleClose}
-        style={StyleSheet.flatten([styles.close, { top: insets.top + SPACING.SM }])}
-      >
+        style={StyleSheet.flatten([styles.close, { top: insets.top + SPACING.SM }])}>
         <SymbolView name="xmark" size={18} tintColor="#ffffff" />
       </PressableScale>
     </View>

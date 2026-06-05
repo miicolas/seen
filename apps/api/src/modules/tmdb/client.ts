@@ -2,8 +2,10 @@ import { db } from "@seen/db";
 import { movies as moviesTable } from "@seen/db/schema";
 
 import { env } from "../../env";
+import { asDateString, asNumber, asString } from "../../lib/coerce";
 import { HttpError } from "../../lib/http-error";
 import { redisGetJson, redisSetJson, withRedisLock } from "../../lib/redis";
+import type { MovieDetailDto } from "./model";
 
 // Shared TMDB HTTP + cache client used by the query endpoints. Holds the fetch,
 // normalization, and movie-cache-warming primitives; the per-endpoint handlers
@@ -66,15 +68,6 @@ export interface TmdbMovieSummary {
   genre_ids?: number[];
 }
 
-export interface TmdbMovieDetail extends TmdbMovieSummary {
-  runtime?: number;
-  genres?: { id: number; name: string }[];
-  number_of_seasons?: number;
-  seasons?: unknown[];
-  _cache?: "hit" | "miss";
-  [key: string]: unknown;
-}
-
 export interface TmdbPagedResult {
   page: number;
   results: RawTmdbItem[];
@@ -98,8 +91,7 @@ export interface DiscoverFeed {
 type TmdbParams = Record<string, string | number | boolean | undefined>;
 
 function tmdbAuthHeaders(): Record<string, string> {
-  if (!env.tmdbToken)
-    return { "Content-Type": "application/json;charset=utf-8" };
+  if (!env.tmdbToken) return { "Content-Type": "application/json;charset=utf-8" };
   return {
     Authorization: `Bearer ${env.tmdbToken}`,
     "Content-Type": "application/json;charset=utf-8",
@@ -108,10 +100,7 @@ function tmdbAuthHeaders(): Record<string, string> {
 
 function cacheKey(path: string, params: TmdbParams) {
   const sorted = Object.entries(params)
-    .filter(
-      (entry): entry is [string, string | number | boolean] =>
-        entry[1] !== undefined,
-    )
+    .filter((entry): entry is [string, string | number | boolean] => entry[1] !== undefined)
     .sort(([left], [right]) => left.localeCompare(right));
   return `tmdb:${path}:${JSON.stringify(sorted)}`;
 }
@@ -170,30 +159,25 @@ export async function tmdbFetch<T>(
   });
 }
 
-export function normalizeSummary(
-  item: RawTmdbItem,
-  fallbackType: MediaType,
-): TmdbMovieSummary {
+export function normalizeSummary(item: RawTmdbItem, fallbackType: MediaType): TmdbMovieSummary {
   const mediaType: MediaType =
-    item.media_type === "tv"
-      ? "tv"
-      : item.media_type === "movie"
-        ? "movie"
-        : fallbackType;
+    item.media_type === "tv" ? "tv" : item.media_type === "movie" ? "movie" : fallbackType;
 
   return {
-    id: item.id,
+    id: asNumber(item.id) ?? 0,
     media_type: mediaType,
-    title: item.title ?? item.name ?? item.original_title ?? item.original_name,
-    original_title: item.original_title ?? item.original_name,
-    overview: item.overview,
-    release_date: item.release_date ?? item.first_air_date,
-    poster_path: item.poster_path,
-    backdrop_path: item.backdrop_path,
-    vote_average: item.vote_average,
-    vote_count: item.vote_count,
-    popularity: item.popularity,
-    genre_ids: item.genre_ids,
+    title: asString(item.title ?? item.name ?? item.original_title ?? item.original_name),
+    original_title: asString(item.original_title ?? item.original_name),
+    overview: asString(item.overview),
+    release_date: asDateString(item.release_date ?? item.first_air_date),
+    poster_path: item.poster_path ?? null,
+    backdrop_path: item.backdrop_path ?? null,
+    vote_average: asNumber(item.vote_average),
+    vote_count: asNumber(item.vote_count),
+    popularity: asNumber(item.popularity),
+    genre_ids: Array.isArray(item.genre_ids)
+      ? item.genre_ids.filter((id): id is number => typeof id === "number")
+      : undefined,
   };
 }
 
@@ -201,10 +185,7 @@ export function hasRating(item: TmdbMovieSummary) {
   return typeof item.vote_average === "number" && item.vote_average > 0;
 }
 
-function interleave(
-  movies: TmdbMovieSummary[],
-  series: TmdbMovieSummary[],
-): TmdbMovieSummary[] {
+function interleave(movies: TmdbMovieSummary[], series: TmdbMovieSummary[]): TmdbMovieSummary[] {
   const out: TmdbMovieSummary[] = [];
   const max = Math.max(movies.length, series.length);
   for (let index = 0; index < max; index += 1) {
@@ -262,10 +243,7 @@ export async function upsertMovieList(
   );
 }
 
-export async function upsertMovieDetail(
-  detail: TmdbMovieDetail,
-  language: string,
-): Promise<void> {
+export async function upsertMovieDetail(detail: MovieDetailDto, language: string): Promise<void> {
   const values = {
     ...movieSummaryValues(detail, language),
     runtime: detail.runtime ?? null,
@@ -287,14 +265,9 @@ export async function discover(
   mediaType: MediaType,
   params: TmdbParams,
 ): Promise<TmdbMovieSummary[]> {
-  const result = await tmdbFetch<TmdbPagedResult>(
-    `/discover/${mediaType}`,
-    params,
-  );
+  const result = await tmdbFetch<TmdbPagedResult>(`/discover/${mediaType}`, params);
   const language = String(params.language ?? DEFAULT_LANGUAGE);
-  const normalized = result.results.map((item) =>
-    normalizeSummary(item, mediaType),
-  );
+  const normalized = result.results.map((item) => normalizeSummary(item, mediaType));
   void upsertMovieList(normalized, language).catch((error) =>
     console.error("movie list cache warm failed", error),
   );
@@ -306,12 +279,9 @@ export async function trending(
   timeWindow: "day" | "week",
   language = DEFAULT_LANGUAGE,
 ): Promise<TmdbMovieSummary[]> {
-  const result = await tmdbFetch<TmdbPagedResult>(
-    `/trending/${filter}/${timeWindow}`,
-    {
-      language,
-    },
-  );
+  const result = await tmdbFetch<TmdbPagedResult>(`/trending/${filter}/${timeWindow}`, {
+    language,
+  });
   const fallbackType: MediaType = filter === "tv" ? "tv" : "movie";
   const normalized = result.results
     .filter((item) => item.media_type !== "person")

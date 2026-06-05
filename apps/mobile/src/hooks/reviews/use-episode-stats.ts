@@ -1,22 +1,11 @@
 import { episodeReviewKeys } from "@seen/shared";
 import { useQuery } from "@tanstack/react-query";
 
-import {
-  getEpisodeStats,
-  type EpisodeStats,
-} from "@/services/episode-reviews";
+import { getEpisodeStats, type EpisodeStats } from "@/services/episode-reviews";
 
-export function useEpisodeStats(
-  seriesTmdbId: number,
-  seasonNumber: number,
-  episodeNumber: number,
-) {
+export function useEpisodeStats(seriesTmdbId: number, seasonNumber: number, episodeNumber: number) {
   const query = useQuery({
-    queryKey: episodeReviewKeys.stats(
-      seriesTmdbId,
-      seasonNumber,
-      episodeNumber,
-    ),
+    queryKey: episodeReviewKeys.stats(seriesTmdbId, seasonNumber, episodeNumber),
     queryFn: () => getEpisodeStats(seriesTmdbId, seasonNumber, episodeNumber),
     enabled:
       Number.isFinite(seriesTmdbId) &&

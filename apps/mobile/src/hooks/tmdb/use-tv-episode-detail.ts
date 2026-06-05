@@ -2,11 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
 import { errorMessage } from "@/lib/format";
-import {
-  getTvEpisodeDetail,
-  tmdbLanguage,
-  type TmdbTvEpisodeDetail,
-} from "@/lib/tmdb";
+import { getTvEpisodeDetail, tmdbLanguage, type TmdbTvEpisodeDetail } from "@/lib/tmdb";
 
 interface TvEpisodeDetailState {
   episode: TmdbTvEpisodeDetail | null;
@@ -22,16 +18,8 @@ export function useTvEpisodeDetail(
   const { i18n } = useTranslation();
   const language = tmdbLanguage(i18n.language);
   const query = useQuery({
-    queryKey: [
-      "tmdb",
-      "episode",
-      seriesId,
-      seasonNumber,
-      episodeNumber,
-      language,
-    ] as const,
-    queryFn: () =>
-      getTvEpisodeDetail(seriesId, seasonNumber, episodeNumber, language),
+    queryKey: ["tmdb", "episode", seriesId, seasonNumber, episodeNumber, language] as const,
+    queryFn: () => getTvEpisodeDetail(seriesId, seasonNumber, episodeNumber, language),
     enabled:
       Number.isFinite(seriesId) &&
       seriesId > 0 &&
@@ -44,8 +32,6 @@ export function useTvEpisodeDetail(
   return {
     episode: query.data ?? null,
     isLoading: query.isLoading,
-    error: query.error
-      ? errorMessage(query.error, "Failed to load the episode")
-      : null,
+    error: query.error ? errorMessage(query.error, "Failed to load the episode") : null,
   };
 }

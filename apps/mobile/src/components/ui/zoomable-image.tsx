@@ -55,11 +55,7 @@ export function ZoomableImage({
   const containerWidth = SCREEN_WIDTH;
   const containerHeight = SCREEN_HEIGHT;
 
-  const clampTranslation = (
-    x: number,
-    y: number,
-    scaleValue: number,
-  ): { x: number; y: number } => {
+  const clampTranslation = (x: number, y: number, scaleValue: number): { x: number; y: number } => {
     "worklet";
 
     if (scaleValue <= 1) {
@@ -137,10 +133,7 @@ export function ZoomableImage({
     .onUpdate((e) => {
       const newScale = savedScale.value * e.scale;
 
-      const clampedScale = Math.max(
-        minScale * 0.85,
-        Math.min(newScale, maxScale * 1.1),
-      );
+      const clampedScale = Math.max(minScale * 0.85, Math.min(newScale, maxScale * 1.1));
 
       scale.value = clampedScale;
 
@@ -156,22 +149,12 @@ export function ZoomableImage({
         const scaleRatio = maxScale / scale.value;
 
         scale.value = withSpring(maxScale, SPRING_CONFIG);
-        translateX.value = withSpring(
-          translateX.value * scaleRatio,
-          SPRING_CONFIG,
-        );
-        translateY.value = withSpring(
-          translateY.value * scaleRatio,
-          SPRING_CONFIG,
-        );
+        translateX.value = withSpring(translateX.value * scaleRatio, SPRING_CONFIG);
+        translateY.value = withSpring(translateY.value * scaleRatio, SPRING_CONFIG);
 
         savedScale.value = maxScale;
       } else {
-        const clamped = clampTranslation(
-          translateX.value,
-          translateY.value,
-          scale.value,
-        );
+        const clamped = clampTranslation(translateX.value, translateY.value, scale.value);
 
         if (
           Math.abs(clamped.x - translateX.value) > 1 ||

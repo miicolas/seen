@@ -55,11 +55,7 @@ export async function updateMyProfile(
     .returning()
     .catch((error) => {
       if (isUniqueViolation(error)) {
-        throw new HttpError(
-          409,
-          "That username is already taken.",
-          "username-taken",
-        );
+        throw new HttpError(409, "That username is already taken.", "username-taken");
       }
       throw error;
     });

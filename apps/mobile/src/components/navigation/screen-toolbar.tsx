@@ -19,8 +19,7 @@ export function ScreenToolbar({ placement, actions }: ScreenToolbarProps) {
           onPress={action.onPress}
           tintColor={action.tintColor}
           disabled={action.disabled}
-          hidden={action.hidden}
-        >
+          hidden={action.hidden}>
           {action.label}
         </Stack.Toolbar.Button>
       ))}

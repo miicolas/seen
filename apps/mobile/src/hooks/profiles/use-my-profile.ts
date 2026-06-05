@@ -13,9 +13,7 @@ export function useMyProfile() {
   return {
     data: query.data ?? null,
     isLoading: query.isLoading,
-    error: query.error
-      ? errorMessage(query.error, "Couldn't load your profile.")
-      : null,
+    error: query.error ? errorMessage(query.error, "Couldn't load your profile.") : null,
     refetch: query.refetch,
   } satisfies {
     data: Profile | null;

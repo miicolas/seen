@@ -13,19 +13,12 @@ function requiredEnv(name: string, fallback?: string) {
 
 export const env = {
   port: Number(process.env.PORT ?? 3000),
-  databaseUrl: requiredEnv(
-    "DATABASE_URL",
-    "postgres://seen:seen@localhost:5432/seen",
-  ),
+  databaseUrl: requiredEnv("DATABASE_URL", "postgres://seen:seen@localhost:5432/seen"),
   redisUrl: optionalEnv("REDIS_URL") ?? "redis://localhost:6379",
-  betterAuthSecret: requiredEnv(
-    "BETTER_AUTH_SECRET",
-    "dev-only-replace-with-a-long-random-secret",
-  ),
+  betterAuthSecret: requiredEnv("BETTER_AUTH_SECRET", "dev-only-replace-with-a-long-random-secret"),
   betterAuthUrl: requiredEnv("BETTER_AUTH_URL", "http://localhost:3000"),
   trustedOrigins: (
-    optionalEnv("TRUSTED_ORIGINS") ??
-    "seen://,seen://*,exp://,exp://**,https://appleid.apple.com"
+    optionalEnv("TRUSTED_ORIGINS") ?? "seen://,seen://*,exp://,exp://**,https://appleid.apple.com"
   )
     .split(",")
     .map((origin) => origin.trim())

@@ -10,13 +10,7 @@ import { Alert, Pressable, StyleSheet, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { FieldRow } from "@/components/ui/field-row";
 import { Text } from "@/components/ui/text";
-import {
-  BORDER_RADIUS,
-  BORDER_WIDTH,
-  LAYOUT,
-  OPACITY,
-  SPACING,
-} from "@/constants/design-tokens";
+import { BORDER_RADIUS, BORDER_WIDTH, LAYOUT, OPACITY, SPACING } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
 import {
   hapticDelete,
@@ -47,11 +41,7 @@ function profileErrorMessage(error: unknown, fallback: string) {
   return fallback;
 }
 
-export function EditProfileForm({
-  initialProfile,
-}: {
-  initialProfile: Profile;
-}) {
+export function EditProfileForm({ initialProfile }: { initialProfile: Profile }) {
   const { t } = useTranslation();
   const router = useRouter();
   const theme = useTheme();
@@ -79,10 +69,7 @@ export function EditProfileForm({
     setUsernameLooksInvalid((prev) => (prev === invalid ? prev : invalid));
   }, []);
 
-  const initialAvatarUrl = useMemo(
-    () => profileAvatarUrl(initialProfile),
-    [initialProfile],
-  );
+  const initialAvatarUrl = useMemo(() => profileAvatarUrl(initialProfile), [initialProfile]);
   const avatarUri = avatar?.uri ?? initialAvatarUrl;
 
   const close = useCallback(() => {
@@ -145,11 +132,7 @@ export function EditProfileForm({
       });
       queryClient.setQueryData(profileKeys.me(), savedProfile);
 
-      if (
-        uploadedPath &&
-        previousAvatarPath &&
-        previousAvatarPath !== uploadedPath
-      ) {
+      if (uploadedPath && previousAvatarPath && previousAvatarPath !== uploadedPath) {
         await deleteProfileAvatarPath(previousAvatarPath);
       }
 
@@ -193,42 +176,33 @@ export function EditProfileForm({
 
   const confirmDelete = useCallback(() => {
     hapticDelete();
-    Alert.alert(
-      t("profile.deleteAccountTitle"),
-      t("profile.deleteAccountMessage"),
-      [
-        { text: t("profile.cancel"), style: "cancel" },
-        {
-          text: t("profile.continueDelete"),
-          style: "destructive",
-          onPress: () => {
-            Alert.alert(
-              t("profile.deleteAccountFinalTitle"),
-              t("profile.deleteAccountFinalMessage"),
-              [
-                { text: t("profile.cancel"), style: "cancel" },
-                {
-                  text: t("profile.deleteAccount"),
-                  style: "destructive",
-                  onPress: deleteConfirmed,
-                },
-              ],
-            );
-          },
+    Alert.alert(t("profile.deleteAccountTitle"), t("profile.deleteAccountMessage"), [
+      { text: t("profile.cancel"), style: "cancel" },
+      {
+        text: t("profile.continueDelete"),
+        style: "destructive",
+        onPress: () => {
+          Alert.alert(
+            t("profile.deleteAccountFinalTitle"),
+            t("profile.deleteAccountFinalMessage"),
+            [
+              { text: t("profile.cancel"), style: "cancel" },
+              {
+                text: t("profile.deleteAccount"),
+                style: "destructive",
+                onPress: deleteConfirmed,
+              },
+            ],
+          );
         },
-      ],
-    );
+      },
+    ]);
   }, [deleteConfirmed, t]);
 
   const isBusy = isSaving || isDeleting;
 
   return (
-    <EditSheetScaffold
-      onClose={close}
-      onSave={save}
-      closeDisabled={isBusy}
-      saveDisabled={isBusy}
-    >
+    <EditSheetScaffold onClose={close} onSave={save} closeDisabled={isBusy} saveDisabled={isBusy}>
       <View style={styles.content}>
         <Pressable
           accessibilityRole="button"
@@ -237,32 +211,21 @@ export function EditProfileForm({
           style={({ pressed }) => [
             styles.avatarButton,
             { opacity: pressed ? OPACITY.DISABLED : 1 },
-          ]}
-        >
+          ]}>
           <ProfileAvatar uri={avatarUri} name={displayName} size={150} />
           <View style={styles.cameraBadge}>
             <SymbolView name="camera.fill" size={28} tintColor="#000000" />
           </View>
         </Pressable>
 
-        <View
-          style={[
-            styles.fieldsPanel,
-            { backgroundColor: theme.backgroundElement },
-          ]}
-        >
+        <View style={[styles.fieldsPanel, { backgroundColor: theme.backgroundElement }]}>
           <FieldRow
             label={t("profile.fullNameLabel")}
             placeholder={t("profile.fullNamePlaceholder")}
             state={fullNameState}
             onChangeText={setDisplayName}
           />
-          <View
-            style={[
-              styles.divider,
-              { backgroundColor: theme.backgroundSelected },
-            ]}
-          />
+          <View style={[styles.divider, { backgroundColor: theme.backgroundSelected }]} />
           <FieldRow
             label={t("profile.usernameLabel")}
             placeholder={t("profile.usernamePlaceholder")}
@@ -276,11 +239,8 @@ export function EditProfileForm({
             size="sm"
             weight="medium"
             color={usernameLooksInvalid ? theme.error : theme.textSecondary}
-            fillWidth
-          >
-            {usernameLooksInvalid
-              ? t("profile.usernameInvalid")
-              : t("profile.usernameHelp")}
+            fillWidth>
+            {usernameLooksInvalid ? t("profile.usernameInvalid") : t("profile.usernameHelp")}
           </Text>
         </View>
 
@@ -294,11 +254,7 @@ export function EditProfileForm({
 
         <View style={styles.destructive}>
           <Button
-            title={
-              isDeleting
-                ? t("profile.deletingAccount")
-                : t("profile.deleteAccount")
-            }
+            title={isDeleting ? t("profile.deletingAccount") : t("profile.deleteAccount")}
             onPress={confirmDelete}
             variant="glass"
             color="red"

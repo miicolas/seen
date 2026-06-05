@@ -24,9 +24,7 @@ function extensionForUpload(input: AvatarUploadInput) {
   }
 }
 
-export async function uploadProfileAvatar(
-  input: AvatarUploadInput,
-): Promise<string> {
+export async function uploadProfileAvatar(input: AvatarUploadInput): Promise<string> {
   const contentType = input.mimeType ?? "image/jpeg";
   const fileName = input.fileName ?? `avatar.${extensionForUpload(input)}`;
   const form = new FormData();

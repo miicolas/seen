@@ -9,14 +9,10 @@ import { useMediaStats } from "@/hooks/reviews/use-media-stats";
 import { useMyReview } from "@/hooks/reviews/use-my-review";
 import { hapticTap } from "@/lib/haptics";
 import { reviewSheetHref, reviewsSheetHref } from "@/lib/navigation";
-import {
-  tmdbImageUrl,
-  type MediaType,
-  type TmdbTvSeasonSummary,
-} from "@/lib/tmdb";
+import { tmdbImageUrl, type MediaType } from "@/lib/tmdb";
 import { ratingToStars } from "@/services/reviews";
 
-import { formatDate } from "@/lib/format";
+import { formatDate, releaseYear } from "@/lib/format";
 
 import { metaLine } from "./utils";
 import type { CastMember, CrewMember, InfoRowData } from "./types";
@@ -61,14 +57,11 @@ export function useMediaDetailViewModel() {
     detail?.backdrop_path ??
     params.backdrop_path ??
     null;
-  const backdropUri = tmdbImageUrl(
-    detail?.backdrop_path ?? params.backdrop_path ?? null,
-    "w1280",
-  );
+  const backdropUri = tmdbImageUrl(detail?.backdrop_path ?? params.backdrop_path ?? null, "w1280");
   const posterUri = tmdbImageUrl(posterPath, "w500");
 
-  const year = (detail?.release_date ?? "").slice(0, 4) || undefined;
-  const episodeRuntime = (detail?.episode_run_time as number[] | undefined)?.[0];
+  const year = releaseYear(detail?.release_date);
+  const episodeRuntime = detail?.episode_run_time?.[0];
   const runtime = detail?.runtime
     ? `${detail.runtime} min`
     : episodeRuntime
@@ -77,23 +70,15 @@ export function useMediaDetailViewModel() {
   const genres = detail?.genres?.map((g) => g.name).join(", ") || undefined;
   const mediaSubtitle = metaLine([year, runtime, genres]);
   const seasonCount =
-    typeof detail?.number_of_seasons === "number"
-      ? `${detail.number_of_seasons}`
-      : undefined;
+    typeof detail?.number_of_seasons === "number" ? `${detail.number_of_seasons}` : undefined;
   const tagline =
-    typeof detail?.tagline === "string" && detail.tagline.length > 0
-      ? detail.tagline
-      : undefined;
+    typeof detail?.tagline === "string" && detail.tagline.length > 0 ? detail.tagline : undefined;
   const status = typeof detail?.status === "string" ? detail.status : undefined;
-  const seasons = Array.isArray(detail?.seasons)
-    ? (detail.seasons as TmdbTvSeasonSummary[])
-    : [];
+  const seasons = detail?.seasons ?? [];
 
-  const credits = detail?.credits as
-    | { cast?: CastMember[]; crew?: CrewMember[] }
-    | undefined;
+  const credits = detail?.credits as { cast?: CastMember[]; crew?: CrewMember[] } | undefined;
   const cast = (credits?.cast ?? []).slice(0, 16);
-  const createdBy = (detail?.created_by as { name?: string }[] | undefined)
+  const createdBy = detail?.created_by
     ?.map((c) => c.name)
     .filter(Boolean)
     .join(", ");
@@ -101,24 +86,18 @@ export function useMediaDetailViewModel() {
     mediaType === "tv"
       ? createdBy || undefined
       : credits?.crew?.find((c) => c.job === "Director")?.name;
-  const studio = (
-    detail?.production_companies as { name?: string }[] | undefined
-  )?.[0]?.name;
+  const studio = detail?.production_companies?.[0]?.name;
   const originalLanguage =
     typeof detail?.original_language === "string"
       ? detail.original_language.toUpperCase()
       : undefined;
 
   const myStars =
-    mediaType === "movie" && review?.rating != null
-      ? ratingToStars(review.rating)
-      : 0;
+    mediaType === "movie" && review?.rating != null ? ratingToStars(review.rating) : 0;
   const hasReview = mediaType === "movie" && review != null;
 
   const infoRows: InfoRowData[] = [
-    director
-      ? { label: mediaType === "tv" ? "Creator" : "Director", value: director }
-      : null,
+    director ? { label: mediaType === "tv" ? "Creator" : "Director", value: director } : null,
     seasonCount ? { label: "Seasons", value: seasonCount } : null,
     detail?.release_date
       ? { label: "Release date", value: formatDate(detail.release_date)! }
@@ -163,9 +142,7 @@ export function useMediaDetailViewModel() {
   }, [title]);
 
   const openTmdb = useCallback(() => {
-    Linking.openURL(
-      `https://www.themoviedb.org/${mediaType}/${tmdbId}`,
-    ).catch(() => {});
+    Linking.openURL(`https://www.themoviedb.org/${mediaType}/${tmdbId}`).catch(() => {});
   }, [mediaType, tmdbId]);
 
   return {

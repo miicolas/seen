@@ -25,8 +25,7 @@ export const fr: typeof en = {
     usernameLabel: "Identifiant",
     usernamePlaceholder: "username",
     usernameHelp: "3 à 20 lettres minuscules, chiffres, points ou underscores.",
-    usernameInvalid:
-      "Utilise 3 à 20 lettres minuscules, chiffres, points ou underscores.",
+    usernameInvalid: "Utilise 3 à 20 lettres minuscules, chiffres, points ou underscores.",
     photoPermissionError:
       "L'accès à la photothèque est nécessaire pour choisir une photo de profil.",
     saveError: "La mise à jour du profil a échoué. Réessaie.",
@@ -34,8 +33,7 @@ export const fr: typeof en = {
     deleteAccount: "Supprimer le compte",
     deletingAccount: "Suppression...",
     deleteAccountTitle: "Supprimer ton compte ?",
-    deleteAccountMessage:
-      "Ton profil, tes notes et tes critiques seront supprimés définitivement.",
+    deleteAccountMessage: "Ton profil, tes notes et tes critiques seront supprimés définitivement.",
     continueDelete: "Continuer",
     deleteAccountFinalTitle: "Cette action est irréversible",
     deleteAccountFinalMessage:
@@ -46,8 +44,7 @@ export const fr: typeof en = {
     subtitle: "Note, critique et garde une trace de tes films et séries",
     devSignIn: "Connexion dev",
     authenticating: "Connexion...",
-    appleUnavailable:
-      "La connexion avec Apple n'est pas disponible sur cet appareil.",
+    appleUnavailable: "La connexion avec Apple n'est pas disponible sur cet appareil.",
     authError: "La connexion avec Apple a échoué. Réessaie.",
     devAuthError: "La connexion dev a échoué. Vérifie le seed Better Auth local.",
   },
@@ -69,8 +66,7 @@ export const fr: typeof en = {
     noResults: "Aucun résultat pour « {{query}} »",
     noResultsHint: "Essaie un autre titre ou une autre orthographe.",
     offlineTitle: "Tu es hors ligne",
-    offlineSubtitle:
-      "Discover reste ouvert. Reviens au réseau pour charger les films et séries.",
+    offlineSubtitle: "Discover reste ouvert. Reviens au réseau pour charger les films et séries.",
     genreAction: "Action",
     genreComedy: "Comédie",
     genreSciFiFantasy: "Science-fiction & Fantastique",
@@ -168,14 +164,11 @@ export const fr: typeof en = {
     cancel: "Annuler",
     save: "Enregistrer",
     deleteTitle: "Supprimer votre compte ?",
-    deleteMessage:
-      "Cela supprimera définitivement votre profil, vos notes et vos critiques.",
+    deleteMessage: "Cela supprimera définitivement votre profil, vos notes et vos critiques.",
     deleteContinue: "Continuer",
     deleteFinalTitle: "Action irréversible",
-    deleteFinalMessage:
-      "Votre compte Seen et toutes vos données seront définitivement supprimés.",
-    deleteError:
-      "Échec de la suppression. Vous devrez peut-être vous reconnecter.",
+    deleteFinalMessage: "Votre compte Seen et toutes vos données seront définitivement supprimés.",
+    deleteError: "Échec de la suppression. Vous devrez peut-être vous reconnecter.",
   },
   tabs: {
     discover: "Découvrir",

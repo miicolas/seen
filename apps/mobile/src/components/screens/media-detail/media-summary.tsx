@@ -33,22 +33,12 @@ export function MediaSummary({
         {title}
       </Text>
       {tagline ? (
-        <Text
-          size="sm"
-          weight="regular"
-          align="center"
-          color={theme.textSecondary}
-          fillWidth>
+        <Text size="sm" weight="regular" align="center" color={theme.textSecondary} fillWidth>
           {tagline}
         </Text>
       ) : null}
       {meta ? (
-        <Text
-          size="sm"
-          weight="regular"
-          align="center"
-          color={theme.textSecondary}
-          fillWidth>
+        <Text size="sm" weight="regular" align="center" color={theme.textSecondary} fillWidth>
           {meta}
         </Text>
       ) : null}

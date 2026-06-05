@@ -9,21 +9,17 @@ const DEFAULT_ACCENT_FAMILY: UIColor = "indigo";
 export function useAccentColor() {
   const scheme = useColorScheme() === "dark" ? "dark" : "light";
   const accentColorFamily = useAccentColorStore((s) => s.accentColorFamily);
-  const setAccentColorFamilyAction = useAccentColorStore(
-    (s) => s.setAccentColorFamilyAction,
-  );
+  const setAccentColorFamilyAction = useAccentColorStore((s) => s.setAccentColorFamilyAction);
 
   const family = accentColorFamily ?? DEFAULT_ACCENT_FAMILY;
 
   const accentHex = getColorValue(family, scheme === "dark" ? 400 : 500);
 
-  const getBackgroundColor = () =>
-    getColorValue(family, scheme === "dark" ? 950 : 50);
+  const getBackgroundColor = () => getColorValue(family, scheme === "dark" ? 950 : 50);
 
   const getPrimaryColor = (shade: number) => getColorValue(family, shade);
 
-  const setAccentFamily = (next: UIColor | null) =>
-    setAccentColorFamilyAction(next);
+  const setAccentFamily = (next: UIColor | null) => setAccentColorFamilyAction(next);
 
   return { accentHex, getBackgroundColor, getPrimaryColor, setAccentFamily };
 }

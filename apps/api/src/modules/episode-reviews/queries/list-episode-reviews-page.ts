@@ -5,11 +5,7 @@ import { count, desc } from "drizzle-orm";
 import { toApiRows } from "../../../lib/rows";
 import { type EpisodeRef, episodeWhere } from "../shared";
 
-export async function getEpisodeReviewsPage(
-  params: EpisodeRef,
-  limit = 3,
-  offset = 0,
-) {
+export async function getEpisodeReviewsPage(params: EpisodeRef, limit = 3, offset = 0) {
   const pageSize = Math.max(1, Math.min(50, limit));
   const from = Math.max(0, offset);
 
@@ -21,10 +17,7 @@ export async function getEpisodeReviewsPage(
       .orderBy(desc(episodeReviews.createdAt))
       .limit(pageSize)
       .offset(from),
-    db
-      .select({ count: count() })
-      .from(episodeReviews)
-      .where(episodeWhere(params)),
+    db.select({ count: count() }).from(episodeReviews).where(episodeWhere(params)),
   ]);
 
   return {

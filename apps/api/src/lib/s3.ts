@@ -95,12 +95,7 @@ export async function getAvatarObject(userId: string, path: string) {
       }),
     )
     .catch((error) => {
-      if (
-        error &&
-        typeof error === "object" &&
-        "name" in error &&
-        error.name === "NoSuchKey"
-      ) {
+      if (error && typeof error === "object" && "name" in error && error.name === "NoSuchKey") {
         throw new HttpError(404, "Avatar object not found.");
       }
       throw error;

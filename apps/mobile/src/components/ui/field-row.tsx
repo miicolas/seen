@@ -1,9 +1,4 @@
-import {
-  Host,
-  HStack,
-  Text as SwiftUIText,
-  TextField,
-} from "@expo/ui/swift-ui";
+import { Host, HStack, Text as SwiftUIText, TextField } from "@expo/ui/swift-ui";
 import {
   font,
   foregroundStyle,
@@ -62,16 +57,14 @@ export function FieldRow({
             horizontal: LAYOUT.FIELD_ROW_PADDING,
             vertical: ROW_VERTICAL_PADDING,
           }),
-        ]}
-      >
+        ]}>
         <SwiftUIText
           modifiers={[
             font({ size: FONT_SIZE.MD, weight: "semibold" }),
             foregroundStyle(theme.text),
             lineLimit(1),
             frame({ width: LAYOUT.FIELD_LABEL_WIDTH, alignment: "leading" }),
-          ]}
-        >
+          ]}>
           {label}
         </SwiftUIText>
         <TextField

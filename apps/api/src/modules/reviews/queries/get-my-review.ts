@@ -6,11 +6,7 @@ import { toApiRow } from "../../../lib/rows";
 import type { MediaType } from "../../tmdb";
 import { mediaWhere } from "../shared";
 
-export async function getMyReview(
-  userId: string,
-  tmdbId: number,
-  mediaType: MediaType,
-) {
+export async function getMyReview(userId: string, tmdbId: number, mediaType: MediaType) {
   const [review] = await db
     .select()
     .from(reviews)

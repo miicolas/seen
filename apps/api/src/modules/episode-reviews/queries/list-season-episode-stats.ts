@@ -4,10 +4,7 @@ import { and, eq } from "drizzle-orm";
 
 import { avgStarsFromSumCount } from "../shared";
 
-export async function getSeasonEpisodeStats(
-  seriesTmdbId: number,
-  seasonNumber: number,
-) {
+export async function getSeasonEpisodeStats(seriesTmdbId: number, seasonNumber: number) {
   const rows = await db
     .select({
       episodeNumber: episodeRatingStats.episodeNumber,

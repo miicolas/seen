@@ -21,10 +21,7 @@ interface SearchState {
 
 const DEBOUNCE_MS = 350;
 
-export function useSearchMedia(
-  query: string,
-  filter: MediaFilter = "all",
-): SearchState {
+export function useSearchMedia(query: string, filter: MediaFilter = "all"): SearchState {
   const { i18n } = useTranslation();
   const language = tmdbLanguage(i18n.language);
   const isOnline = useNetworkOnline();
@@ -49,9 +46,7 @@ export function useSearchMedia(
   return {
     results: queryResult.data ?? [],
     isLoading: queryResult.isLoading || debouncedQuery !== trimmed,
-    error: queryResult.error
-      ? errorMessage(queryResult.error, "Search failed")
-      : null,
+    error: queryResult.error ? errorMessage(queryResult.error, "Search failed") : null,
     isOffline: false,
   };
 }

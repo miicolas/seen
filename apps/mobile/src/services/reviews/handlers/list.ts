@@ -1,11 +1,6 @@
 import { eden, unwrapEden } from "@/lib/eden";
 
-import type {
-  MediaRef,
-  MediaReviewsPage,
-  PaginatedMediaRef,
-  Review,
-} from "../types";
+import type { MediaRef, MediaReviewsPage, PaginatedMediaRef, Review } from "../types";
 
 export async function getMediaReviewsPage({
   tmdbId,
@@ -20,10 +15,7 @@ export async function getMediaReviewsPage({
   );
 }
 
-export async function getMediaReviews({
-  tmdbId,
-  mediaType,
-}: MediaRef): Promise<Review[]> {
+export async function getMediaReviews({ tmdbId, mediaType }: MediaRef): Promise<Review[]> {
   const page = await getMediaReviewsPage({
     tmdbId,
     mediaType,

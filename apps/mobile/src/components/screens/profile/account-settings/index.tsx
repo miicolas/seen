@@ -19,8 +19,7 @@ export function AccountSettings() {
     <ScrollView
       style={[styles.root, { backgroundColor: theme.background }]}
       contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={{ paddingBottom: insets.bottom + SPACING.XL }}
-    >
+      contentContainerStyle={{ paddingBottom: insets.bottom + SPACING.XL }}>
       <View style={styles.content}>
         <AccountSection hasCredential={hasCredential} />
         <SessionsSection />

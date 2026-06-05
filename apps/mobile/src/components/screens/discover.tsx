@@ -1,10 +1,7 @@
 import { Stack } from "expo-router";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type {
-  NativeSyntheticEvent,
-  TextInputFocusEventData,
-} from "react-native";
+import type { NativeSyntheticEvent, TextInputFocusEventData } from "react-native";
 import { ScrollView, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { SFSymbol } from "sf-symbols-typescript";
@@ -43,8 +40,7 @@ export function Discover() {
 
   const isSearching = query.trim().length > 0;
   const bottomInset = safeAreaInsets.bottom + BottomTabInset + Spacing.three;
-  const activeOption =
-    options.find((option) => option.value === filter) ?? options[0];
+  const activeOption = options.find((option) => option.value === filter) ?? options[0];
 
   function handleFilter(value: MediaFilter) {
     setFilter(value);

@@ -1,10 +1,4 @@
-import {
-  Button as UIButton,
-  Host,
-  HStack,
-  Image,
-  Text as SwiftUIText,
-} from "@expo/ui/swift-ui";
+import { Button as UIButton, Host, HStack, Image, Text as SwiftUIText } from "@expo/ui/swift-ui";
 import {
   buttonStyle,
   controlSize,
@@ -61,8 +55,7 @@ export function Button({
 }: ButtonProps) {
   const isDark = useColorScheme() === "dark";
   const { accentHex } = useAccentColor();
-  const tintValue =
-    tintColor ?? (color ? getColorValue(color, isDark ? 400 : 500) : accentHex);
+  const tintValue = tintColor ?? (color ? getColorValue(color, isDark ? 400 : 500) : accentHex);
   const isDisabled = disabled || loading;
 
   function handlePress() {
@@ -81,8 +74,7 @@ export function Button({
   return (
     <Host
       matchContents={stretch ? { vertical: true } : true}
-      style={stretch ? { width: "100%" } : undefined}
-    >
+      style={stretch ? { width: "100%" } : undefined}>
       <UIButton
         onPress={handlePress}
         modifiers={[
@@ -90,13 +82,10 @@ export function Button({
           controlSize("large"),
           tint(tintValue),
           disabledModifier(isDisabled),
-        ]}
-      >
+        ]}>
         <HStack spacing={8} modifiers={[contentFrame]}>
           {icon ? <Image systemName={icon} size={16} /> : null}
-          <SwiftUIText
-            modifiers={[font({ size: SIZE_TO_FONT[size], weight: "semibold" })]}
-          >
+          <SwiftUIText modifiers={[font({ size: SIZE_TO_FONT[size], weight: "semibold" })]}>
             {loading ? "…" : title}
           </SwiftUIText>
         </HStack>

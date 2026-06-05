@@ -2,10 +2,7 @@ import { reviewKeys } from "@seen/shared";
 import { useQuery } from "@tanstack/react-query";
 
 import type { MediaType } from "@/lib/tmdb";
-import {
-  getMediaStats,
-  type MediaReviewStats,
-} from "@/services/reviews";
+import { getMediaStats, type MediaReviewStats } from "@/services/reviews";
 
 export function useMediaStats(tmdbId: number, mediaType: MediaType) {
   const query = useQuery({

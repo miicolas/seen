@@ -17,11 +17,7 @@ export async function search(
 ): Promise<TmdbMovieSummary[]> {
   if (!query.trim()) return [];
   const path =
-    filter === "all"
-      ? "/search/multi"
-      : filter === "tv"
-        ? "/search/tv"
-        : "/search/movie";
+    filter === "all" ? "/search/multi" : filter === "tv" ? "/search/tv" : "/search/movie";
   const result = await tmdbFetch<TmdbPagedResult>(path, {
     query,
     page,

@@ -33,11 +33,7 @@ const PREVIEW_LINES = 3;
 const PREVIEW_FADE_WIDTH = 116;
 const PREVIEW_LINE_HEIGHT = LINE_HEIGHT.SM;
 
-export function OverviewSection({
-  overview,
-}: {
-  overview?: string | null;
-}) {
+export function OverviewSection({ overview }: { overview?: string | null }) {
   const theme = useTheme();
   const { t } = useTranslation();
   const [isPresented, setIsPresented] = useState(false);
@@ -63,8 +59,7 @@ export function OverviewSection({
               weight="regular"
               color={theme.textSecondary}
               fillWidth
-              numberOfLines={PREVIEW_LINES}
-            >
+              numberOfLines={PREVIEW_LINES}>
               {trimmedOverview}
             </Text>
             <LinearGradient
@@ -80,29 +75,14 @@ export function OverviewSection({
               accessibilityRole="button"
               hitSlop={8}
               onPress={handleOpenSheet}
-              style={[
-                styles.moreButton,
-                { backgroundColor: theme.background },
-              ]}
-            >
-              <Text
-                size="sm"
-                weight="bold"
-                color={theme.text}
-                align="center"
-                fillWidth
-              >
+              style={[styles.moreButton, { backgroundColor: theme.background }]}>
+              <Text size="sm" weight="bold" color={theme.text} align="center" fillWidth>
                 {t("mediaDetail.more")}
               </Text>
             </Pressable>
           </View>
         ) : (
-          <Text
-            size="sm"
-            weight="regular"
-            color={theme.textSecondary}
-            fillWidth
-          >
+          <Text size="sm" weight="regular" color={theme.textSecondary} fillWidth>
             {trimmedOverview}
           </Text>
         )}
@@ -110,17 +90,13 @@ export function OverviewSection({
 
       {isLong ? (
         <Host style={styles.sheetHost} pointerEvents="none">
-          <BottomSheet
-            isPresented={isPresented}
-            onIsPresentedChange={setIsPresented}
-          >
+          <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
             <Group
               modifiers={[
                 presentationDetents(["medium", "large"]),
                 presentationDragIndicator("visible"),
                 presentationBackground(theme.background),
-              ]}
-            >
+              ]}>
               <SwiftUIScrollView>
                 <VStack
                   alignment="leading"
@@ -133,22 +109,19 @@ export function OverviewSection({
                       trailing: SPACING.MD,
                     }),
                     frame({ maxWidth: Infinity, alignment: "topLeading" }),
-                  ]}
-                >
+                  ]}>
                   <SwiftUIText
                     modifiers={[
                       font({ size: FONT_SIZE.XL, weight: "bold" }),
                       foregroundStyle(theme.text),
-                    ]}
-                  >
+                    ]}>
                     {t("mediaDetail.about")}
                   </SwiftUIText>
                   <SwiftUIText
                     modifiers={[
                       font({ size: FONT_SIZE.MD, weight: "regular" }),
                       foregroundStyle(theme.textSecondary),
-                    ]}
-                  >
+                    ]}>
                     {trimmedOverview}
                   </SwiftUIText>
                 </VStack>

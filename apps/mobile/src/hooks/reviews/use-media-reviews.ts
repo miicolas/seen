@@ -7,11 +7,7 @@ import {
 } from "@/hooks/reviews/use-paginated-reviews";
 import { errorMessage } from "@/lib/format";
 import type { MediaType } from "@/lib/tmdb";
-import {
-  getMediaReviewsPage,
-  type MediaReviewsPage,
-  type Review,
-} from "@/services/reviews";
+import { getMediaReviewsPage, type MediaReviewsPage, type Review } from "@/services/reviews";
 
 const REVIEW_PREVIEW_LIMIT = 3;
 export const REVIEW_PAGE_SIZE = 25;
@@ -66,8 +62,7 @@ export function usePaginatedMediaReviews(
 ): PaginatedReviewsState<Review> {
   return usePaginatedReviews<Review>(
     [...reviewKeys.list(mediaType, tmdbId), "pages"] as const,
-    (offset, limit) =>
-      getMediaReviewsPage({ tmdbId, mediaType, limit, offset }),
+    (offset, limit) => getMediaReviewsPage({ tmdbId, mediaType, limit, offset }),
     REVIEW_PAGE_SIZE,
     canLoadReviews(tmdbId, mediaType),
   );

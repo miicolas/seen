@@ -16,12 +16,9 @@ export default function AppTabs() {
       indicatorColor={colors.backgroundElement}
       labelStyle={{ selected: { color: colors.text } }}
       screenListeners={{ tabPress: () => hapticSelection() }}
-      minimizeBehavior="automatic"
-    >
+      minimizeBehavior="automatic">
       <NativeTabs.Trigger name="discover">
-        <NativeTabs.Trigger.Label>
-          {t("tabs.discover")}
-        </NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Label>{t("tabs.discover")}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
           src={require("@/assets/images/tabIcons/explore.png")}
           renderingMode="template"
@@ -29,12 +26,8 @@ export default function AppTabs() {
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="profile">
-        <NativeTabs.Trigger.Label>
-          {t("tabs.profile")}
-        </NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          sf={{ default: "person", selected: "person.fill" }}
-        />
+        <NativeTabs.Trigger.Label>{t("tabs.profile")}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf={{ default: "person", selected: "person.fill" }} />
       </NativeTabs.Trigger>
     </NativeTabs>
   );

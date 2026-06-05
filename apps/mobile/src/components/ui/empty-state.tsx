@@ -28,13 +28,7 @@ export function EmptyState({ icon, title, subtitle, action }: EmptyStateProps) {
           {title}
         </Text>
         {subtitle ? (
-          <Text
-            size="sm"
-            weight="regular"
-            color={theme.textSecondary}
-            align="center"
-            fillWidth
-          >
+          <Text size="sm" weight="regular" color={theme.textSecondary} align="center" fillWidth>
             {subtitle}
           </Text>
         ) : null}

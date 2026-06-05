@@ -54,8 +54,7 @@ export function EditSheetScaffold({
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{
           paddingBottom: Math.max(insets.bottom, LAYOUT.SCREEN_PADDING),
-        }}
-      >
+        }}>
         {children}
       </KeyboardAwareScrollView>
     </>

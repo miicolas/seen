@@ -51,8 +51,7 @@ export async function unwrapEden<T>(
       const value = edenError.value as { error: string; code?: string };
       throw new EdenApiError(value.error, {
         code: value.code,
-        status:
-          typeof edenError.status === "number" ? edenError.status : undefined,
+        status: typeof edenError.status === "number" ? edenError.status : undefined,
       });
     }
 
@@ -65,8 +64,7 @@ export async function unwrapEden<T>(
       const value = edenError.value as { message: string; code?: string };
       throw new EdenApiError(value.message, {
         code: value.code,
-        status:
-          typeof edenError.status === "number" ? edenError.status : undefined,
+        status: typeof edenError.status === "number" ? edenError.status : undefined,
       });
     }
 

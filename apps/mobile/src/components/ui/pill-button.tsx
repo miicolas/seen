@@ -12,12 +12,7 @@ interface PillButtonProps {
   accentHex: string;
 }
 
-export function PillButton({
-  label,
-  selected,
-  onPress,
-  accentHex,
-}: PillButtonProps) {
+export function PillButton({ label, selected, onPress, accentHex }: PillButtonProps) {
   const theme = useTheme();
 
   return (
@@ -29,10 +24,7 @@ export function PillButton({
         styles.pill,
         { backgroundColor: selected ? accentHex : theme.backgroundElement },
       ])}>
-      <Text
-        size="sm"
-        weight="bold"
-        color={selected ? theme.onAccent : theme.text}>
+      <Text size="sm" weight="bold" color={selected ? theme.onAccent : theme.text}>
         {label}
       </Text>
     </PressableScale>

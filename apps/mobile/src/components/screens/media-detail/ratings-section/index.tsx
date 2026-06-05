@@ -39,14 +39,8 @@ export function RatingsSection({
   const hasReviews = reviews.length > 0;
   const hasWrittenReviews = writtenReviews.length > 0;
   const visibleReviews = hasWrittenReviews ? writtenReviews : reviews.slice(0, 1);
-  const totalReviews = Math.max(
-    reviewCount,
-    reviews.length,
-    stats?.review_count ?? 0,
-  );
-  const shouldShowAllReviews = Boolean(
-    onOpenReviews && totalReviews > reviews.length,
-  );
+  const totalReviews = Math.max(reviewCount, reviews.length, stats?.review_count ?? 0);
+  const shouldShowAllReviews = Boolean(onOpenReviews && totalReviews > reviews.length);
 
   // Collapse the 10 half-star buckets into 5 whole-star rows (index 0 = 1★ … 4 = 5★).
   const histogram = stats?.histogram ?? EMPTY_HISTOGRAM;
@@ -82,11 +76,7 @@ export function RatingsSection({
             </View>
 
             <View style={styles.summaryCopy}>
-              <Text
-                size="md"
-                weight="bold"
-                color={theme.text}
-                fillWidth>
+              <Text size="md" weight="bold" color={theme.text} fillWidth>
                 {t("mediaDetail.ratingAndReviewSummary", {
                   ratingCount: stats.rating_count,
                   ratingPlural: stats.rating_count === 1 ? "" : "s",
@@ -100,7 +90,7 @@ export function RatingsSection({
           <View style={styles.bars}>
             {STAR_ROWS.map((star) => {
               const count = starCounts[star - 1];
-                  const fraction = count > 0 ? Math.max(count / maxStar, 0.06) : 0;
+              const fraction = count > 0 ? Math.max(count / maxStar, 0.06) : 0;
               return (
                 <View key={star} style={styles.barRow}>
                   <View style={styles.barLabel}>
@@ -131,9 +121,7 @@ export function RatingsSection({
         <View style={styles.reviewsBlock}>
           <View style={styles.reviewsHeader}>
             <Text size="sm" weight="bold" color={theme.textSecondary}>
-              {hasWrittenReviews
-                ? t("mediaDetail.recentReviews")
-                : t("mediaDetail.recentRatings")}
+              {hasWrittenReviews ? t("mediaDetail.recentReviews") : t("mediaDetail.recentRatings")}
             </Text>
             {shouldShowAllReviews ? (
               <Pressable
@@ -152,11 +140,7 @@ export function RatingsSection({
             ) : null}
           </View>
 
-          <View
-            style={[
-              styles.reviewList,
-              { borderBottomColor: theme.backgroundSelected },
-            ]}>
+          <View style={[styles.reviewList, { borderBottomColor: theme.backgroundSelected }]}>
             {visibleReviews.map((item) => (
               <ReviewCard key={item.id} review={item} variant="preview" />
             ))}

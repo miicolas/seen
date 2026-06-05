@@ -1,11 +1,7 @@
 import { db } from "@seen/db";
 import { episodeRatingStats } from "@seen/db/schema";
 
-import {
-  type EpisodeRef,
-  avgStarsFromSumCount,
-  episodeStatsWhere,
-} from "../shared";
+import { type EpisodeRef, avgStarsFromSumCount, episodeStatsWhere } from "../shared";
 
 export async function getEpisodeStats(params: EpisodeRef) {
   const [row] = await db

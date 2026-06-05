@@ -12,10 +12,7 @@ import {
   type EpisodeReviewInput,
 } from "@/services/episode-reviews";
 
-type SaveEpisodeReviewInput = Pick<
-  EpisodeReviewInput,
-  "rating" | "title" | "comment"
->;
+type SaveEpisodeReviewInput = Pick<EpisodeReviewInput, "rating" | "title" | "comment">;
 
 interface MyEpisodeReviewState {
   review: EpisodeReview | null;
@@ -37,11 +34,7 @@ export function useMyEpisodeReview(params: {
   const queryClient = useQueryClient();
   const [mutationError, setMutationError] = useState<string | null>(null);
   const canLoad = !!user && canLoadEpisodeReview(params);
-  const key = episodeReviewKeys.my(
-    params.seriesTmdbId,
-    params.seasonNumber,
-    params.episodeNumber,
-  );
+  const key = episodeReviewKeys.my(params.seriesTmdbId, params.seasonNumber, params.episodeNumber);
   const query = useQuery({
     queryKey: key,
     queryFn: () => getMyEpisodeReview(params),
@@ -64,16 +57,10 @@ export function useMyEpisodeReview(params: {
       ),
     });
     queryClient.invalidateQueries({
-      queryKey: episodeReviewKeys.seasonStats(
-        params.seriesTmdbId,
-        params.seasonNumber,
-      ),
+      queryKey: episodeReviewKeys.seasonStats(params.seriesTmdbId, params.seasonNumber),
     });
     queryClient.invalidateQueries({
-      queryKey: episodeReviewKeys.seasonRatings(
-        params.seriesTmdbId,
-        params.seasonNumber,
-      ),
+      queryKey: episodeReviewKeys.seasonRatings(params.seriesTmdbId, params.seasonNumber),
     });
     queryClient.invalidateQueries({ queryKey: profileKeys.activity() });
   }, [params, queryClient]);

@@ -20,11 +20,7 @@ export function RankingCard({ movie, rank, width }: RankingCardProps) {
   const name = truncate(movie.title ?? movie.original_title ?? "Untitled", 20);
 
   return (
-    <ScrimArtworkCard
-      imageUrl={uri}
-      width={width}
-      aspectRatio={1.4}
-      href={mediaDetailHref(movie)}>
+    <ScrimArtworkCard imageUrl={uri} width={width} aspectRatio={1.4} href={mediaDetailHref(movie)}>
       <ThemedText type="title" style={styles.rank}>
         {String(rank)}
       </ThemedText>

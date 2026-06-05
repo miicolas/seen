@@ -50,38 +50,25 @@ export function ReviewForm({
       <View style={styles.content}>
         <View style={styles.mediaRow}>
           {posterUri ? (
-            <PosterImage
-              source={{ uri: posterUri }}
-              contentFit="cover"
-              style={styles.poster}
-            />
+            <PosterImage source={{ uri: posterUri }} contentFit="cover" style={styles.poster} />
           ) : (
             <View
               style={[
                 styles.poster,
                 styles.posterFallback,
                 { backgroundColor: theme.backgroundElement },
-              ]}
-            >
-              <SymbolView
-                name="film"
-                size={34}
-                tintColor={theme.textSecondary}
-              />
+              ]}>
+              <SymbolView name="film" size={34} tintColor={theme.textSecondary} />
             </View>
           )}
           <View style={styles.mediaText}>
-            <Text
-              numberOfLines={2}
-              style={[styles.mediaTitle, { color: theme.text }]}
-            >
+            <Text numberOfLines={2} style={[styles.mediaTitle, { color: theme.text }]}>
               {mediaTitle}
             </Text>
             {subtitle ? (
               <Text
                 numberOfLines={2}
-                style={[styles.mediaSubtitle, { color: theme.textSecondary }]}
-              >
+                style={[styles.mediaSubtitle, { color: theme.textSecondary }]}>
                 {subtitle}
               </Text>
             ) : null}
@@ -100,22 +87,14 @@ export function ReviewForm({
           />
         </View>
 
-        <GlassPanel
-          style={styles.fieldsPanel}
-          fallbackColor={theme.backgroundElement}
-        >
+        <GlassPanel style={styles.fieldsPanel} fallbackColor={theme.backgroundElement}>
           <FieldRow
             label={t("review.titleLabel")}
             placeholder={t("review.optional")}
             state={reviewTitleState}
             onChangeText={onTitleChange}
           />
-          <View
-            style={[
-              styles.divider,
-              { backgroundColor: theme.backgroundSelected },
-            ]}
-          />
+          <View style={[styles.divider, { backgroundColor: theme.backgroundSelected }]} />
           <FieldRow
             label={t("review.reviewLabel")}
             multiline
@@ -131,9 +110,7 @@ export function ReviewForm({
           </Text>
         </Pressable>
 
-        {error ? (
-          <Text style={[styles.error, { color: theme.error }]}>{error}</Text>
-        ) : null}
+        {error ? <Text style={[styles.error, { color: theme.error }]}>{error}</Text> : null}
       </View>
     </View>
   );

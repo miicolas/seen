@@ -30,17 +30,12 @@ export async function updateMyProfile(input: ProfileInput): Promise<Profile> {
       eden.profiles.me.patch({
         fullName,
         username,
-        ...("avatarPath" in input
-          ? { avatarPath: input.avatarPath ?? null }
-          : {}),
+        ...("avatarPath" in input ? { avatarPath: input.avatarPath ?? null } : {}),
       }),
     );
   } catch (error) {
     if (error instanceof EdenApiError && error.code === "username-taken") {
-      throw new ProfileError(
-        "username-taken",
-        "That username is already taken.",
-      );
+      throw new ProfileError("username-taken", "That username is already taken.");
     }
     throw error;
   }

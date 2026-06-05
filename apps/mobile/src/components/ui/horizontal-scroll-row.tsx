@@ -1,10 +1,5 @@
 import type { ReactNode } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  type StyleProp,
-  type ViewStyle,
-} from "react-native";
+import { ScrollView, StyleSheet, type StyleProp, type ViewStyle } from "react-native";
 
 import { SPACING } from "@/constants/design-tokens";
 

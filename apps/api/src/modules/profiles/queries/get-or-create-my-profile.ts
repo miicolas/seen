@@ -14,9 +14,7 @@ type AuthUser = {
 };
 
 function stringValue(value: unknown) {
-  return typeof value === "string" && value.trim().length > 0
-    ? value.trim()
-    : null;
+  return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
 }
 
 function defaultFullName(user: AuthUser) {
@@ -49,11 +47,7 @@ function defaultUsername(user: AuthUser, withSuffix = false) {
 }
 
 export async function getOrCreateMyProfile(user: AuthUser) {
-  const [existing] = await db
-    .select()
-    .from(profiles)
-    .where(eq(profiles.id, user.id))
-    .limit(1);
+  const [existing] = await db.select().from(profiles).where(eq(profiles.id, user.id)).limit(1);
 
   if (existing) return toApiRow(existing);
 

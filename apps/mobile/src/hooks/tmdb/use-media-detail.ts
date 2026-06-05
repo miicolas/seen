@@ -3,12 +3,7 @@ import { tmdbKeys } from "@seen/shared";
 import { useTranslation } from "react-i18next";
 
 import { errorMessage } from "@/lib/format";
-import {
-  getMovieDetail,
-  type MediaType,
-  type TmdbMovieDetail,
-  tmdbLanguage,
-} from "@/lib/tmdb";
+import { getMovieDetail, type MediaType, type TmdbMovieDetail, tmdbLanguage } from "@/lib/tmdb";
 
 interface MediaDetailState {
   detail: TmdbMovieDetail | null;
@@ -16,10 +11,7 @@ interface MediaDetailState {
   error: string | null;
 }
 
-export function useMediaDetail(
-  tmdbId: number,
-  mediaType: MediaType,
-): MediaDetailState {
+export function useMediaDetail(tmdbId: number, mediaType: MediaType): MediaDetailState {
   const { i18n } = useTranslation();
   const language = tmdbLanguage(i18n.language);
   const query = useQuery({
@@ -31,8 +23,6 @@ export function useMediaDetail(
   return {
     detail: query.data ?? null,
     isLoading: query.isLoading,
-    error: query.error
-      ? errorMessage(query.error, "Failed to load details")
-      : null,
+    error: query.error ? errorMessage(query.error, "Failed to load details") : null,
   };
 }

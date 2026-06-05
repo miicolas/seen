@@ -56,10 +56,7 @@ export function EpisodesSection({
 
   const { season, isLoading, error } = useTvSeasonDetail(seriesId, selectedSeason);
   const episodes = season?.episodes ?? [];
-  const { statsByEpisode, myRatingByEpisode } = useSeasonEpisodeStats(
-    seriesId,
-    selectedSeason,
-  );
+  const { statsByEpisode, myRatingByEpisode } = useSeasonEpisodeStats(seriesId, selectedSeason);
 
   if (seasonOptions.length === 0) return null;
 
@@ -103,9 +100,7 @@ export function EpisodesSection({
       </HorizontalScrollRow>
 
       {episodes.length > 0 ? (
-        <View
-          style={[styles.episodeList, { borderTopColor: theme.backgroundSelected }]}
-        >
+        <View style={[styles.episodeList, { borderTopColor: theme.backgroundSelected }]}>
           {episodes.map((episode, index) => {
             const stat = statsByEpisode.get(episode.episode_number);
             return (

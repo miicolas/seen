@@ -1,9 +1,4 @@
-export type {
-  AccountSession,
-  AccountSessionInfo,
-  AccountUser,
-  LinkedAccount,
-} from "./types";
+export type { AccountSession, AccountSessionInfo, AccountUser, LinkedAccount } from "./types";
 
 export { getMySession } from "./handlers/get-session";
 export { listMySessions } from "./handlers/list-sessions";

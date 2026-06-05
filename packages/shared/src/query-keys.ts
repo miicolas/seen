@@ -21,30 +21,18 @@ export const tmdbKeys = {
 };
 
 export const reviewKeys = {
-  my: (mediaType: MediaType, tmdbId: number) =>
-    ["reviews", "my", mediaType, tmdbId] as const,
-  list: (mediaType: MediaType, tmdbId: number) =>
-    ["reviews", "list", mediaType, tmdbId] as const,
-  stats: (mediaType: MediaType, tmdbId: number) =>
-    ["reviews", "stats", mediaType, tmdbId] as const,
+  my: (mediaType: MediaType, tmdbId: number) => ["reviews", "my", mediaType, tmdbId] as const,
+  list: (mediaType: MediaType, tmdbId: number) => ["reviews", "list", mediaType, tmdbId] as const,
+  stats: (mediaType: MediaType, tmdbId: number) => ["reviews", "stats", mediaType, tmdbId] as const,
 };
 
 export const episodeReviewKeys = {
-  my: (
-    seriesTmdbId: number,
-    seasonNumber: number,
-    episodeNumber: number,
-  ) => ["episode-reviews", "my", seriesTmdbId, seasonNumber, episodeNumber] as const,
-  list: (
-    seriesTmdbId: number,
-    seasonNumber: number,
-    episodeNumber: number,
-  ) => ["episode-reviews", "list", seriesTmdbId, seasonNumber, episodeNumber] as const,
-  stats: (
-    seriesTmdbId: number,
-    seasonNumber: number,
-    episodeNumber: number,
-  ) => ["episode-reviews", "stats", seriesTmdbId, seasonNumber, episodeNumber] as const,
+  my: (seriesTmdbId: number, seasonNumber: number, episodeNumber: number) =>
+    ["episode-reviews", "my", seriesTmdbId, seasonNumber, episodeNumber] as const,
+  list: (seriesTmdbId: number, seasonNumber: number, episodeNumber: number) =>
+    ["episode-reviews", "list", seriesTmdbId, seasonNumber, episodeNumber] as const,
+  stats: (seriesTmdbId: number, seasonNumber: number, episodeNumber: number) =>
+    ["episode-reviews", "stats", seriesTmdbId, seasonNumber, episodeNumber] as const,
   seasonRatings: (seriesTmdbId: number, seasonNumber: number) =>
     ["episode-reviews", "season-ratings", seriesTmdbId, seasonNumber] as const,
   seasonStats: (seriesTmdbId: number, seasonNumber: number) =>

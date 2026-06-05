@@ -5,7 +5,5 @@ export function changeMyPassword(input: {
   newPassword: string;
   revokeOtherSessions?: boolean;
 }): Promise<{ ok: boolean }> {
-  return unwrapEden<{ ok: boolean }>(
-    eden.account["change-password"].post(input),
-  );
+  return unwrapEden<{ ok: boolean }>(eden.account["change-password"].post(input));
 }

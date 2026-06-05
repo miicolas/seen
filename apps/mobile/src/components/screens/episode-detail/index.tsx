@@ -44,8 +44,7 @@ export function EpisodeDetail() {
           posterUri={vm.posterUri}
           headerHeight={370}
           bottomInset={insets.bottom}
-          adaptToHero
-        >
+          adaptToHero>
           <MediaSummary
             title={vm.title}
             tagline={vm.seriesTitle}

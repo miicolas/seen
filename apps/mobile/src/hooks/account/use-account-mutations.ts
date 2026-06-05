@@ -11,8 +11,7 @@ function refreshSession() {
 
 export function useAccountMutations() {
   const update = useMutation({
-    mutationFn: (input: { name?: string; image?: string | null }) =>
-      updateMyUser(input),
+    mutationFn: (input: { name?: string; image?: string | null }) => updateMyUser(input),
     onSuccess: refreshSession,
   });
 

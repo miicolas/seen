@@ -23,21 +23,17 @@ export const en = {
     usernameLabel: "Username",
     usernamePlaceholder: "username",
     usernameHelp: "3-20 lowercase letters, numbers, dots or underscores.",
-    usernameInvalid:
-      "Use 3-20 lowercase letters, numbers, dots or underscores.",
-    photoPermissionError:
-      "Photo library access is required to choose a profile picture.",
+    usernameInvalid: "Use 3-20 lowercase letters, numbers, dots or underscores.",
+    photoPermissionError: "Photo library access is required to choose a profile picture.",
     saveError: "Profile update failed. Please try again.",
     deleteError: "Account deletion failed. Please try again.",
     deleteAccount: "Delete Account",
     deletingAccount: "Deleting...",
     deleteAccountTitle: "Delete your account?",
-    deleteAccountMessage:
-      "This will permanently delete your profile, ratings and reviews.",
+    deleteAccountMessage: "This will permanently delete your profile, ratings and reviews.",
     continueDelete: "Continue",
     deleteAccountFinalTitle: "This cannot be undone",
-    deleteAccountFinalMessage:
-      "Your Seen account and profile data will be permanently removed.",
+    deleteAccountFinalMessage: "Your Seen account and profile data will be permanently removed.",
   },
   onboarding: {
     title: "Everything you've watched, in one place",
@@ -66,8 +62,7 @@ export const en = {
     noResults: "No results for “{{query}}”",
     noResultsHint: "Try a different title or spelling.",
     offlineTitle: "You are offline",
-    offlineSubtitle:
-      "Discover stays open. Reconnect to load movies and series.",
+    offlineSubtitle: "Discover stays open. Reconnect to load movies and series.",
     genreAction: "Action",
     genreComedy: "Comedy",
     genreSciFiFantasy: "Sci-Fi & Fantasy",
@@ -165,12 +160,10 @@ export const en = {
     cancel: "Cancel",
     save: "Save",
     deleteTitle: "Delete your account?",
-    deleteMessage:
-      "This will permanently delete your profile, ratings and reviews.",
+    deleteMessage: "This will permanently delete your profile, ratings and reviews.",
     deleteContinue: "Continue",
     deleteFinalTitle: "This cannot be undone",
-    deleteFinalMessage:
-      "Your Seen account and all data will be permanently removed.",
+    deleteFinalMessage: "Your Seen account and all data will be permanently removed.",
     deleteError: "Account deletion failed. You may need to sign in again.",
   },
   tabs: {

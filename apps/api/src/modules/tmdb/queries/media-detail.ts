@@ -7,17 +7,17 @@ import {
   DETAIL_APPEND,
   DETAIL_TTL_MS,
   type MediaType,
-  type TmdbMovieDetail,
-  normalizeSummary,
   tmdbFetch,
   upsertMovieDetail,
 } from "../client";
+import type { MovieDetailDto } from "../model";
+import { toMovieDetail } from "../resources";
 
 export async function getMediaDetail(
   mediaType: MediaType,
   tmdbId: number,
   language = DEFAULT_LANGUAGE,
-): Promise<TmdbMovieDetail> {
+): Promise<MovieDetailDto> {
   const [row] = await db
     .select({
       detail: moviesTable.detail,
@@ -25,9 +25,7 @@ export async function getMediaDetail(
       language: moviesTable.language,
     })
     .from(moviesTable)
-    .where(
-      and(eq(moviesTable.tmdbId, tmdbId), eq(moviesTable.mediaType, mediaType)),
-    )
+    .where(and(eq(moviesTable.tmdbId, tmdbId), eq(moviesTable.mediaType, mediaType)))
     .limit(1);
 
   if (
@@ -36,10 +34,10 @@ export async function getMediaDetail(
     (!row.language || row.language === language) &&
     Date.now() - row.detailFetchedAt.getTime() < DETAIL_TTL_MS
   ) {
-    return { ...(row.detail as TmdbMovieDetail), _cache: "hit" };
+    return toMovieDetail(row.detail as Record<string, unknown>, mediaType, "hit");
   }
 
-  const detail = await tmdbFetch<TmdbMovieDetail>(
+  const detail = await tmdbFetch<Record<string, unknown>>(
     `/${mediaType}/${tmdbId}`,
     {
       language,
@@ -47,11 +45,7 @@ export async function getMediaDetail(
     },
     60 * 60,
   );
-  const normalized = {
-    ...detail,
-    ...normalizeSummary({ ...detail, media_type: mediaType }, mediaType),
-    _cache: "miss" as const,
-  };
-  await upsertMovieDetail(normalized, language);
-  return normalized;
+  const dto = toMovieDetail(detail, mediaType, "miss");
+  await upsertMovieDetail(dto, language);
+  return dto;
 }

@@ -17,7 +17,10 @@
     },
     "production": {
       "channel": "production",
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://seen-production-57db.up.railway.app"
+      }
     }
   },
   "submit": {

@@ -12,12 +12,10 @@ import { hapticError, hapticSuccess } from "@/lib/haptics";
 
 import { SettingsRow } from "./settings-row";
 
-
 export function LinkedAccountsSection() {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { accounts, canUnlink, isLoading, error, unlink, isMutating } =
-    useLinkedAccounts();
+  const { accounts, canUnlink, isLoading, error, unlink, isMutating } = useLinkedAccounts();
 
   const onUnlink = useCallback(
     async (providerId: string) => {

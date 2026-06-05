@@ -60,20 +60,19 @@ export async function discoverFeed(
       : none,
   }));
 
-  const [trendingWeek, trendingDay, newMovies, newSeries, genres] =
-    await Promise.all([
-      trendingWeekP,
-      trendingDayP,
-      newMoviesP,
-      newSeriesP,
-      Promise.all(
-        genreP.map(async (genre) => ({
-          key: genre.key,
-          name: genre.name,
-          media: combine(await genre.movies, await genre.series, filter),
-        })),
-      ),
-    ]);
+  const [trendingWeek, trendingDay, newMovies, newSeries, genres] = await Promise.all([
+    trendingWeekP,
+    trendingDayP,
+    newMoviesP,
+    newSeriesP,
+    Promise.all(
+      genreP.map(async (genre) => ({
+        key: genre.key,
+        name: genre.name,
+        media: combine(await genre.movies, await genre.series, filter),
+      })),
+    ),
+  ]);
 
   return {
     trending: trendingWeek.filter(hasRating),

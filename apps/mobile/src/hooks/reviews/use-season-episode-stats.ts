@@ -28,25 +28,17 @@ export function useSeasonEpisodeStats(
   seriesTmdbId: number,
   seasonNumber: number | null,
 ): SeasonEpisodeStatsState {
-  const enabled =
-    Number.isFinite(seriesTmdbId) && seriesTmdbId > 0 && seasonNumber != null;
+  const enabled = Number.isFinite(seriesTmdbId) && seriesTmdbId > 0 && seasonNumber != null;
 
   const statsQuery = useQuery({
-    queryKey: episodeReviewKeys.seasonStats(
-      seriesTmdbId,
-      seasonNumber ?? -1,
-    ),
+    queryKey: episodeReviewKeys.seasonStats(seriesTmdbId, seasonNumber ?? -1),
     queryFn: () => getSeasonEpisodeStats(seriesTmdbId, seasonNumber as number),
     enabled,
   });
 
   const mineQuery = useQuery({
-    queryKey: episodeReviewKeys.seasonRatings(
-      seriesTmdbId,
-      seasonNumber ?? -1,
-    ),
-    queryFn: () =>
-      getMySeasonEpisodeRatings(seriesTmdbId, seasonNumber as number),
+    queryKey: episodeReviewKeys.seasonRatings(seriesTmdbId, seasonNumber ?? -1),
+    queryFn: () => getMySeasonEpisodeRatings(seriesTmdbId, seasonNumber as number),
     enabled,
   });
 

@@ -99,24 +99,16 @@ export function Input({
   const modifiers = [
     foregroundColor(cfg.textColor),
     padding({ horizontal: SPACING.MD }),
-    ...(cfg.backgroundColor !== "transparent"
-      ? [background(cfg.backgroundColor)]
-      : []),
-    ...(cfg.borderWidth > 0
-      ? [border({ color: cfg.borderColor, width: cfg.borderWidth })]
-      : []),
+    ...(cfg.backgroundColor !== "transparent" ? [background(cfg.backgroundColor)] : []),
+    ...(cfg.borderWidth > 0 ? [border({ color: cfg.borderColor, width: cfg.borderWidth })] : []),
     clipShape("roundedRectangle", radiusPx),
     frame({
-      height: multiline
-        ? Math.round(height * MULTILINE_HEIGHT_MULTIPLIER)
-        : height,
+      height: multiline ? Math.round(height * MULTILINE_HEIGHT_MULTIPLIER) : height,
       ...(width ? { width } : {}),
     }),
     ...(keyboardType ? [keyboardTypeModifier(keyboardType)] : []),
     ...(textContentType ? [textContentTypeModifier(textContentType)] : []),
-    ...(autocapitalization
-      ? [textInputAutocapitalization(autocapitalization)]
-      : []),
+    ...(autocapitalization ? [textInputAutocapitalization(autocapitalization)] : []),
     ...(autocorrection === false ? [autocorrectionDisabled(true)] : []),
     ...(submitLabel ? [submitLabelModifier(submitLabel)] : []),
     ...(onSubmit ? [onSubmitModifier(onSubmit)] : []),
@@ -125,11 +117,7 @@ export function Input({
   if (secure) {
     return (
       <Host matchContents>
-        <SecureField
-          placeholder={placeholder}
-          onTextChange={onChangeText}
-          modifiers={modifiers}
-        />
+        <SecureField placeholder={placeholder} onTextChange={onChangeText} modifiers={modifiers} />
       </Host>
     );
   }

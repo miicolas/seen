@@ -10,9 +10,6 @@ export function ratingToStars(rating: number): number {
 
 // Aggregate stored sum/count (1..10 units) -> display-star average (0.5..5),
 // null when the item has no ratings yet.
-export function avgStarsFromSumCount(
-  sum: number,
-  count: number,
-): number | null {
+export function avgStarsFromSumCount(sum: number, count: number): number | null {
   return count > 0 ? sum / count / 2 : null;
 }

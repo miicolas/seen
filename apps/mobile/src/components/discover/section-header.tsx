@@ -14,12 +14,7 @@ interface SectionHeaderProps {
   onSeeAll?: () => void;
 }
 
-export function SectionHeader({
-  title,
-  eyebrow,
-  subtitle,
-  onSeeAll,
-}: SectionHeaderProps) {
+export function SectionHeader({ title, eyebrow, subtitle, onSeeAll }: SectionHeaderProps) {
   const theme = useTheme();
 
   const content = (

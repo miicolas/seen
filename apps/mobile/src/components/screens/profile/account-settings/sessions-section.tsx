@@ -20,8 +20,7 @@ function deviceLabel(userAgent: string | null, fallback: string) {
 export function SessionsSection() {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { sessions, isLoading, error, revoke, revokeOthers, isMutating } =
-    useSessions();
+  const { sessions, isLoading, error, revoke, revokeOthers, isMutating } = useSessions();
 
   const onRevoke = useCallback(
     async (token: string) => {

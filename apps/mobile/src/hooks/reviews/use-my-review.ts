@@ -23,10 +23,7 @@ interface MyReviewState {
   refetch: () => void;
 }
 
-export function useMyReview(
-  tmdbId: number,
-  mediaType: MediaType,
-): MyReviewState {
+export function useMyReview(tmdbId: number, mediaType: MediaType): MyReviewState {
   const { user } = useAuthContext();
   const queryClient = useQueryClient();
   const [mutationError, setMutationError] = useState<string | null>(null);

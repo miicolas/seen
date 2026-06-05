@@ -6,8 +6,7 @@ import { toApiRow } from "../../../lib/rows";
 import type { MediaType } from "../../tmdb";
 
 export async function getMediaStats(tmdbId: number, mediaType: MediaType) {
-  const source =
-    mediaType === "tv" ? seriesEpisodeReviewStats : movieReviewStats;
+  const source = mediaType === "tv" ? seriesEpisodeReviewStats : movieReviewStats;
   const [stats] = await db
     .select()
     .from(source)

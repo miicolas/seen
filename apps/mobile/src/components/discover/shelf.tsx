@@ -59,9 +59,7 @@ export function Shelf<T>({
         snapToAlignment="start"
         contentContainerStyle={styles.content}>
         {data.map((item, index) => (
-          <Fragment key={keyExtractor(item, index)}>
-            {renderItem(item, index, cardWidth)}
-          </Fragment>
+          <Fragment key={keyExtractor(item, index)}>{renderItem(item, index, cardWidth)}</Fragment>
         ))}
       </ScrollView>
     </View>

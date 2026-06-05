@@ -20,10 +20,7 @@ export function Section({ title, children }: SectionProps) {
           {title}
         </ThemedText>
       ) : null}
-      <BlurView
-        intensity={80}
-        tint={isDark ? "dark" : "light"}
-        style={styles.card}>
+      <BlurView intensity={80} tint={isDark ? "dark" : "light"} style={styles.card}>
         {children}
       </BlurView>
     </View>

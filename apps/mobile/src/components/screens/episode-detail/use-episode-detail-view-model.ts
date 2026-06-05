@@ -8,10 +8,8 @@ import { useEpisodeStats } from "@/hooks/reviews/use-episode-stats";
 import { useMyEpisodeReview } from "@/hooks/reviews/use-my-episode-review";
 import { useTvEpisodeDetail } from "@/hooks/tmdb/use-tv-episode-detail";
 import { hapticTap } from "@/lib/haptics";
-import {
-  episodeReviewSheetHref,
-  episodeReviewsListHref,
-} from "@/lib/navigation";
+import { episodeReviewSheetHref, episodeReviewsListHref } from "@/lib/navigation";
+import { releaseYear } from "@/lib/format";
 import { tmdbImageUrl } from "@/lib/tmdb";
 import { ratingToStars } from "@/services/core";
 import type { MediaReviewStats } from "@/services/reviews";
@@ -36,17 +34,13 @@ export function useEpisodeDetailViewModel() {
   const seriesId = Number(params.seriesId);
   const seasonNumber = Number(params.seasonNumber);
   const episodeNumber = Number(params.episodeNumber);
-  const { episode, isLoading, error } = useTvEpisodeDetail(
-    seriesId,
-    seasonNumber,
-    episodeNumber,
-  );
+  const { episode, isLoading, error } = useTvEpisodeDetail(seriesId, seasonNumber, episodeNumber);
 
   const episodeTmdbIdParam = Number(params.episodeTmdbId);
   const episodeTmdbId =
     Number.isFinite(episodeTmdbIdParam) && episodeTmdbIdParam > 0
       ? episodeTmdbIdParam
-      : episode?.id ?? 0;
+      : (episode?.id ?? 0);
   const { review, refetch: refetchEpisodeReview } = useMyEpisodeReview({
     seriesTmdbId: seriesId,
     episodeTmdbId,
@@ -85,12 +79,9 @@ export function useEpisodeDetailViewModel() {
     params.episodeTitle?.trim() ||
     t("episode.fallbackTitle", { number: episodeNumber || "" }).trim();
   const seriesTitle = params.seriesTitle?.trim() || t("episode.series");
-  const backdropUri = tmdbImageUrl(
-    episode?.still_path ?? params.still_path ?? null,
-    "w1280",
-  );
+  const backdropUri = tmdbImageUrl(episode?.still_path ?? params.still_path ?? null, "w1280");
   const posterUri = tmdbImageUrl(params.poster_path ?? null, "w500");
-  const year = (episode?.air_date ?? "").slice(0, 4) || undefined;
+  const year = releaseYear(episode?.air_date);
   const runtime = episode?.runtime ? `${episode.runtime} min` : undefined;
   const episodeMeta =
     Number.isInteger(seasonNumber) && Number.isInteger(episodeNumber)
@@ -127,15 +118,7 @@ export function useEpisodeDetailViewModel() {
         },
         t,
       ),
-    [
-      episode?.air_date,
-      crew,
-      episodeNumber,
-      runtime,
-      seasonNumber,
-      seriesTitle,
-      t,
-    ],
+    [episode?.air_date, crew, episodeNumber, runtime, seasonNumber, seriesTitle, t],
   );
 
   const handleClose = useCallback(() => {
@@ -172,9 +155,7 @@ export function useEpisodeDetailViewModel() {
 
   const openReviews = useCallback(() => {
     hapticTap();
-    router.push(
-      episodeReviewsListHref({ seriesId, seasonNumber, episodeNumber, title }),
-    );
+    router.push(episodeReviewsListHref({ seriesId, seasonNumber, episodeNumber, title }));
   }, [seriesId, seasonNumber, episodeNumber, title]);
 
   useFocusEffect(

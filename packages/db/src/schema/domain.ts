@@ -145,7 +145,10 @@ export const mediaRatingStats = pgTable(
     sumRating: bigint("sum_rating", { mode: "number" }).notNull().default(0),
     ratingCount: bigint("rating_count", { mode: "number" }).notNull().default(0),
     reviewCount: bigint("review_count", { mode: "number" }).notNull().default(0),
-    histogram: integer("histogram").array().notNull().default(sql`'{0,0,0,0,0,0,0,0,0,0}'::integer[]`),
+    histogram: integer("histogram")
+      .array()
+      .notNull()
+      .default(sql`'{0,0,0,0,0,0,0,0,0,0}'::integer[]`),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [primaryKey({ columns: [table.tmdbId, table.mediaType] })],
@@ -159,10 +162,15 @@ export const episodeRatingStats = pgTable(
     episodeNumber: integer("episode_number").notNull(),
     sumRating: bigint("sum_rating", { mode: "number" }).notNull().default(0),
     ratingCount: bigint("rating_count", { mode: "number" }).notNull().default(0),
-    histogram: integer("histogram").array().notNull().default(sql`'{0,0,0,0,0,0,0,0,0,0}'::integer[]`),
+    histogram: integer("histogram")
+      .array()
+      .notNull()
+      .default(sql`'{0,0,0,0,0,0,0,0,0,0}'::integer[]`),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [primaryKey({ columns: [table.seriesTmdbId, table.seasonNumber, table.episodeNumber] })],
+  (table) => [
+    primaryKey({ columns: [table.seriesTmdbId, table.seasonNumber, table.episodeNumber] }),
+  ],
 );
 
 export const seriesRatingStats = pgTable("series_rating_stats", {
@@ -170,7 +178,10 @@ export const seriesRatingStats = pgTable("series_rating_stats", {
   sumOfEpisodeAvgs: numeric("sum_of_episode_avgs", { mode: "number" }).notNull().default(0),
   episodesWithRatings: integer("episodes_with_ratings").notNull().default(0),
   totalRatingCount: bigint("total_rating_count", { mode: "number" }).notNull().default(0),
-  histogram: integer("histogram").array().notNull().default(sql`'{0,0,0,0,0,0,0,0,0,0}'::integer[]`),
+  histogram: integer("histogram")
+    .array()
+    .notNull()
+    .default(sql`'{0,0,0,0,0,0,0,0,0,0}'::integer[]`),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

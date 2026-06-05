@@ -1,10 +1,5 @@
 import * as AppleAuthentication from "expo-apple-authentication";
-import {
-  Button as SwiftUIButton,
-  HStack,
-  Host,
-  Text as SwiftUIText,
-} from "@expo/ui/swift-ui";
+import { Button as SwiftUIButton, HStack, Host, Text as SwiftUIText } from "@expo/ui/swift-ui";
 import {
   buttonStyle,
   controlSize,
@@ -29,18 +24,10 @@ import { LinearGradientImageBlur } from "@/components/linear-gradient-image-blur
 import { ThemedText } from "@/components/themed-text";
 import { Spacing } from "@/constants/theme";
 import { signInWithApple } from "@/lib/apple-auth";
-import {
-  isDevAuthBypassEnabled,
-  signInWithDevSeedUser,
-} from "@/lib/dev-auth";
+import { isDevAuthBypassEnabled, signInWithDevSeedUser } from "@/lib/dev-auth";
 import { hapticError, hapticSuccess, hapticTap } from "@/lib/haptics";
 
-const DARK_GRADIENT = [
-  "transparent",
-  "#00000040",
-  "#000000B0",
-  "#000000",
-] as const;
+const DARK_GRADIENT = ["transparent", "#00000040", "#000000B0", "#000000"] as const;
 
 export function Onboarding() {
   const { t } = useTranslation();
@@ -156,19 +143,10 @@ export function Onboarding() {
       </Animated.View>
 
       <Animated.View
-        style={[
-          styles.content,
-          { paddingBottom: Math.max(insets.bottom, 32) },
-          foregroundStyle,
-        ]}
-      >
+        style={[styles.content, { paddingBottom: Math.max(insets.bottom, 32) }, foregroundStyle]}>
         <View style={styles.textWrapper}>
-          <ThemedText style={styles.title}>
-            {t("onboarding.title")}
-          </ThemedText>
-          <ThemedText style={styles.subtitle}>
-            {t("onboarding.subtitle")}
-          </ThemedText>
+          <ThemedText style={styles.title}>{t("onboarding.title")}</ThemedText>
+          <ThemedText style={styles.subtitle}>{t("onboarding.subtitle")}</ThemedText>
         </View>
 
         <View style={styles.buttonArea}>
@@ -181,15 +159,13 @@ export function Onboarding() {
                   tint("#ffffff"),
                   disabledModifier(true),
                 ]}
-                onPress={() => {}}
-              >
+                onPress={() => {}}>
                 <HStack modifiers={[frame({ width: buttonWidth, height: 44 })]}>
                   <SwiftUIText
                     modifiers={[
                       font({ weight: "semibold", size: 16 }),
                       foregroundColor("#000000"),
-                    ]}
-                  >
+                    ]}>
                     {t("onboarding.authenticating")}
                   </SwiftUIText>
                 </HStack>
@@ -197,12 +173,8 @@ export function Onboarding() {
             </Host>
           ) : appleAvailable === true ? (
             <AppleAuthentication.AppleAuthenticationButton
-              buttonType={
-                AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
-              }
-              buttonStyle={
-                AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
-              }
+              buttonType={AppleAuthentication.AppleAuthenticationButtonType.CONTINUE}
+              buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE}
               cornerRadius={22}
               onPress={handleStart}
               style={{ width: buttonWidth, height: 44 }}
@@ -218,15 +190,13 @@ export function Onboarding() {
                   tint("#ffffff"),
                   disabledModifier(false),
                 ]}
-                onPress={handleDevSignIn}
-              >
+                onPress={handleDevSignIn}>
                 <HStack modifiers={[frame({ width: buttonWidth, height: 40 })]}>
                   <SwiftUIText
                     modifiers={[
                       font({ weight: "semibold", size: 15 }),
                       foregroundColor("#ffffff"),
-                    ]}
-                  >
+                    ]}>
                     {t("onboarding.devSignIn")}
                   </SwiftUIText>
                 </HStack>
@@ -235,14 +205,10 @@ export function Onboarding() {
           ) : null}
 
           {appleAvailable === false && !showDevAuthBypass ? (
-            <ThemedText style={styles.statusText}>
-              {t("onboarding.appleUnavailable")}
-            </ThemedText>
+            <ThemedText style={styles.statusText}>{t("onboarding.appleUnavailable")}</ThemedText>
           ) : null}
 
-          {error ? (
-            <ThemedText style={styles.errorText}>{error}</ThemedText>
-          ) : null}
+          {error ? <ThemedText style={styles.errorText}>{error}</ThemedText> : null}
         </View>
       </Animated.View>
     </View>

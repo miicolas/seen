@@ -4,13 +4,7 @@ import { Text } from "@/components/ui/text";
 import { SPACING } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
 
-export function DetailSection({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
+export function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
   const theme = useTheme();
 
   return (

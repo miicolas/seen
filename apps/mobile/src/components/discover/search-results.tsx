@@ -1,11 +1,5 @@
 import { useTranslation } from "react-i18next";
-import {
-  ActivityIndicator,
-  FlatList,
-  StyleSheet,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet, useWindowDimensions, View } from "react-native";
 
 import { EmptyState } from "@/components/ui/empty-state";
 import { Text } from "@/components/ui/text";
@@ -79,9 +73,7 @@ export function SearchResults({
       keyboardDismissMode="on-drag"
       columnWrapperStyle={styles.row}
       contentContainerStyle={[styles.content, { paddingBottom: bottomInset }]}
-      renderItem={({ item }) => (
-        <PosterCard movie={item} width={cardWidth} />
-      )}
+      renderItem={({ item }) => <PosterCard movie={item} width={cardWidth} />}
     />
   );
 }

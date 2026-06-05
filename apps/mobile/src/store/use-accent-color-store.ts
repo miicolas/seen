@@ -13,8 +13,7 @@ export const useAccentColorStore = create(
   persist<AccentColorStore>(
     (set) => ({
       accentColorFamily: null,
-      setAccentColorFamilyAction: (family) =>
-        set({ accentColorFamily: family }),
+      setAccentColorFamilyAction: (family) => set({ accentColorFamily: family }),
     }),
     {
       name: "accent-color-store",

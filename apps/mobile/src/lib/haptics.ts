@@ -22,9 +22,7 @@ export function hapticSelection() {
   if (isIOS) Haptics.selectionAsync();
 }
 
-export function hapticTap(
-  style: Haptics.ImpactFeedbackStyle = Haptics.ImpactFeedbackStyle.Light,
-) {
+export function hapticTap(style: Haptics.ImpactFeedbackStyle = Haptics.ImpactFeedbackStyle.Light) {
   if (isIOS) Haptics.impactAsync(style);
 }
 

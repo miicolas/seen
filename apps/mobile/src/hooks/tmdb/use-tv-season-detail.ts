@@ -2,11 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
 import { errorMessage } from "@/lib/format";
-import {
-  getTvSeasonDetail,
-  tmdbLanguage,
-  type TmdbTvSeasonDetail,
-} from "@/lib/tmdb";
+import { getTvSeasonDetail, tmdbLanguage, type TmdbTvSeasonDetail } from "@/lib/tmdb";
 
 interface TvSeasonDetailState {
   season: TmdbTvSeasonDetail | null;
@@ -23,8 +19,7 @@ export function useTvSeasonDetail(
   const query = useQuery({
     queryKey: ["tmdb", "season", seriesId, seasonNumber, language] as const,
     queryFn: () => getTvSeasonDetail(seriesId, seasonNumber as number, language),
-    enabled:
-      Number.isFinite(seriesId) && seriesId > 0 && seasonNumber != null,
+    enabled: Number.isFinite(seriesId) && seriesId > 0 && seasonNumber != null,
   });
 
   return {

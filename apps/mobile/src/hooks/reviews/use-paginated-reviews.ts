@@ -1,7 +1,4 @@
-import {
-  useInfiniteQuery,
-  type QueryKey,
-} from "@tanstack/react-query";
+import { useInfiniteQuery, type QueryKey } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 
 import { errorMessage } from "@/lib/format";
@@ -42,10 +39,7 @@ export function usePaginatedReviews<T extends { id: string }>(
     enabled,
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
-      const loaded = allPages.reduce(
-        (total, page) => total + page.reviews.length,
-        0,
-      );
+      const loaded = allPages.reduce((total, page) => total + page.reviews.length, 0);
       return loaded < lastPage.count ? loaded : undefined;
     },
   });
@@ -78,9 +72,7 @@ export function usePaginatedReviews<T extends { id: string }>(
       isLoadingInitial: query.isLoading,
       isLoadingMore: query.isFetchingNextPage,
       isRefreshing: query.isRefetching && !query.isFetchingNextPage,
-      error: query.error
-        ? errorMessage(query.error, "Failed to load reviews")
-        : null,
+      error: query.error ? errorMessage(query.error, "Failed to load reviews") : null,
       refresh,
       loadMore,
     }),

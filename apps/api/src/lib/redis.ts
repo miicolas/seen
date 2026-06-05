@@ -31,11 +31,7 @@ export async function redisGetJson<T>(key: string): Promise<T | null> {
   }
 }
 
-export async function redisSetJson(
-  key: string,
-  value: unknown,
-  ttlSeconds: number,
-): Promise<void> {
+export async function redisSetJson(key: string, value: unknown, ttlSeconds: number): Promise<void> {
   await safeRedis(
     () => redis!.set(key, JSON.stringify(value), "EX", ttlSeconds).then(() => undefined),
     undefined,
@@ -54,22 +50,16 @@ export async function withRedisLock<T>(
   if (!redis) return work();
 
   const token = crypto.randomUUID();
-  const acquired = await safeRedis(
-    () => redis!.set(key, token, "PX", ttlMs, "NX"),
-    null,
-  );
+  const acquired = await safeRedis(() => redis!.set(key, token, "PX", ttlMs, "NX"), null);
 
   if (!acquired) return work();
 
   try {
     return await work();
   } finally {
-    await safeRedis(
-      async () => {
-        const current = await redis!.get(key);
-        if (current === token) await redis!.del(key);
-      },
-      undefined,
-    );
+    await safeRedis(async () => {
+      const current = await redis!.get(key);
+      if (current === token) await redis!.del(key);
+    }, undefined);
   }
 }

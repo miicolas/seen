@@ -9,6 +9,10 @@
     ".": {
       "types": "./src/app.ts",
       "default": "./src/app.ts"
+    },
+    "./tmdb": {
+      "types": "./src/modules/tmdb/model.ts",
+      "default": "./src/modules/tmdb/model.ts"
     }
   },
   "scripts": {
@@ -16,7 +20,9 @@
     "build": "bun build src/index.ts --target bun --outdir dist",
     "start": "NODE_ENV=production bun dist/index.js",
     "typecheck": "tsc --noEmit",
-    "lint": "tsc --noEmit",
+    "lint": "eslint src --max-warnings=0",
+    "format": "prettier --write . --ignore-path ../../.prettierignore",
+    "format:check": "prettier --check . --ignore-path ../../.prettierignore",
     "test": "bun test"
   },
   "dependencies": {

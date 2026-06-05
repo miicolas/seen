@@ -23,10 +23,7 @@ export async function getMediaReviewsPage(
       .orderBy(desc(reviews.createdAt))
       .limit(pageSize)
       .offset(from),
-    db
-      .select({ count: count() })
-      .from(reviews)
-      .where(mediaWhere(tmdbId, mediaType)),
+    db.select({ count: count() }).from(reviews).where(mediaWhere(tmdbId, mediaType)),
   ]);
 
   return {

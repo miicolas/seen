@@ -2,11 +2,7 @@ import { getLocales } from "expo-localization";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
-import {
-  resources,
-  SUPPORTED_LANGUAGES,
-  type AppLanguage,
-} from "./locales/resources";
+import { resources, SUPPORTED_LANGUAGES, type AppLanguage } from "./locales/resources";
 
 const FALLBACK: AppLanguage = "en";
 

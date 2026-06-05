@@ -20,7 +20,5 @@ export function GlassPanel({ children, fallbackColor, style }: GlassPanelProps) 
     );
   }
 
-  return (
-    <View style={[style, { backgroundColor: fallbackColor }]}>{children}</View>
-  );
+  return <View style={[style, { backgroundColor: fallbackColor }]}>{children}</View>;
 }
