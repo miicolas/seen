@@ -65,7 +65,7 @@ The route file is a thin default-export component that renders the screen:
 
 ```tsx
 // src/app/(tabs)/index.tsx
-import { Home } from '@/components/screens/home';
+import { Home } from "@/components/screens/home";
 
 export default function HomeScreen() {
   return <Home />;

@@ -70,16 +70,19 @@ export function EpisodesSection({
   function openEpisode(episode: TmdbTvEpisodeSummary) {
     hapticTap();
     router.push(
-      episodeDetailHref({
-        seriesId,
-        episodeTmdbId: episode.id,
-        seasonNumber: episode.season_number,
-        episodeNumber: episode.episode_number,
-        seriesTitle,
-        episodeTitle: episode.name,
-        poster_path: posterPath,
-        still_path: episode.still_path,
-      }, routeBase),
+      episodeDetailHref(
+        {
+          seriesId,
+          episodeTmdbId: episode.id,
+          seasonNumber: episode.season_number,
+          episodeNumber: episode.episode_number,
+          seriesTitle,
+          episodeTitle: episode.name,
+          poster_path: posterPath,
+          still_path: episode.still_path,
+        },
+        routeBase,
+      ),
     );
   }
 
