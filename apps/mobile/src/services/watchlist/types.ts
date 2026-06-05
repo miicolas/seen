@@ -30,6 +30,7 @@ export interface WatchlistPage {
 
 export interface WatchlistListInput {
   filter: MediaFilter;
+  search?: string;
   limit: number;
   offset: number;
 }

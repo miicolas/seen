@@ -15,6 +15,13 @@
       "when": 1780674395309,
       "tag": "0002_watchlist",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1780693072728,
+      "tag": "0003_domain_runtime",
+      "breakpoints": true
     }
   ]
 }

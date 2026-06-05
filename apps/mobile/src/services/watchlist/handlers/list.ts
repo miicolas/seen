@@ -4,14 +4,16 @@ import type { WatchlistListInput, WatchlistPage } from "../types";
 
 export async function getMyWatchlistPage({
   filter,
+  search,
   limit,
   offset,
 }: WatchlistListInput): Promise<WatchlistPage> {
   const mediaType = filter === "all" ? undefined : filter;
+  const term = search?.trim();
 
   return unwrapEden<WatchlistPage>(
     eden.watchlist.get({
-      query: { mediaType, limit, offset },
+      query: { mediaType, search: term || undefined, limit, offset },
     }),
   );
 }

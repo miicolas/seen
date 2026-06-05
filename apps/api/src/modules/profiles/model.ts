@@ -23,6 +23,9 @@ const activityItem = t.Object({
   poster_path: t.Nullable(t.String()),
   media_type: mediaType,
   tmdb_id: t.Number(),
+  season_number: t.Optional(t.Nullable(t.Number())),
+  episode_number: t.Optional(t.Nullable(t.Number())),
+  episode_tmdb_id: t.Optional(t.Nullable(t.Number())),
 });
 
 export const ProfileModel = new Elysia({ name: "Profile.Model" }).model({

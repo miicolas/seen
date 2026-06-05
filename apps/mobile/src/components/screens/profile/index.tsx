@@ -9,7 +9,7 @@ import { GlassButton } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Text } from "@/components/ui/text";
 import { BottomTabInset } from "@/constants/theme";
-import { BORDER_RADIUS, BORDER_WIDTH, LAYOUT, OPACITY, SPACING } from "@/constants/design-tokens";
+import { BORDER_RADIUS, LAYOUT, OPACITY, SPACING } from "@/constants/design-tokens";
 import { useProfileActivity } from "@/hooks/profiles/use-profile-activity";
 import { useMyProfile } from "@/hooks/profiles/use-my-profile";
 import { useAccentColor } from "@/hooks/use-accent-color";
@@ -123,8 +123,7 @@ export function ProfileScreen() {
                     <ActivityIndicator />
                   </View>
                 ) : activity.data.length > 0 ? (
-                  <View
-                    style={[styles.activityList, { borderBottomColor: theme.backgroundSelected }]}>
+                  <View style={styles.activityList}>
                     {activity.data.map((item) => (
                       <ActivityRow key={`${item.kind}:${item.id}`} item={item} />
                     ))}
@@ -203,7 +202,7 @@ const styles = StyleSheet.create({
     gap: SPACING.MD,
   },
   activityList: {
-    borderBottomWidth: BORDER_WIDTH.THIN,
+    gap: SPACING.LG,
   },
   activityLoading: {
     minHeight: 120,

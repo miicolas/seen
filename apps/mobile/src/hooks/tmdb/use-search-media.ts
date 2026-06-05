@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { errorMessage } from "@/lib/format";
 import {
   hasRating,
@@ -49,15 +49,4 @@ export function useSearchMedia(query: string, filter: MediaFilter = "all"): Sear
     error: queryResult.error ? errorMessage(queryResult.error, "Search failed") : null,
     isOffline: false,
   };
-}
-
-function useDebouncedValue<T>(value: T, delayMs: number) {
-  const [debounced, setDebounced] = useState(value);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setDebounced(value), delayMs);
-    return () => clearTimeout(timer);
-  }, [value, delayMs]);
-
-  return debounced;
 }

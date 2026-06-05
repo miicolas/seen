@@ -1,17 +1,31 @@
 import type { Href } from "expo-router";
 
-import type { MediaType, TmdbMovieSummary } from "@/lib/tmdb";
+import type { MediaType } from "@/lib/tmdb";
 
 // Which tab Stack owns the media-detail route tree. The detail screen lives in
-// both the discover and watchlist stacks so navigation (and the back/zoom
+// the discover, watchlist and profile stacks so navigation (and the back/zoom
 // transition) stays within the tab the user came from.
-export type MediaRouteBase = "discover" | "watchlist";
+export type MediaRouteBase = "discover" | "watchlist" | "profile";
 
-export function mediaTitle(media: { title?: string; original_title?: string }): string {
+export function mediaTitle(media: {
+  title?: string | null;
+  original_title?: string | null;
+}): string {
   return media.title ?? media.original_title ?? "Untitled";
 }
 
-export function mediaDetailHref(media: TmdbMovieSummary, base: MediaRouteBase = "discover"): Href {
+// The minimum a media object needs to drive the detail route (full
+// TmdbMovieSummary objects satisfy this, as does a hand-built activity item).
+export type MediaDetailLink = {
+  id: number;
+  media_type: MediaType;
+  title?: string | null;
+  original_title?: string | null;
+  poster_path?: string | null;
+  backdrop_path?: string | null;
+};
+
+export function mediaDetailHref(media: MediaDetailLink, base: MediaRouteBase = "discover"): Href {
   return {
     pathname: `/(tabs)/${base}/[id]`,
     params: {

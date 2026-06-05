@@ -11,4 +11,6 @@ RUN bun install --frozen-lockfile
 
 ENV NODE_ENV=production
 EXPOSE 3000
-CMD ["bun", "apps/api/src/index.ts"]
+# Apply pending Drizzle migrations before booting the API so the schema
+# (tables, views, triggers) is always in sync with the deployed code.
+CMD ["sh", "-c", "bun run db:migrate && bun apps/api/src/index.ts"]

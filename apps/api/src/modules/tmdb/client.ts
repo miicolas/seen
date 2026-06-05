@@ -248,7 +248,9 @@ export async function upsertMovieDetail(detail: MovieDetailDto, language: string
   const values = {
     ...movieSummaryValues(detail, language),
     runtime: detail.runtime ?? null,
-    genres: detail.genres ?? null,
+    // Store genre ids only (named genres live in `detail`); the `genres` column
+    // is the summary's `genre_ids` and must stay a number[].
+    genres: detail.genres?.map((genre) => genre.id) ?? null,
     detail,
     detailFetchedAt: new Date(),
   };

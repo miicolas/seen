@@ -7,5 +7,7 @@ import type { MediaRouteBase } from "@/lib/navigation";
 // stay within the originating tab. Defaults to discover.
 export function useMediaRouteBase(): MediaRouteBase {
   const segments = useSegments() as string[];
-  return segments.includes("watchlist") ? "watchlist" : "discover";
+  if (segments.includes("watchlist")) return "watchlist";
+  if (segments.includes("profile")) return "profile";
+  return "discover";
 }

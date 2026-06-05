@@ -41,7 +41,8 @@ export const watchlistController = new Elysia({
   )
   .get(
     "/",
-    ({ user, query }) => getMyWatchlistPage(user.id, query.mediaType, query.limit, query.offset),
+    ({ user, query }) =>
+      getMyWatchlistPage(user.id, query.mediaType, query.search, query.limit, query.offset),
     {
       auth: true,
       query: "watchlist.ListQuery",

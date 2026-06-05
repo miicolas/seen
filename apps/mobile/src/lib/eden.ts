@@ -27,6 +27,21 @@ export class EdenApiError extends Error {
   }
 }
 
+// Eden wraps error responses in an `Error` whose `message` is `String(body)`, so
+// an object body becomes the useless "[object Object]". Pull a real message out of
+// the parsed body and never surface the raw stringified object.
+function readEdenError(value: unknown): { message?: string; code?: string } {
+  if (value && typeof value === "object") {
+    const body = value as { error?: unknown; message?: unknown; code?: unknown };
+    const message = typeof body.error === "string" ? body.error : body.message;
+    return {
+      message: typeof message === "string" ? message : undefined,
+      code: typeof body.code === "string" ? body.code : undefined,
+    };
+  }
+  return { message: typeof value === "string" ? value : undefined };
+}
+
 export async function unwrapEden<T>(
   response: Promise<{
     data: T | null;
@@ -37,38 +52,12 @@ export async function unwrapEden<T>(
 ): Promise<T> {
   const { data, error, response: rawResponse } = await response;
   if (error) {
-    const edenError = error as {
-      value?: unknown;
-      status?: number;
-    };
-
-    if (
-      edenError.value &&
-      typeof edenError.value === "object" &&
-      "error" in edenError.value &&
-      typeof edenError.value.error === "string"
-    ) {
-      const value = edenError.value as { error: string; code?: string };
-      throw new EdenApiError(value.error, {
-        code: value.code,
-        status: typeof edenError.status === "number" ? edenError.status : undefined,
-      });
-    }
-
-    if (
-      edenError.value &&
-      typeof edenError.value === "object" &&
-      "message" in edenError.value &&
-      typeof edenError.value.message === "string"
-    ) {
-      const value = edenError.value as { message: string; code?: string };
-      throw new EdenApiError(value.message, {
-        code: value.code,
-        status: typeof edenError.status === "number" ? edenError.status : undefined,
-      });
-    }
-
-    throw error instanceof Error ? error : new Error("Request failed");
+    const edenError = error as { value?: unknown; status?: number };
+    const { message, code } = readEdenError(edenError.value);
+    throw new EdenApiError(message ?? "Request failed", {
+      code,
+      status: typeof edenError.status === "number" ? edenError.status : undefined,
+    });
   }
 
   if (data == null) {

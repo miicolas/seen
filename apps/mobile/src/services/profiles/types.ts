@@ -51,4 +51,7 @@ export interface ProfileActivityItem {
   poster_path: string | null;
   media_type: MediaType;
   tmdb_id: number;
+  season_number: number | null;
+  episode_number: number | null;
+  episode_tmdb_id: number | null;
 }

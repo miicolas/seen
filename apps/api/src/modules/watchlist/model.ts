@@ -50,6 +50,7 @@ export const WatchlistModel = new Elysia({ name: "Watchlist.Model" }).model({
   }),
   "watchlist.ListQuery": t.Object({
     mediaType: t.Optional(mediaType),
+    search: t.Optional(t.String()),
     limit: t.Optional(t.Numeric({ minimum: 1, maximum: 50 })),
     offset: t.Optional(t.Numeric({ minimum: 0 })),
   }),

@@ -7,12 +7,18 @@ import {
   RNHostView,
   SwipeActions,
 } from "@expo/ui/swift-ui";
-import { listRowInsets, listStyle, scrollContentBackground } from "@expo/ui/swift-ui/modifiers";
+import {
+  listRowInsets,
+  listStyle,
+  onAppear as onAppearModifier,
+  scrollContentBackground,
+} from "@expo/ui/swift-ui/modifiers";
 import { Image as ExpoImage } from "expo-image";
 import { Link, Stack, useFocusEffect } from "expo-router";
 import { PressableScale } from "pressto";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import type { NativeSyntheticEvent, TextInputFocusEventData } from "react-native";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
 import type { SFSymbol } from "sf-symbols-typescript";
 
@@ -49,13 +55,16 @@ export function Watchlist() {
   const { t } = useTranslation();
   const theme = useTheme();
   const [filter, setFilter] = useState<MediaFilter>("all");
-  const { items, isLoading, error, remove, refetch } = useWatchlist(filter);
+  const [query, setQuery] = useState("");
+  const { items, isLoading, error, remove, refetch, loadMore } = useWatchlist(filter, query);
 
   useFocusEffect(
     useCallback(() => {
       refetch();
     }, [refetch]),
   );
+
+  const isSearching = query.trim().length > 0;
 
   const options = useMemo(
     () =>
@@ -71,6 +80,10 @@ export function Watchlist() {
   function handleFilter(value: MediaFilter) {
     setFilter(value);
     hapticSelection();
+  }
+
+  function handleSearchText(e: NativeSyntheticEvent<TextInputFocusEventData>) {
+    setQuery(e.nativeEvent.text ?? "");
   }
 
   async function handleRemove(item: WatchlistItemWithMedia) {
@@ -95,6 +108,13 @@ export function Watchlist() {
         </Stack.Toolbar.Menu>
       </Stack.Toolbar>
 
+      <Stack.SearchBar
+        placeholder={t("watchlist.searchPlaceholder")}
+        onChangeText={handleSearchText}
+        onCancelButtonPress={() => setQuery("")}
+        onClose={() => setQuery("")}
+      />
+
       <Host style={{ flex: 1, backgroundColor: theme.background }}>
         {isLoading ? (
           <ProgressView />
@@ -105,15 +125,28 @@ export function Watchlist() {
             description={error}
           />
         ) : items.length === 0 ? (
-          <ContentUnavailableView
-            title={t("watchlist.emptyTitle")}
-            systemImage="bookmark"
-            description={t("watchlist.emptySubtitle")}
-          />
+          isSearching ? (
+            <ContentUnavailableView
+              title={t("watchlist.noResults", { query: query.trim() })}
+              systemImage="magnifyingglass"
+              description={t("watchlist.noResultsHint")}
+            />
+          ) : (
+            <ContentUnavailableView
+              title={t("watchlist.emptyTitle")}
+              systemImage="bookmark"
+              description={t("watchlist.emptySubtitle")}
+            />
+          )
         ) : (
           <List modifiers={[listStyle("inset"), scrollContentBackground("hidden")]}>
-            {items.map((item) => (
-              <WatchlistRow key={item.id} item={item} onRemove={handleRemove} />
+            {items.map((item, index) => (
+              <WatchlistRow
+                key={item.id}
+                item={item}
+                onRemove={handleRemove}
+                onReveal={index === items.length - 1 ? loadMore : undefined}
+              />
             ))}
           </List>
         )}
@@ -125,9 +158,12 @@ export function Watchlist() {
 function WatchlistRow({
   item,
   onRemove,
+  onReveal,
 }: {
   item: WatchlistItemWithMedia;
   onRemove: (item: WatchlistItemWithMedia) => void;
+  // Fires when this row scrolls into view — used on the last row to page in more.
+  onReveal?: () => void;
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -139,12 +175,15 @@ function WatchlistRow({
   const duration = formatRuntime(item.media.runtime);
   const rowWidth = width - ROW_HORIZONTAL_INSET;
 
+  const rowModifiers = [listRowInsets({ top: 8, bottom: 8, leading: 16, trailing: 16 })];
+  if (onReveal) rowModifiers.push(onAppearModifier(onReveal));
+
   // The row content is hosted in React Native (via RNHostView with matchContents)
   // so the poster can drive the Apple zoom transition through a real <Link>; the
   // SwiftUI List still owns the swipe-to-delete and inset styling. RNHostView has
   // no width of its own, so we pin an explicit row width for the text to wrap.
   return (
-    <SwipeActions modifiers={[listRowInsets({ top: 8, bottom: 8, leading: 16, trailing: 16 })]}>
+    <SwipeActions modifiers={rowModifiers}>
       <RNHostView matchContents>
         <Link href={mediaDetailHref(item.media, "watchlist")} asChild>
           <PressableScale

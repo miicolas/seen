@@ -70,6 +70,9 @@ export async function getMyProfileActivity(userId: string, limit = 12) {
       posterPath: movie?.posterPath ?? null,
       mediaType,
       tmdbId: review.tmdbId,
+      seasonNumber: null,
+      episodeNumber: null,
+      episodeTmdbId: null,
     });
   });
 
@@ -87,6 +90,9 @@ export async function getMyProfileActivity(userId: string, limit = 12) {
       posterPath: series?.posterPath ?? null,
       mediaType: "tv" as const,
       tmdbId: episode.seriesTmdbId,
+      seasonNumber: episode.seasonNumber,
+      episodeNumber: episode.episodeNumber,
+      episodeTmdbId: episode.episodeTmdbId,
     });
   });
 

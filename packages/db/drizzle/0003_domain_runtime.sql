@@ -1,15 +1,25 @@
+-- Custom SQL migration file, put your code below! --
+-- Domain runtime objects: constraints, rating-stats triggers and the
+-- review-stats views. These are not expressible in the Drizzle TS schema
+-- (the views are declared `.existing()`), so they live in this custom
+-- migration. Written idempotently so it is safe to re-run on any database.
+
+alter table public.reviews drop constraint if exists reviews_movie_fkey;
 alter table public.reviews
   add constraint reviews_movie_fkey
   foreign key (tmdb_id, media_type)
   references public.movies (tmdb_id, media_type)
   on delete restrict;
 
+alter table public.media_rating_stats drop constraint if exists media_rating_stats_hist_len;
 alter table public.media_rating_stats
   add constraint media_rating_stats_hist_len check (cardinality(histogram) = 10);
 
+alter table public.episode_rating_stats drop constraint if exists episode_rating_stats_hist_len;
 alter table public.episode_rating_stats
   add constraint episode_rating_stats_hist_len check (cardinality(histogram) = 10);
 
+alter table public.series_rating_stats drop constraint if exists series_rating_stats_hist_len;
 alter table public.series_rating_stats
   add constraint series_rating_stats_hist_len check (cardinality(histogram) = 10);
 
@@ -23,19 +33,19 @@ begin
 end;
 $$;
 
-create trigger movies_set_updated_at
+create or replace trigger movies_set_updated_at
   before update on public.movies
   for each row execute function public.set_updated_at();
 
-create trigger profiles_set_updated_at
+create or replace trigger profiles_set_updated_at
   before update on public.profiles
   for each row execute function public.set_updated_at();
 
-create trigger reviews_set_updated_at
+create or replace trigger reviews_set_updated_at
   before update on public.reviews
   for each row execute function public.set_updated_at();
 
-create trigger episode_reviews_set_updated_at
+create or replace trigger episode_reviews_set_updated_at
   before update on public.episode_reviews
   for each row execute function public.set_updated_at();
 
@@ -204,11 +214,11 @@ begin
 end;
 $$;
 
-create trigger reviews_apply_rating_stats
+create or replace trigger reviews_apply_rating_stats
   after insert or update or delete on public.reviews
   for each row execute function public.reviews_apply_rating_stats();
 
-create trigger episode_reviews_apply_rating_stats
+create or replace trigger episode_reviews_apply_rating_stats
   after insert or update or delete on public.episode_reviews
   for each row execute function public.episode_reviews_apply_rating_stats();
 
