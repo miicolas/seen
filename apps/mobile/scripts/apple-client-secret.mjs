@@ -1,4 +1,4 @@
-// Generate the Apple "Sign in with Apple" client secret (JWT) for Supabase web OAuth.
+// Generate the Apple "Sign in with Apple" client secret (JWT) for web OAuth.
 // Usage:
 //   node scripts/apple-client-secret.mjs \
 //     --p8 ./AuthKey_XXXXXXXXXX.p8 \
@@ -6,7 +6,7 @@
 //     --service-id app.seen.com.web
 //
 // Team ID defaults to Seen's (HZAYG4Q47N); override with --team-id if needed.
-// Paste the printed token into Supabase → Auth → Apple → "Secret Key (for OAuth)".
+// Paste the printed token into the Apple OAuth provider configuration.
 // Apple caps exp at 6 months, so regenerate before it expires.
 
 import { createSign } from "node:crypto";

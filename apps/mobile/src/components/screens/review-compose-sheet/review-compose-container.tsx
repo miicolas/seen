@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { useCallback } from "react";
-import { ActivityIndicator, StyleSheet, useWindowDimensions, View } from "react-native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 import { ScreenToolbar } from "@/components/navigation";
@@ -14,12 +14,6 @@ import type { ReviewController } from "./use-review-controller";
 export function ReviewComposeContainer({ controller }: { controller: ReviewController }) {
   const router = useRouter();
   const theme = useTheme();
-  const { width } = useWindowDimensions();
-
-  const buttonWidth = Math.min(
-    LAYOUT.CONTENT_MAX_WIDTH,
-    Math.max(0, width - LAYOUT.SCREEN_PADDING * 2),
-  );
 
   const onClose = useCallback(() => {
     hapticTap();
@@ -43,11 +37,7 @@ export function ReviewComposeContainer({ controller }: { controller: ReviewContr
         ) : (
           // Remount once loaded so the body's native text observables seed with
           // the resolved review values.
-          <ReviewFormBody
-            key={controller.hasReview ? "edit" : "new"}
-            controller={controller}
-            buttonWidth={buttonWidth}
-          />
+          <ReviewFormBody key={controller.hasReview ? "edit" : "new"} controller={controller} />
         )}
       </KeyboardAwareScrollView>
     </>

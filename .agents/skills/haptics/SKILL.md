@@ -40,10 +40,10 @@ import { hapticTap } from "@/lib/haptics";
 <Pressable onPress={() => { hapticTap(); onConfirm(); }} />
 ```
 
-Async success/error (see `src/app/(auth)/login.tsx`):
+Async success/error:
 
 ```tsx
-const { error } = await supabase.auth.signInWithPassword(creds);
+const { error } = await authClient.signIn.email(creds);
 if (error) hapticError();
 else hapticSuccess();
 ```

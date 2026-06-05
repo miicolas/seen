@@ -4,13 +4,13 @@ import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { toast } from "sonner-native";
 
 import { ScreenToolbar } from "@/components/navigation";
 import { Button } from "@/components/ui/button";
 import { LAYOUT } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
 import { hapticDelete, hapticError, hapticSuccess, hapticTap } from "@/lib/haptics";
+import { runReviewStatusActivity } from "@/lib/review-status-activity";
 import { starsToRating } from "@/services/core";
 
 import { ReviewForm } from "./review-form";
@@ -19,13 +19,7 @@ import type { ReviewController } from "./use-review-controller";
 // Owns the form's interactive state. Mounted only once the controller has loaded
 // (keyed by the container), so the native text observables seed synchronously
 // with the resolved review values — no `.value` writes, no empty-then-fill flash.
-export function ReviewFormBody({
-  controller,
-  buttonWidth,
-}: {
-  controller: ReviewController;
-  buttonWidth: number;
-}) {
+export function ReviewFormBody({ controller }: { controller: ReviewController }) {
   const router = useRouter();
   const theme = useTheme();
   const { t } = useTranslation();
@@ -63,31 +57,29 @@ export function ReviewFormBody({
     const trimmedTitle = reviewTitleState.value.trim();
     const trimmedComment = commentState.value.trim();
     try {
-      await controller.save({
-        rating: stars > 0 ? starsToRating(stars) : null,
-        title: trimmedTitle.length > 0 ? trimmedTitle : null,
-        comment: trimmedComment.length > 0 ? trimmedComment : null,
-      });
+      await runReviewStatusActivity("save", () =>
+        controller.save({
+          rating: stars > 0 ? starsToRating(stars) : null,
+          title: trimmedTitle.length > 0 ? trimmedTitle : null,
+          comment: trimmedComment.length > 0 ? trimmedComment : null,
+        }),
+      );
       hapticSuccess();
-      toast.success(t("review.saved"));
       router.back();
     } catch {
       hapticError();
-      toast.error(t("review.saveError"));
     }
-  }, [canSave, isSaving, reviewTitleState, commentState, stars, controller, router, t]);
+  }, [canSave, isSaving, reviewTitleState, commentState, stars, controller, router]);
 
   const handleDelete = useCallback(async () => {
     try {
-      await controller.remove();
+      await runReviewStatusActivity("delete", () => controller.remove());
       hapticDelete();
-      toast.success(t("review.deleted"));
       router.back();
     } catch {
       hapticError();
-      toast.error(t("review.saveError"));
     }
-  }, [controller, router, t]);
+  }, [controller, router]);
 
   return (
     <>
@@ -132,7 +124,7 @@ export function ReviewFormBody({
             variant="glass"
             color="red"
             size="sm"
-            width={buttonWidth}
+            width="fill"
             disabled={isSaving}
           />
         </View>

@@ -31,18 +31,18 @@ Package manager is **bun** (`bun.lock`). Use `bunx`/`bun` rather than `npm`/`npx
 
 There is no test framework wired up.
 
-## Environment / Supabase
+## Environment / Backend
 
-The app talks to Supabase, selected by environment file (loaded automatically by Expo):
+The app talks to the local Seen API, selected by environment file (loaded automatically by Expo):
 
-- `.env.development` → **local** Supabase stack (`supabase start`). Note: `127.0.0.1` only works on the iOS simulator; use `10.0.2.2` for the Android emulator and your Mac's LAN IP for a physical device.
-- `.env.production` → hosted Supabase project (used for production builds, e.g. `expo start --no-dev` / EAS).
+- `.env.development` → local Bun/Elysia API (`bun run dev:api`) and local Postgres/Redis dependencies.
+- `.env.production` → hosted API endpoint used for production builds.
 
-Both files expose `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (the publishable/anon key — `EXPO_PUBLIC_*` vars are inlined into the client bundle, so never put service-role secrets here). Local Supabase config lives in `supabase/config.toml` (API on 54321, Studio on 54323, DB on 54322).
+Client-visible values use `EXPO_PUBLIC_*`; never put provider secrets or database credentials there.
 
-**Supabase is the backend** — there is no separate server. Server-side logic and any third-party/AI calls run in **Supabase Edge Functions** (`supabase/functions/`); schema lives in **migrations** (`supabase/migrations/`) with RLS. Follow the **`backend` skill** for these, plus the existing `supabase` / `supabase-postgres-best-practices` skills. Provider secrets stay server-side (`supabase secrets set`), never in `EXPO_PUBLIC_*`.
+**The backend is `apps/api`** — a Bun/Elysia service using Better Auth, Drizzle, Postgres, Redis, and S3. Database schema lives in `packages/db/drizzle/` and `packages/db/src/schema/`; generate and run migrations through the root `db:*` scripts. Provider secrets stay server-side in the API environment.
 
-**Movie data** comes from TMDB via the server-side `tmdb` Edge Function, which proxies TMDB and caches movie details in the `movies` table to protect the API quota. Follow the **`tmdb` skill** for any TMDB work (search/discover/find/detail, images, auth, cache).
+**Movie data** comes from TMDB via the API module in `apps/api/src/modules/tmdb/`, which proxies TMDB and keeps TMDB tokens server-side. Follow the **`tmdb` skill** for any TMDB work (search/discover/find/detail, images, auth, cache).
 
 ## Architecture
 
@@ -52,8 +52,8 @@ iOS-only Expo Router (file-based routing) app. Source lives under `src/` and is 
 
 Authentication state drives routing through a single context, not imperative redirects:
 
-1. `src/lib/supabase.ts` creates the singleton Supabase client. Sessions persist via a custom **`LargeSecureStore`**: because `expo-secure-store` caps values at 2048 bytes, it generates an AES-256 key, stores the key in SecureStore, and stores the AES-encrypted session blob in AsyncStorage. It also wires `AppState` to start/stop `autoRefresh` with foreground/background.
-2. `src/providers/auth-provider.tsx` subscribes to `supabase.auth` (`getSession` on mount + `onAuthStateChange`) and exposes `{ session, user, isLoading, isLoggedIn }` via `AuthContext` (`src/hooks/use-auth-context.tsx`).
+1. `src/lib/auth-client.ts` creates the Better Auth Expo client and configures secure client-side session storage.
+2. `src/providers/auth-provider.tsx` reads the Better Auth session and exposes `{ session, user, isLoading, isLoggedIn }` via `AuthContext` (`src/hooks/use-auth-context.tsx`).
 3. `src/app/_layout.tsx` reads `useAuthContext()` and uses **`<Stack.Protected guard={...}>`** to gate route groups: `(tabs)` when logged in, `(auth)/login` when not. Signing in/out flips `isLoggedIn` and the guard handles the redirect — screens should not navigate manually on auth change.
 4. `src/components/splash-screen-controller.tsx` holds the native splash screen until `isLoading` is false (session restore finished).
 
@@ -80,7 +80,7 @@ The wrapper (rather than a bare `export { default } from`) is deliberate: it let
 
 Client state uses **Zustand**, split into small feature stores under `src/store/` (kebab-case `use-<feature>-store.ts`, actions suffixed `Action`). Persisted stores use the shared `expo-sqlite/kv-store` adapter in `src/store/storage.ts` (`createJSONStorage(() => Storage)`); transient UI/form state uses plain `create(...)` with no `persist`. See the **`state-management` skill** for the full conventions.
 
-Boundary rule: **Supabase is the source of truth** for server data and owns the auth session (via `LargeSecureStore`). Zustand persistence is for client/UI state and offline cache only — never re-store the auth session or secrets in a Zustand store.
+Boundary rule: **the API/database is the source of truth** for server data, and Better Auth owns the auth session. Zustand persistence is for client/UI state and offline cache only — never re-store auth sessions, tokens, or secrets in a Zustand store.
 
 ### Haptics
 

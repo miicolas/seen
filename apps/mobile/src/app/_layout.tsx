@@ -8,7 +8,6 @@ import { StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import "react-native-reanimated";
-import { Toaster } from "sonner-native";
 import { useTheme } from "@/hooks/use-theme";
 
 import { SplashScreenController } from "@/components/splash-screen-controller";
@@ -72,7 +71,6 @@ export default function RootLayout() {
               <AuthProvider>
                 <SplashScreenController />
                 <RootNavigator />
-                <Toaster theme="system" />
                 <StatusBar style="auto" />
               </AuthProvider>
             </QueryProvider>

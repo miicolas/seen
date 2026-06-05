@@ -4,13 +4,13 @@ import { GlassButton } from "@/components/ui/button";
 import { SPACING } from "@/constants/design-tokens";
 
 export function MediaActions({
-  hasReview,
+  hasRating,
   accentHex,
   onRate,
   reviewedLabel = "Rated",
   unreviewedLabel = "Mark as seen",
 }: {
-  hasReview: boolean;
+  hasRating: boolean;
   accentHex: string;
   onRate: () => void;
   reviewedLabel?: string;
@@ -19,8 +19,8 @@ export function MediaActions({
   return (
     <View style={styles.actionContainer}>
       <GlassButton
-        icon={hasReview ? "checkmark" : "star.fill"}
-        title={hasReview ? reviewedLabel : unreviewedLabel}
+        icon={hasRating ? "checkmark" : "star.fill"}
+        title={hasRating ? reviewedLabel : unreviewedLabel}
         tintColor={accentHex}
         onPress={onRate}
         width={180}

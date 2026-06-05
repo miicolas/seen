@@ -19,14 +19,6 @@ export default function ProfileLayout() {
           contentStyle: { backgroundColor: theme.background },
         }}
       />
-      <Stack.Screen
-        name="settings"
-        options={{
-          title: t("account.settings"),
-          headerLargeTitle: false,
-          contentStyle: { backgroundColor: theme.background },
-        }}
-      />
     </Stack>
   );
 }

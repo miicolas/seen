@@ -48,7 +48,7 @@ export function MediaDetail() {
           />
 
           {vm.mediaType === "movie" ? (
-            <MediaActions hasReview={vm.hasReview} accentHex={vm.accentHex} onRate={handleRate} />
+            <MediaActions hasRating={vm.hasRating} accentHex={vm.accentHex} onRate={handleRate} />
           ) : null}
 
           {vm.error && !vm.detail ? (

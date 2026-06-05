@@ -1,18 +1,18 @@
 ---
 name: state-management
-description: Zustand state-management conventions for the Seen app — feature-split stores, on-device persistence via expo-sqlite/kv-store, and the boundary with Supabase. Use this skill whenever creating, editing, or wiring client state: stores, global/shared state, persisted state, offline cache, form state, transient UI state, or anything involving zustand, create(), persist, or src/store/.
+description: Zustand state-management conventions for the Seen app — feature-split stores, on-device persistence via expo-sqlite/kv-store, and the boundary with API-owned server state. Use this skill whenever creating, editing, or wiring client state: stores, global/shared state, persisted state, offline cache, form state, transient UI state, or anything involving zustand, create(), persist, or src/store/.
 ---
 
 # State management (Zustand) for Seen
 
 Seen uses **Zustand** for client state, with on-device persistence via **`expo-sqlite/kv-store`**. State is split into small **feature stores** under `src/store/`. This mirrors the reference app's pattern (Code With Beto / Endlessly).
 
-## The boundary: Zustand vs Supabase (read first)
+## The boundary: Zustand vs server state (read first)
 
-- **Supabase is the source of truth** for server data, and it **owns the auth session** (persisted by `LargeSecureStore` in `src/lib/supabase.ts`).
+- **The API/database is the source of truth** for server data, and Better Auth owns the auth session.
 - **Zustand persistence is for client/UI state and offline cache only.**
-- **Never** store the auth session, access tokens, or anything secret in a Zustand store — that belongs to Supabase/SecureStore.
-- For server data, fetch from Supabase; you may cache a copy in a Zustand store for offline/optimistic UI, but treat Supabase as authoritative on reconnect.
+- **Never** store the auth session, access tokens, or anything secret in a Zustand store.
+- For server data, fetch from the API; you may cache a copy in a Zustand store for offline/optimistic UI, but treat the API/database as authoritative on reconnect.
 
 ## Conventions
 
@@ -81,11 +81,11 @@ export const useComposerStore = create<ComposerStore>((set) => ({
 | --- | --- |
 | Watchlist, favorites, user preferences, offline cache of server data | **persisted** |
 | Form/composer in progress, search query, modal/sheet open, playback progress | **ephemeral** |
-| Auth session / tokens | **neither — Supabase + LargeSecureStore** |
-| Source-of-truth server data | **fetch from Supabase** (optionally cache in a persisted store) |
+| Auth session / tokens | **neither — Better Auth secure storage** |
+| Source-of-truth server data | **fetch from the API** (optionally cache in a persisted store) |
 
 ## Don'ts
 
 - Don't put a Zustand provider around the app — Zustand stores are global module singletons; just import the hook.
 - Don't read the whole store when you need one field (causes extra re-renders).
-- Don't duplicate the Supabase auth session into Zustand.
+- Don't duplicate the auth session into Zustand.

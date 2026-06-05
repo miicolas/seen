@@ -23,13 +23,12 @@ export const ReviewModel = new Elysia({ name: "Review.Model" }).model({
   "review.Review": review,
   "review.NullableReview": t.Nullable(review),
   "review.MediaRefQuery": mediaRefQuery,
-  "review.ListQuery": t.Intersect([
-    mediaRefQuery,
-    t.Object({
-      limit: t.Optional(t.Numeric({ minimum: 1, maximum: 50 })),
-      offset: t.Optional(t.Numeric({ minimum: 0 })),
-    }),
-  ]),
+  "review.ListQuery": t.Object({
+    tmdbId: t.Numeric(),
+    mediaType,
+    limit: t.Optional(t.Numeric({ minimum: 1, maximum: 50 })),
+    offset: t.Optional(t.Numeric({ minimum: 0 })),
+  }),
   "review.Input": t.Object({
     tmdb_id: t.Number(),
     media_type: mediaType,

@@ -57,7 +57,7 @@ export function EpisodeDetail() {
 
           {vm.episodeTmdbId > 0 ? (
             <MediaActions
-              hasReview={vm.hasReview}
+              hasRating={vm.hasRating}
               accentHex={vm.accentHex}
               onRate={vm.handleRate}
               reviewedLabel={t("episode.rated")}

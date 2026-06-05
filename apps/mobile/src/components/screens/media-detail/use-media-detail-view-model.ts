@@ -94,6 +94,7 @@ export function useMediaDetailViewModel() {
 
   const myStars =
     mediaType === "movie" && review?.rating != null ? ratingToStars(review.rating) : 0;
+  const hasRating = myStars > 0;
   const hasReview = mediaType === "movie" && review != null;
 
   const infoRows: InfoRowData[] = [
@@ -169,6 +170,7 @@ export function useMediaDetailViewModel() {
     reviews: mediaType === "tv" ? [] : reviews,
     reviewCount: mediaType === "tv" ? 0 : reviewCount,
     myStars,
+    hasRating,
     hasReview,
     openReview,
     openReviews,

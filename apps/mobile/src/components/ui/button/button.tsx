@@ -1,13 +1,15 @@
-import { Button as UIButton, Host, HStack, Image, Text as SwiftUIText } from "@expo/ui/swift-ui";
+import { Button as UIButton, Host, Label } from "@expo/ui/swift-ui";
 import {
   buttonStyle,
   controlSize,
   disabled as disabledModifier,
   font,
   frame,
+  padding,
   tint,
 } from "@expo/ui/swift-ui/modifiers";
-import { useColorScheme } from "react-native";
+import { isLiquidGlassAvailable } from "expo-glass-effect";
+import { useColorScheme, useWindowDimensions, View } from "react-native";
 
 import { getColorValue } from "@/constants/colors";
 import { FONT_SIZE } from "@/constants/design-tokens";
@@ -17,16 +19,23 @@ import type { UISize } from "@/types/ui";
 
 import type { ButtonProps, ButtonVariant } from "./button.types";
 
-const VARIANT_TO_STYLE: Record<
-  ButtonVariant,
-  "borderedProminent" | "glassProminent" | "bordered" | "borderless"
-> = {
-  solid: "borderedProminent",
-  glass: "glassProminent",
-  soft: "bordered",
-  outline: "bordered",
-  link: "borderless",
-};
+type NativeButtonStyle = "borderedProminent" | "glassProminent" | "bordered" | "borderless";
+
+function resolveButtonStyle(variant: ButtonVariant): NativeButtonStyle {
+  if (variant === "glass") {
+    return isLiquidGlassAvailable() ? "glassProminent" : "borderedProminent";
+  }
+
+  if (variant === "solid") {
+    return "borderedProminent";
+  }
+
+  if (variant === "link") {
+    return "borderless";
+  }
+
+  return "bordered";
+}
 
 const SIZE_TO_FONT: Record<UISize, number> = {
   xs: FONT_SIZE.XS,
@@ -54,6 +63,7 @@ export function Button({
   width,
 }: ButtonProps) {
   const isDark = useColorScheme() === "dark";
+  const { width: screenWidth } = useWindowDimensions();
   const { accentHex } = useAccentColor();
   const tintValue = tintColor ?? (color ? getColorValue(color, isDark ? 400 : 500) : accentHex);
   const isDisabled = disabled || loading;
@@ -65,31 +75,36 @@ export function Button({
   }
 
   const stretch = width === "fill";
-  const contentFrame = stretch
-    ? frame({ height: 16, maxWidth: Infinity })
-    : width != null
-      ? frame({ width, height: 16 })
-      : frame({ height: 16 });
+  const hostWidth = stretch ? "100%" : width;
+  const labelFrame = frame({
+    maxWidth: stretch ? screenWidth : typeof width === "number" ? width : undefined,
+  });
+  const labelTitle = loading ? "…" : title;
 
   return (
-    <Host
-      matchContents={stretch ? { vertical: true } : true}
-      style={stretch ? { width: "100%" } : undefined}>
-      <UIButton
-        onPress={handlePress}
-        modifiers={[
-          buttonStyle(VARIANT_TO_STYLE[variant]),
-          controlSize("large"),
-          tint(tintValue),
-          disabledModifier(isDisabled),
-        ]}>
-        <HStack spacing={8} modifiers={[contentFrame]}>
-          {icon ? <Image systemName={icon} size={16} /> : null}
-          <SwiftUIText modifiers={[font({ size: SIZE_TO_FONT[size], weight: "semibold" })]}>
-            {loading ? "…" : title}
-          </SwiftUIText>
-        </HStack>
-      </UIButton>
-    </Host>
+    <View style={stretch ? { width: "100%" } : undefined}>
+      <Host
+        matchContents={stretch ? { vertical: true } : true}
+        style={{
+          alignSelf: "center",
+          ...(hostWidth != null ? { width: hostWidth } : null),
+        }}>
+        <UIButton
+          onPress={handlePress}
+          modifiers={[
+            buttonStyle(resolveButtonStyle(variant)),
+            controlSize("large"),
+            tint(tintValue),
+            disabledModifier(isDisabled),
+            padding(),
+          ]}>
+          <Label
+            title={labelTitle}
+            systemImage={icon}
+            modifiers={[font({ size: SIZE_TO_FONT[size], weight: "semibold" }), labelFrame]}
+          />
+        </UIButton>
+      </Host>
+    </View>
   );
 }

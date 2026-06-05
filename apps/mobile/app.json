@@ -56,7 +56,17 @@
         {
           "supportedLocales": ["en", "fr"]
         }
-      ]
+      ],
+      [
+        "expo-widgets",
+        {
+          "bundleIdentifier": "app.seen.com.ExpoWidgetsTarget",
+          "groupIdentifier": "group.app.seen.com",
+          "enablePushNotifications": false,
+          "widgets": []
+        }
+      ],
+      "./plugins/with-expo-widgets-version"
     ],
     "experiments": {
       "typedRoutes": true,

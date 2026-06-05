@@ -1,26 +1,26 @@
 ---
 name: tmdb
-description: TMDB (The Movie Database) integration for the Seen app — all TMDB access goes through the server-side `tmdb` Edge Function, which proxies TMDB and caches movie details in Supabase to protect the API quota. Use when fetching films (search / discover / find / detail), building movie image URLs, handling TMDB auth/errors, or extending the TMDB cache. Triggers on: TMDB, themoviedb, movie/film data, search films, discover, find by imdb id, poster/backdrop images, movie cache, API quota.
+description: TMDB (The Movie Database) integration for the Seen app — all TMDB access goes through the server-side API module, which proxies TMDB and keeps tokens server-side. Use when fetching media (search / discover / detail), building movie image URLs, handling TMDB auth/errors, or extending TMDB server handlers. Triggers on: TMDB, themoviedb, movie data, search media, discover, poster/backdrop images, API quota.
 ---
 
 # TMDB for Seen
 
-Seen shows films from **TMDB**. To protect the API quota (and cut latency), **every
-TMDB call goes through the server-side `tmdb` Edge Function** — the app never calls
-TMDB directly. The function proxies TMDB, keeps the token server-side, and caches movie
-**details** in the `movies` table (cache-aside). This is the only conformant path: per
-the `backend` skill, provider secrets must never reach `EXPO_PUBLIC_*`.
+Seen shows media from **TMDB**. To protect the API quota and keep credentials private,
+**every TMDB call goes through `apps/api/src/modules/tmdb/`** — the app never calls TMDB
+directly. The API proxies TMDB and keeps the token server-side. This is the only
+conformant path: per the `backend` skill, provider secrets must never reach
+`EXPO_PUBLIC_*`.
 
 > Read this skill before touching TMDB so you don't re-dig the docs. Deep param tables,
 > image config, and error codes live in `references/endpoints.md`.
 
 ## Where the code lives
 
-- `supabase/functions/tmdb/index.ts` — the function; routes on `action`.
-- `supabase/functions/_shared/tmdb.ts` — TMDB client (Bearer auth, endpoints, errors).
-- `supabase/functions/_shared/cache.ts` — `movies` cache helpers (TTL ~30 days).
-- `supabase/functions/_shared/supabase-admin.ts` — service-role client for cache writes.
-- `supabase/migrations/*_create_movies.sql` — the `movies` table + RLS.
+- `apps/api/src/modules/tmdb/router.ts` — Elysia routes.
+- `apps/api/src/modules/tmdb/client.ts` — TMDB client (Bearer auth, endpoints, errors).
+- `apps/api/src/modules/tmdb/queries/` — server query handlers.
+- `apps/api/src/modules/tmdb/resources/` — TMDB-to-app resource mappers.
+- `apps/mobile/src/lib/tmdb/` — mobile wrappers around the API.
 
 ## Auth (critical)
 
@@ -29,45 +29,33 @@ the `backend` skill, provider secrets must never reach `EXPO_PUBLIC_*`.
   `Authorization: Bearer <TMDB_TOKEN>`.
 - **Fallback:** v3 API key as a query param: `?api_key=<TMDB_API_KEY>`.
 - Validate a token: `GET /authentication` → `{"success":true,"status_code":1,...}`.
-- Secrets stay server-side: local `supabase/functions/.env` (gitignored, see
-  `.env.example`); prod `supabase secrets set TMDB_TOKEN=... TMDB_API_KEY=...`.
+- Secrets stay server-side in the API environment.
   **Never** put TMDB keys in `EXPO_PUBLIC_*` or call TMDB from the app.
 
 ## Calling the function from the app
 
 ```ts
-import { supabase } from "@/lib/supabase";
+import { getDiscoverFeed, getMovieDetail, searchMedia } from "@/lib/tmdb";
 
 // Text search
-const { data } = await supabase.functions.invoke("tmdb", {
-  body: { action: "search", query: "dune", page: 1 },
-});
+const results = await searchMedia("dune", "all", 1);
 
-// Full detail (cache-aside — served from `movies` when fresh)
-await supabase.functions.invoke("tmdb", { body: { action: "movie", tmdb_id: 438631 } });
+// Full detail
+const detail = await getMovieDetail(438631, "movie");
 
-// Discover (filters/sort passed via `params`)
-await supabase.functions.invoke("tmdb", {
-  body: { action: "discover", params: { sort_by: "popularity.desc", with_genres: "878" } },
-});
-
-// Find by external id (e.g. IMDB)
-await supabase.functions.invoke("tmdb", {
-  body: { action: "find", external_id: "tt1160419", source: "imdb_id" },
-});
+// Discover
+const feed = await getDiscoverFeed("all");
 ```
 
-The app can also read the warm cache directly via RLS:
-`supabase.from("movies").select("*")` (authenticated only).
+## Endpoints
 
-## Endpoints & caching strategy
-
-| action     | TMDB endpoint        | cache behaviour                                            |
-| ---------- | -------------------- | --------------------------------------------------------- |
-| `movie`    | `/movie/{id}`        | **cache-aside**: serve `movies.detail` if fresh (TTL ~30d), else fetch + upsert |
-| `search`   | `/search/movie`      | always TMDB; **warms** `movies` with light rows           |
-| `discover` | `/discover/movie`    | always TMDB; warms `movies`                                |
-| `find`     | `/find/{external_id}`| always TMDB; warms `movies.movie_results`                 |
+| API route | TMDB endpoint |
+| --- | --- |
+| `GET /tmdb/search` | `/search/movie` and tv search as requested by filter |
+| `GET /tmdb/discover` | discover feed endpoints |
+| `GET /tmdb/:mediaType/:tmdbId` | `/movie/{id}` or `/tv/{id}` |
+| `GET /tmdb/tv/:seriesId/season/:seasonNumber` | `/tv/{id}/season/{season}` |
+| `GET /tmdb/tv/:seriesId/season/:seasonNumber/episode/:episodeNumber` | `/tv/{id}/season/{season}/episode/{episode}` |
 
 - **`append_to_response`** — detail calls bundle sub-requests in one HTTP call
   (`credits,videos,images,release_dates`) to save quota. Add more by extending
@@ -101,6 +89,5 @@ TMDB errors carry `{ status_code, status_message }`. The function maps them to H
 ## Don'ts
 
 - No TMDB token or `api_key` in the app or in `EXPO_PUBLIC_*`.
-- No TMDB calls from the app — always go through the `tmdb` Edge Function.
-- Don't overwrite `movies.detail` from list responses (light upserts skip it).
+- No TMDB calls from the app — always go through the API module.
 - No schema changes outside a migration.

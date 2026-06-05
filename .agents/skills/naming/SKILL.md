@@ -53,10 +53,10 @@ For every concept there is **one canonical word**. The others are **forbidden** 
 | Concept | ✅ Canonical |
 |---|---|
 | The public-facing person record (name, avatar, activity) | **`profile`** (`profiles` table, `services/profiles`) |
-| The authenticated identity / Supabase auth user | **`user`** (from `useAuthContext()`) |
+| The authenticated identity / Better Auth user | **`user`** (from `useAuthContext()`) |
 | Account-level destructive ops (delete account) | **`account`** (e.g. `deleteAccount`) — only for auth/account lifecycle |
 
-Don't use `user` for profile data or `profile` for the auth session. `user` = who is logged in (Supabase auth); `profile` = the editable public record in our DB.
+Don't use `user` for profile data or `profile` for the auth session. `user` = who is logged in; `profile` = the editable public record in our DB.
 
 ---
 
@@ -93,13 +93,14 @@ src/
   services/
     core/                    # shared client/data plumbing
     <feature>/
-      handlers/              # one handler per file (direct supabase .from() + RLS; user data)
+      handlers/              # one handler per file (API-backed user data)
       types.ts               # feature's data types
   store/use-<feature>-store.ts
   lib/  constants/  providers/  types/
-supabase/
-  functions/<name>/index.ts  # server logic, AI/3rd-party calls only
-  migrations/*.sql           # schema + RLS
+apps/api/src/modules/<feature>/ # server logic and API routes
+packages/db/
+  src/schema/                 # Drizzle schema
+  drizzle/                    # SQL migrations
 ```
 
 ### File-name patterns (the suffix vocabulary)
@@ -128,7 +129,7 @@ A filename is `<concept>-<role>.tsx`, where `<concept>` uses the §1 vocabulary 
 | **verb**`.ts` (in `handlers/`) | one data operation per file | `upsert.ts`, `list.ts`, `delete.ts`, `stats.ts`, `get-my-review.ts` |
 
 Notes:
-- **Service handlers are verb-named, not noun-named**: `handlers/upsert.ts`, `handlers/list.ts`, `handlers/delete.ts` — one Supabase operation per file, re-exported from the feature's `index.ts`. Don't bundle them into one `reviews.ts`.
+- **Service handlers are verb-named, not noun-named**: `handlers/upsert.ts`, `handlers/list.ts`, `handlers/delete.ts` — one API operation per file, re-exported from the feature's `index.ts`. Don't bundle them into one `reviews.ts`.
 - **No `-screen` suffix on screen files** — the screen folder/file is the bare feature name (`media-detail`, not `media-detail-screen`); only route files in `app/` add route config.
 - **A file's `<concept>` must match its data.** A card showing a review is `review-card.tsx` (not `movie-card.tsx`); a section of media info is media-named.
 - Platform files: prefer `<name>.ios.tsx` for native-only variants. **Do not add new `.web.*` files** (web isn't a target).
@@ -137,7 +138,7 @@ Rules that are easy to get wrong:
 
 - **Screen names use the canonical vocabulary.** A screen for a movie-or-series is `media-detail` (✅ exists), not `movie-detail`/`title-detail`. An episode screen is `episode-detail`.
 - **Feature folders are named after the canonical concept**, pluralized for the data layer: `services/reviews`, `services/episode-reviews`, `services/profiles`, `hooks/reviews`, `hooks/profiles`, `hooks/tmdb`.
-- **Data access = `services/<feature>/handlers/` (direct `.from()` + RLS)** for user data — *not* an Edge Function, *not* `lib/`. Edge Functions are only for server logic / AI / third-party calls. (See the `backend` skill.)
+- **Mobile data access = `services/<feature>/handlers/`** for user data — call the existing API clients there, not from random components. Server logic / AI / third-party calls live in `apps/api`. (See the `backend` skill.)
 - **Singular vs plural:** type/interface = singular (`Review`); table, service folder, and hooks folder = plural (`reviews`). A hook returning one thing is singular (`useMyReview`); a list is plural (`useMediaReviews`).
 
 ---

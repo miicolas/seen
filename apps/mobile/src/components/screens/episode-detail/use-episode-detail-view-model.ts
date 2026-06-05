@@ -88,6 +88,7 @@ export function useEpisodeDetailViewModel() {
       ? `S${seasonNumber} E${episodeNumber}`
       : undefined;
   const myStars = review?.rating != null ? ratingToStars(review.rating) : 0;
+  const hasRating = myStars > 0;
   const hasReview = review != null;
 
   const crew = useMemo(
@@ -176,6 +177,7 @@ export function useEpisodeDetailViewModel() {
     runtime,
     episodeMeta,
     myStars,
+    hasRating,
     hasReview,
     cast,
     infoRows,

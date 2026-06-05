@@ -32,13 +32,13 @@ export const EpisodeReviewModel = new Elysia({
   "episodeReview.NullableReview": t.Nullable(episodeReview),
   "episodeReview.RefQuery": episodeRef,
   "episodeReview.SeasonQuery": seasonRef,
-  "episodeReview.ListQuery": t.Intersect([
-    episodeRef,
-    t.Object({
-      limit: t.Optional(t.Numeric({ minimum: 1, maximum: 50 })),
-      offset: t.Optional(t.Numeric({ minimum: 0 })),
-    }),
-  ]),
+  "episodeReview.ListQuery": t.Object({
+    seriesTmdbId: t.Numeric(),
+    seasonNumber: t.Numeric(),
+    episodeNumber: t.Numeric(),
+    limit: t.Optional(t.Numeric({ minimum: 1, maximum: 50 })),
+    offset: t.Optional(t.Numeric({ minimum: 0 })),
+  }),
   "episodeReview.Input": t.Object({
     series_tmdb_id: t.Number(),
     episode_tmdb_id: t.Number(),

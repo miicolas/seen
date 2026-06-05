@@ -9,7 +9,6 @@ dist
 apps/mobile/.expo
 apps/mobile/ios
 apps/mobile/android
-supabase
 **/*.log
 .env
 .env.*
