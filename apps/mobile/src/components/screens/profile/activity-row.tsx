@@ -13,6 +13,7 @@ import { useTheme } from "@/hooks/use-theme";
 import { hapticTap } from "@/lib/haptics";
 import { episodeDetailHref, mediaDetailHref } from "@/lib/navigation";
 import { tmdbImageUrl } from "@/lib/tmdb";
+import { ratingToStars } from "@/services/core/rating";
 import type { ProfileActivityItem } from "@/services/profiles";
 
 const POSTER_WIDTH = 64;
@@ -118,7 +119,7 @@ export function ActivityRow({ item }: { item: ProfileActivityItem }) {
             <MetricPill
               icon="star.fill"
               iconSize={10}
-              label={String(item.rating)}
+              label={String(ratingToStars(item.rating))}
               tint={accentHex}
               background={getBackgroundColor()}
             />

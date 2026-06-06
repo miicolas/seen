@@ -15,11 +15,10 @@ import {
 } from "@expo/ui/swift-ui/modifiers";
 import { Image as ExpoImage } from "expo-image";
 import { Link, Stack, useFocusEffect } from "expo-router";
-import { PressableScale } from "pressto";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { NativeSyntheticEvent, TextInputFocusEventData } from "react-native";
-import { StyleSheet, useWindowDimensions, View } from "react-native";
+import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 import type { SFSymbol } from "sf-symbols-typescript";
 
 import { MetricPill } from "@/components/ui/metric-pill";
@@ -186,7 +185,7 @@ function WatchlistRow({
     <SwipeActions modifiers={rowModifiers}>
       <RNHostView matchContents>
         <Link href={mediaDetailHref(item.media, "watchlist")} asChild>
-          <PressableScale
+          <Pressable
             onPress={() => hapticTap()}
             style={StyleSheet.flatten([styles.row, { width: rowWidth }])}>
             <Link.AppleZoom>
@@ -224,7 +223,7 @@ function WatchlistRow({
                 />
               ) : null}
             </View>
-          </PressableScale>
+          </Pressable>
         </Link>
       </RNHostView>
       <SwipeActions.Actions edge="trailing" allowsFullSwipe>

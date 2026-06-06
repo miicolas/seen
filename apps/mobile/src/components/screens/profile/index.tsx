@@ -114,7 +114,7 @@ export function ProfileScreen() {
               ) : null}
 
               <View style={styles.section}>
-                <Text size="4xl" color={theme.text} fillWidth>
+                <Text size="2xl" weight="bold" color={theme.text} fillWidth>
                   {t("profile.activityTitle")}
                 </Text>
 
