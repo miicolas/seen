@@ -10,3 +10,4 @@ export { updateMyUser } from "./handlers/update-user";
 export { changeMyPassword } from "./handlers/change-password";
 export { changeMyEmail } from "./handlers/change-email";
 export { deleteAccount } from "./handlers/delete-account";
+export { signOut } from "./handlers/sign-out";

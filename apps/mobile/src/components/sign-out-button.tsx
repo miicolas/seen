@@ -4,18 +4,12 @@ import { Pressable, StyleSheet } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Spacing } from "@/constants/theme";
-import { authClient } from "@/lib/auth-client";
 import { hapticTap } from "@/lib/haptics";
-import { queryClient } from "@/lib/query-client";
+import { signOut } from "@/services/account";
 
 async function onSignOutButtonPress() {
   hapticTap();
-  const { error } = await authClient.signOut();
-  if (error) {
-    console.error("Error signing out:", error);
-    return;
-  }
-  queryClient.clear();
+  await signOut().catch(() => {});
 }
 
 export default function SignOutButton() {
