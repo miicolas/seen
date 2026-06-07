@@ -36,8 +36,12 @@ import {
 import { EditSheetScaffold } from "./edit-sheet-scaffold";
 import { ProfileAvatar } from "./profile-avatar";
 
-function profileErrorMessage(error: unknown, fallback: string) {
-  if (error instanceof ProfileError) return error.message;
+function profileErrorMessage(
+  error: unknown,
+  fallback: string,
+  overrides: Partial<Record<ProfileError["code"], string>> = {},
+) {
+  if (error instanceof ProfileError) return overrides[error.code] ?? error.message;
   return fallback;
 }
 
@@ -89,10 +93,10 @@ export function EditProfileForm({ initialProfile }: { initialProfile: Profile })
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: "images",
+      mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.9,
+      quality: 0.7,
     });
 
     if (result.canceled) return;
@@ -105,6 +109,7 @@ export function EditProfileForm({ initialProfile }: { initialProfile: Profile })
       uri: asset.uri,
       mimeType: asset.mimeType,
       fileName: asset.fileName,
+      fileSize: asset.fileSize,
     });
   }, [t]);
 
@@ -133,17 +138,27 @@ export function EditProfileForm({ initialProfile }: { initialProfile: Profile })
       queryClient.setQueryData(profileKeys.me(), savedProfile);
 
       if (uploadedPath && previousAvatarPath && previousAvatarPath !== uploadedPath) {
-        await deleteProfileAvatarPath(previousAvatarPath);
+        void deleteProfileAvatarPath(previousAvatarPath).catch((cleanupError) => {
+          console.warn("previous avatar cleanup failed", cleanupError);
+        });
       }
 
       hapticSuccess();
       router.back();
     } catch (err) {
+      console.error("Profile save failed", err);
       if (uploadedPath) {
-        await deleteProfileAvatarPath(uploadedPath);
+        await deleteProfileAvatarPath(uploadedPath).catch((cleanupError) => {
+          console.warn("uploaded avatar cleanup failed", cleanupError);
+        });
       }
       hapticError();
-      setError(profileErrorMessage(err, t("profile.saveError")));
+      setError(
+        profileErrorMessage(err, t("profile.saveError"), {
+          "avatar-too-large": t("profile.avatarTooLarge"),
+          "avatar-invalid-type": t("profile.avatarInvalidType"),
+        }),
+      );
     } finally {
       setIsSaving(false);
     }

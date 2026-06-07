@@ -1,15 +1,14 @@
 import { treaty } from "@elysia/eden";
 import type { App } from "@seen/api";
 
-import { apiBaseUrl, authClient } from "@/lib/auth-client";
+import { apiBaseUrl, getAuthHeaders } from "@/lib/auth-client";
 
 export const api = treaty<App>(apiBaseUrl, {
   fetch: {
     credentials: "omit",
   },
   headers() {
-    const cookie = authClient.getCookie();
-    return cookie ? { Cookie: cookie } : {};
+    return getAuthHeaders();
   },
 });
 

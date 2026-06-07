@@ -19,6 +19,8 @@ export type ProfileErrorCode =
   | "full-name-required"
   | "username-invalid"
   | "username-taken"
+  | "avatar-too-large"
+  | "avatar-invalid-type"
   | "not-signed-in";
 
 export class ProfileError extends Error {
@@ -35,6 +37,7 @@ export interface AvatarUploadInput {
   uri: string;
   mimeType?: string | null;
   fileName?: string | null;
+  fileSize?: number;
 }
 
 export type ProfileActivityKind = "media" | "episode";

@@ -25,6 +25,15 @@ export default function ProfileLayout() {
         }}
       />
       <Stack.Screen
+        name="settings"
+        options={{
+          title: t("account.settingsTitle"),
+          presentation: "formSheet",
+          headerLargeTitle: false,
+          contentStyle: { backgroundColor: theme.backgroundElement },
+        }}
+      />
+      <Stack.Screen
         name="episode"
         options={{
           title: "",

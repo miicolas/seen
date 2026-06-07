@@ -1,6 +1,5 @@
 import { db } from "@seen/db";
 import { profiles } from "@seen/db/schema";
-import { eq } from "drizzle-orm";
 
 import { HttpError } from "../../../lib/http-error";
 import { toApiRow } from "../../../lib/rows";
@@ -48,10 +47,12 @@ export async function updateMyProfile(
     patch.avatarPath = input.avatarPath ?? null;
   }
 
+  // Upsert: the profile row is normally created lazily by GET /me, but a client
+  // that saves before ever loading its profile would otherwise hit a 404.
   const result = await db
-    .update(profiles)
-    .set(patch)
-    .where(eq(profiles.id, userId))
+    .insert(profiles)
+    .values({ id: userId, ...patch })
+    .onConflictDoUpdate({ target: profiles.id, set: patch })
     .returning()
     .catch((error) => {
       if (isUniqueViolation(error)) {

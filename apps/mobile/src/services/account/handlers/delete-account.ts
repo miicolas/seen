@@ -1,4 +1,4 @@
-import { authClient } from "@/lib/auth-client";
+import { authClient, clearAuthData } from "@/lib/auth-client";
 import { eden, unwrapEden } from "@/lib/eden";
 import { queryClient } from "@/lib/query-client";
 
@@ -11,5 +11,6 @@ export async function deleteAccount(input?: { password?: string }): Promise<void
     eden.account.delete(input?.password ? { password: input.password } : {}),
   );
   await authClient.signOut().catch(() => {});
+  await clearAuthData();
   queryClient.clear();
 }

@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { LetterboxdImportBanner } from "@/components/letterboxd-import-banner";
 import { GlassButton } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Text } from "@/components/ui/text";
@@ -14,9 +15,7 @@ import { useProfileActivity } from "@/hooks/profiles/use-profile-activity";
 import { useMyProfile } from "@/hooks/profiles/use-my-profile";
 import { useAccentColor } from "@/hooks/use-accent-color";
 import { useTheme } from "@/hooks/use-theme";
-import { authClient } from "@/lib/auth-client";
-import { hapticError, hapticSuccess, hapticTap } from "@/lib/haptics";
-import { queryClient } from "@/lib/query-client";
+import { hapticTap } from "@/lib/haptics";
 import { profileAvatarUrl } from "@/services/profiles";
 
 import { ActivityRow } from "./activity-row";
@@ -50,37 +49,17 @@ export function ProfileScreen() {
     router.push("/profile/edit");
   }, [router]);
 
-  const handleWhatsNew = useCallback(() => {
+  const handleSettings = useCallback(() => {
     hapticTap();
-    router.push("/whats-new");
+    router.push("/profile/settings");
   }, [router]);
-
-  const handleSignOut = useCallback(async () => {
-    hapticTap();
-    const { error } = await authClient.signOut();
-    if (error) {
-      hapticError();
-      console.error("Error signing out:", error);
-      return;
-    }
-    queryClient.clear();
-    hapticSuccess();
-  }, []);
 
   return (
     <>
       <Stack.Toolbar placement="right">
-        <Stack.Toolbar.Menu icon="ellipsis">
-          <Stack.Toolbar.Label>{t("profile.menuTitle")}</Stack.Toolbar.Label>
-          <Stack.Toolbar.MenuAction icon="sparkles" onPress={handleWhatsNew}>
-            {t("whatsNew.title")}
-          </Stack.Toolbar.MenuAction>
-          <Stack.Toolbar.MenuAction
-            icon="rectangle.portrait.and.arrow.right"
-            onPress={handleSignOut}>
-            {t("profile.signOut")}
-          </Stack.Toolbar.MenuAction>
-        </Stack.Toolbar.Menu>
+        <Stack.Toolbar.Button icon="gearshape" onPress={handleSettings}>
+          {t("account.settings")}
+        </Stack.Toolbar.Button>
       </Stack.Toolbar>
 
       <ScrollView
@@ -90,6 +69,8 @@ export function ProfileScreen() {
           paddingBottom: insets.bottom + BottomTabInset + SPACING.LG,
         }}>
         <View style={styles.content}>
+          <LetterboxdImportBanner style={styles.bannerSlot} />
+
           {isLoading ? (
             <View style={styles.loading}>
               <ActivityIndicator />
@@ -184,6 +165,9 @@ const styles = StyleSheet.create({
     maxWidth: LAYOUT.CONTENT_MAX_WIDTH,
     alignSelf: "center",
     paddingHorizontal: LAYOUT.SCREEN_PADDING,
+  },
+  bannerSlot: {
+    marginTop: SPACING.MD,
   },
   loading: {
     minHeight: 420,

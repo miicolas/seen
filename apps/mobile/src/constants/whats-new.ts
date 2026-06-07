@@ -17,6 +17,27 @@ export interface WhatsNewRelease {
 
 export const WHATS_NEW_RELEASES: WhatsNewRelease[] = [
   {
+    version: "1.1.0",
+    features: [
+      {
+        icon: "square.and.arrow.down",
+        title: { en: "Letterboxd Import", fr: "Import Letterboxd" },
+        description: {
+          en: "Bring your Letterboxd history with you in just a few taps.",
+          fr: "Importez votre historique Letterboxd en quelques instants.",
+        },
+      },
+      {
+        icon: "person.crop.circle",
+        title: { en: "Account Settings", fr: "Réglages du compte" },
+        description: {
+          en: "Manage your account and preferences from one place.",
+          fr: "Gérez votre compte et vos préférences au même endroit.",
+        },
+      },
+    ],
+  },
+  {
     version: "1.0.0",
     features: [
       {

@@ -58,3 +58,10 @@ example
 eas-asc-api-key.p8
 *.p8
 .env.prod
+.claude/
+.codex/
+.agents/skills/
+.vscode/
+.superset/
+apps/api/.turbo/
+docs/

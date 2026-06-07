@@ -45,7 +45,7 @@ export const ProfileModel = new Elysia({ name: "Profile.Model" }).model({
   "profile.AvatarUploadBody": t.Object({
     file: t.File({
       type: "image/*",
-      maxSize: "5m",
+      maxSize: "10m",
     }),
   }),
   "profile.AvatarUploadResponse": t.Object({
