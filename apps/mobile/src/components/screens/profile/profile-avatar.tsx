@@ -4,7 +4,6 @@ import { StyleSheet, View } from "react-native";
 import { Text } from "@/components/ui/text";
 import { useAccentColor } from "@/hooks/use-accent-color";
 import { useTheme } from "@/hooks/use-theme";
-import { authClient } from "@/lib/auth-client";
 
 import { initials } from "./utils";
 
@@ -20,16 +19,9 @@ export function ProfileAvatar({
   const theme = useTheme();
   const { accentHex } = useAccentColor();
   const circle = { width: size, height: size, borderRadius: size / 2 };
-  const cookie = authClient.getCookie();
 
   if (uri) {
-    return (
-      <Image
-        source={{ uri, headers: cookie ? { Cookie: cookie } : undefined }}
-        contentFit="cover"
-        style={[styles.circle, circle]}
-      />
-    );
+    return <Image source={{ uri }} contentFit="cover" style={[styles.circle, circle]} />;
   }
 
   return (

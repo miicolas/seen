@@ -9,14 +9,6 @@ import { ulid } from "ulid";
 import { env } from "../env";
 import { HttpError } from "./http-error";
 
-const allowedAvatarTypes = new Set([
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/heic",
-  "image/heif",
-]);
-
 export const s3 = new S3Client({
   region: env.s3Region,
   endpoint: env.s3Endpoint,
@@ -26,6 +18,22 @@ export const s3 = new S3Client({
   },
   forcePathStyle: true,
 });
+
+function normalizeAvatarMimeType(type: string) {
+  switch (type.trim().toLowerCase()) {
+    case "image/jpeg":
+    case "image/png":
+    case "image/webp":
+    case "image/heic":
+    case "image/heif":
+      return type.trim().toLowerCase();
+    case "image/jpg":
+    case "image/pjpeg":
+      return "image/jpeg";
+    default:
+      throw new HttpError(415, "Unsupported avatar image type.", "invalid-mime");
+  }
+}
 
 function extensionForMime(type: string) {
   switch (type) {
@@ -42,10 +50,14 @@ function extensionForMime(type: string) {
   }
 }
 
-export function assertUserObjectPath(userId: string, path: string) {
+function assertSafeObjectPath(path: string) {
   if (!path || path.includes("..") || path.startsWith("/")) {
     throw new HttpError(400, "Invalid object path.", "invalid-object-path");
   }
+}
+
+export function assertUserObjectPath(userId: string, path: string) {
+  assertSafeObjectPath(path);
 
   if (!path.startsWith(`${userId}/`)) {
     throw new HttpError(403, "Object path is not owned by this user.");
@@ -53,11 +65,9 @@ export function assertUserObjectPath(userId: string, path: string) {
 }
 
 export async function uploadAvatarObject(userId: string, file: File) {
-  if (!allowedAvatarTypes.has(file.type)) {
-    throw new HttpError(415, "Unsupported avatar image type.", "invalid-mime");
-  }
+  const contentType = normalizeAvatarMimeType(file.type);
 
-  const key = `${userId}/${ulid()}.${extensionForMime(file.type)}`;
+  const key = `${userId}/${ulid()}.${extensionForMime(contentType)}`;
   const body = new Uint8Array(await file.arrayBuffer());
 
   await s3.send(
@@ -65,7 +75,7 @@ export async function uploadAvatarObject(userId: string, file: File) {
       Bucket: env.s3AvatarsBucket,
       Key: key,
       Body: body,
-      ContentType: file.type,
+      ContentType: contentType,
       CacheControl: "private, max-age=31536000, immutable",
     }),
   );
@@ -84,8 +94,8 @@ export async function deleteAvatarObject(userId: string, path: string) {
   );
 }
 
-export async function getAvatarObject(userId: string, path: string) {
-  assertUserObjectPath(userId, path);
+export async function getAvatarObject(path: string) {
+  assertSafeObjectPath(path);
 
   const result = await s3
     .send(

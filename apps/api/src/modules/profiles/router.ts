@@ -45,7 +45,6 @@ export const profileController = new Elysia({
       200: "profile.DeleteResponse",
     },
   })
-  .get("/avatar", ({ user, query }) => getAvatar(user.id, query.path), {
-    auth: true,
+  .get("/avatar", ({ query }) => getAvatar(query.path), {
     query: "profile.AvatarQuery",
   });
