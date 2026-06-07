@@ -4,7 +4,7 @@ on:
   push:
     branches: ["main"]
   pull_request:
-    branches: ["main"]
+    branches: ["main", "dev"]
     types: [opened, synchronize, reopened, ready_for_review]
 
 concurrency:
@@ -24,6 +24,8 @@ jobs:
     name: ${{ matrix.target.name }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # Run on pushes, and on PRs only once they are open (skip while draft).
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
     strategy:
       fail-fast: false
       matrix:
