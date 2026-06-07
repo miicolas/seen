@@ -16,20 +16,33 @@ import { useAuthContext } from "@/hooks/use-auth-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { QueryProvider } from "@/lib/query-client";
 import AuthProvider from "@/providers/auth-provider";
+import { useOnboardingStore } from "@/store/use-onboarding-store";
 
 function RootNavigator() {
   const { isLoggedIn } = useAuthContext();
+  const onboardingCompleted = useOnboardingStore((state) => state.completed);
   const theme = useTheme();
   const { t } = useTranslation();
 
   return (
     <Stack>
-      <Stack.Protected guard={isLoggedIn}>
+      <Stack.Protected guard={isLoggedIn && onboardingCompleted}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack.Protected>
+      <Stack.Protected guard={isLoggedIn && !onboardingCompleted}>
+        <Stack.Screen name="(setup)/import" options={{ headerShown: false }} />
       </Stack.Protected>
       <Stack.Protected guard={!isLoggedIn}>
         <Stack.Screen name="(onboarding)/index" options={{ headerShown: false }} />
       </Stack.Protected>
+      <Stack.Screen
+        name="import-letterboxd"
+        options={{
+          title: t("import.screenTitle"),
+          presentation: "formSheet",
+          contentStyle: { backgroundColor: theme.background },
+        }}
+      />
       <Stack.Screen
         name="review"
         options={{
