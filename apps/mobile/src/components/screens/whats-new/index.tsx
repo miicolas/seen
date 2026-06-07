@@ -25,15 +25,24 @@ export function WhatsNew() {
 
   return (
     <View style={[styles.root, { backgroundColor: theme.background }]}>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text size="4xl" weight="bold" color={theme.text} fillWidth>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}>
+        <Text size="4xl" weight="bold" color={theme.text} align="leading" fillWidth>
           {t("whatsNew.title")}
         </Text>
 
         <View style={styles.features}>
-          {release?.features.map((feature, index) => (
-            <FeatureRow key={`${feature.icon}-${index}`} feature={feature} />
-          ))}
+          {release ? (
+            release.features.map((feature, index) => (
+              <FeatureRow key={`${feature.icon}-${index}`} feature={feature} />
+            ))
+          ) : (
+            <Text size="md" color={theme.textSecondary} fillWidth>
+              {t("whatsNew.empty")}
+            </Text>
+          )}
         </View>
       </ScrollView>
 
@@ -46,6 +55,9 @@ export function WhatsNew() {
 
 const styles = StyleSheet.create({
   root: {
+    flex: 1,
+  },
+  scroll: {
     flex: 1,
   },
   content: {

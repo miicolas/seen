@@ -6,10 +6,8 @@ import { ScrollView, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { SFSymbol } from "sf-symbols-typescript";
 
-import { LetterboxdImportBanner } from "@/components/letterboxd-import-banner";
 import { DiscoverContainer } from "@/components/discover/container";
 import { SearchResults } from "@/components/discover/search-results";
-import { LAYOUT, SPACING } from "@/constants/design-tokens";
 import { BottomTabInset, Spacing } from "@/constants/theme";
 import { hapticSelection } from "@/lib/haptics";
 import type { MediaFilter } from "@/lib/tmdb";
@@ -82,9 +80,9 @@ export function Discover() {
       ) : (
         <ScrollView
           style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
           contentInsetAdjustmentBehavior="automatic"
           contentContainerStyle={{ paddingBottom: bottomInset }}>
-          <LetterboxdImportBanner style={styles.bannerSlot} />
           <DiscoverContainer filter={filter} />
         </ScrollView>
       )}
@@ -96,13 +94,5 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     width: "100%",
-  },
-  bannerSlot: {
-    width: "100%",
-    maxWidth: LAYOUT.CONTENT_MAX_WIDTH,
-    alignSelf: "center",
-    paddingHorizontal: LAYOUT.SCREEN_PADDING,
-    marginTop: SPACING.MD,
-    marginBottom: SPACING.SM,
   },
 });

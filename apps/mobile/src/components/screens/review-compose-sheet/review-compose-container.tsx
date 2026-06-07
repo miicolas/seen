@@ -29,6 +29,7 @@ export function ReviewComposeContainer({ controller }: { controller: ReviewContr
 
       <KeyboardAwareScrollView
         bottomOffset={LAYOUT.SCREEN_PADDING}
+        showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic">
         {controller.isLoading ? (
           <View style={[styles.loading, { backgroundColor: theme.background }]}>

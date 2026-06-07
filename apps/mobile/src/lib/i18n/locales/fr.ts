@@ -67,16 +67,14 @@ export const fr: typeof en = {
     importing: "Importation…",
     summary: "{{imported}} importés • {{unmatched}} à vérifier",
     summaryNoUnmatched: "{{imported}} films importés",
-    reviewTitle: "Films à confirmer",
-    reviewHint: "Nous n'avons pas pu les associer avec certitude. Choisis le bon film ou passe.",
-    skip: "Passer",
+    reviewTitle: "Films à vérifier",
+    reviewCount: "{{count}} film{{plural}} qu'on n'a pas pu associer automatiquement.",
+    reviewHint: "Choisis la bonne fiche, ou n'importe pas ce film.",
+    skipFilm: "Ne pas importer ce film",
     noMatch: "Aucune correspondance sur TMDB.",
     skipAll: "Plus tard",
     done: "Continuer",
     close: "Terminé",
-    bannerTitle: "Importe tes notes et ta watchlist Letterboxd.",
-    bannerAction: "Commencer",
-    bannerDismiss: "Masquer l’invitation d’import Letterboxd",
   },
   discover: {
     filterAll: "Tout",
@@ -227,5 +225,6 @@ export const fr: typeof en = {
   whatsNew: {
     title: "Quoi de neuf dans Seen",
     continue: "Continuer",
+    empty: "Rien de neuf pour le moment.",
   },
 };

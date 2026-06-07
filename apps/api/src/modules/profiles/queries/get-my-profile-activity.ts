@@ -26,8 +26,12 @@ function mediaSubtitle(movie: typeof movies.$inferSelect | undefined, mediaType:
   return year ? `${label} - ${year}` : label;
 }
 
-export async function getMyProfileActivity(userId: string, limit = 12) {
+export async function getMyProfileActivity(userId: string, limit = 12, offset = 0) {
   const pageSize = Math.max(1, Math.min(50, limit));
+  const from = Math.max(0, offset);
+  // The feed merges two tables sorted by createdAt, so to honor a global offset we
+  // over-fetch the full window (offset + pageSize) from each table, merge, then slice.
+  const window = from + pageSize;
 
   const [reviewRows, episodeRows] = await Promise.all([
     db
@@ -35,13 +39,13 @@ export async function getMyProfileActivity(userId: string, limit = 12) {
       .from(reviews)
       .where(eq(reviews.userId, userId))
       .orderBy(desc(reviews.createdAt))
-      .limit(pageSize),
+      .limit(window),
     db
       .select()
       .from(episodeReviews)
       .where(eq(episodeReviews.userId, userId))
       .orderBy(desc(episodeReviews.createdAt))
-      .limit(pageSize),
+      .limit(window),
   ]);
 
   const movieMap = await getMoviesForActivity([
@@ -100,5 +104,5 @@ export async function getMyProfileActivity(userId: string, limit = 12) {
     .sort(
       (left, right) => new Date(right.created_at).getTime() - new Date(left.created_at).getTime(),
     )
-    .slice(0, pageSize);
+    .slice(from, from + pageSize);
 }

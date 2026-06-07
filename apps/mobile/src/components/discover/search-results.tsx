@@ -69,6 +69,7 @@ export function SearchResults({
       data={results}
       keyExtractor={keyOf}
       numColumns={COLUMNS}
+      showsVerticalScrollIndicator={false}
       contentInsetAdjustmentBehavior="automatic"
       keyboardDismissMode="on-drag"
       columnWrapperStyle={styles.row}

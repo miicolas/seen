@@ -51,6 +51,7 @@ export function EditSheetScaffold({
       <KeyboardAwareScrollView
         style={[styles.root, { backgroundColor: theme.background }]}
         bottomOffset={LAYOUT.SCREEN_PADDING}
+        showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{
           paddingBottom: Math.max(insets.bottom, LAYOUT.SCREEN_PADDING),

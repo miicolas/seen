@@ -72,8 +72,9 @@ function RootNavigator() {
         <Stack.Screen
           name="whats-new"
           options={{
-            title: t("whatsNew.title"),
+            headerShown: false,
             presentation: "formSheet",
+            sheetGrabberVisible: true,
             contentStyle: { backgroundColor: theme.background },
           }}
         />

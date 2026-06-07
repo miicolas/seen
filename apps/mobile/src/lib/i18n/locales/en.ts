@@ -63,16 +63,14 @@ export const en = {
     importing: "Importing…",
     summary: "Imported {{imported}} • {{unmatched}} need review",
     summaryNoUnmatched: "Imported {{imported}} films",
-    reviewTitle: "Films that need your help",
-    reviewHint: "We couldn't confidently match these. Pick the right film or skip it.",
-    skip: "Skip",
+    reviewTitle: "Films to review",
+    reviewCount: "{{count}} film{{plural}} we couldn't match automatically.",
+    reviewHint: "Pick the correct match, or skip importing this one.",
+    skipFilm: "Don't import this one",
     noMatch: "No match found on TMDB.",
     skipAll: "Maybe later",
     done: "Continue",
     close: "Done",
-    bannerTitle: "Import your Letterboxd ratings and watchlist.",
-    bannerAction: "Get Started",
-    bannerDismiss: "Dismiss Letterboxd import prompt",
   },
   discover: {
     filterAll: "All",
@@ -223,5 +221,6 @@ export const en = {
   whatsNew: {
     title: "What's New in Seen",
     continue: "Continue",
+    empty: "Nothing new right now.",
   },
 };

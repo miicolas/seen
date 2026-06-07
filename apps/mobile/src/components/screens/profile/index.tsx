@@ -2,10 +2,10 @@ import { Stack, useFocusEffect, useRouter } from "expo-router";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
+import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { LetterboxdImportBanner } from "@/components/letterboxd-import-banner";
 import { GlassButton } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Text } from "@/components/ui/text";
@@ -54,6 +54,16 @@ export function ProfileScreen() {
     router.push("/profile/settings");
   }, [router]);
 
+  const loadMore = activity.loadMore;
+  const handleScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
+      const distanceToBottom = contentSize.height - (contentOffset.y + layoutMeasurement.height);
+      if (distanceToBottom < 400) loadMore();
+    },
+    [loadMore],
+  );
+
   return (
     <>
       <Stack.Toolbar placement="right">
@@ -65,12 +75,13 @@ export function ProfileScreen() {
       <ScrollView
         style={[styles.root, { backgroundColor: theme.background }]}
         contentInsetAdjustmentBehavior="automatic"
+        showsVerticalScrollIndicator={false}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
         contentContainerStyle={{
           paddingBottom: insets.bottom + BottomTabInset + SPACING.LG,
         }}>
         <View style={styles.content}>
-          <LetterboxdImportBanner style={styles.bannerSlot} />
-
           {isLoading ? (
             <View style={styles.loading}>
               <ActivityIndicator />
@@ -134,6 +145,12 @@ export function ProfileScreen() {
                   </View>
                 )}
 
+                {activity.isFetchingNextPage ? (
+                  <View style={styles.activityLoading}>
+                    <ActivityIndicator />
+                  </View>
+                ) : null}
+
                 {activity.error ? (
                   <Pressable
                     accessibilityRole="button"
@@ -165,9 +182,6 @@ const styles = StyleSheet.create({
     maxWidth: LAYOUT.CONTENT_MAX_WIDTH,
     alignSelf: "center",
     paddingHorizontal: LAYOUT.SCREEN_PADDING,
-  },
-  bannerSlot: {
-    marginTop: SPACING.MD,
   },
   loading: {
     minHeight: 420,

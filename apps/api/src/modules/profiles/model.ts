@@ -37,6 +37,7 @@ export const ProfileModel = new Elysia({ name: "Profile.Model" }).model({
   }),
   "profile.ActivityQuery": t.Object({
     limit: t.Optional(t.Numeric({ minimum: 1, maximum: 50 })),
+    offset: t.Optional(t.Numeric({ minimum: 0 })),
   }),
   "profile.ActivityList": t.Array(activityItem),
   "profile.AvatarQuery": t.Object({

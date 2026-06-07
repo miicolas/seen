@@ -29,7 +29,7 @@ export function PosterCard({ movie, width, showMeta = true }: PosterCardProps) {
     width >= 180 ? "w500" : "w342",
   );
 
-  const title = truncate(movie.title ?? movie.original_title ?? "Untitled", 22);
+  const title = truncate(movie.title ?? movie.original_title ?? "Untitled", 18);
   const meta = releaseYear(movie.release_date);
 
   function handlePress() {

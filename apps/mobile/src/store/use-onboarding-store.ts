@@ -10,11 +10,10 @@ interface OnboardingStore {
   // Flips true once the persisted value has loaded, so the root navigator doesn't
   // flash the setup step before we know whether it was already completed.
   hasHydrated: boolean;
-  letterboxdImportStatus: "pending" | "skipped" | "completed" | "dismissed";
+  letterboxdImportStatus: "pending" | "skipped" | "completed";
   completeOnboardingAction: () => void;
   markLetterboxdImportSkippedAction: () => void;
   markLetterboxdImportCompletedAction: () => void;
-  dismissLetterboxdImportPromptAction: () => void;
   setHasHydratedAction: (value: boolean) => void;
 }
 
@@ -27,7 +26,6 @@ export const useOnboardingStore = create(
       completeOnboardingAction: () => set({ completed: true }),
       markLetterboxdImportSkippedAction: () => set({ letterboxdImportStatus: "skipped" }),
       markLetterboxdImportCompletedAction: () => set({ letterboxdImportStatus: "completed" }),
-      dismissLetterboxdImportPromptAction: () => set({ letterboxdImportStatus: "dismissed" }),
       setHasHydratedAction: (value) => set({ hasHydrated: value }),
     }),
     {

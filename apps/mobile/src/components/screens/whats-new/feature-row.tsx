@@ -9,8 +9,8 @@ import { useAccentColor } from "@/hooks/use-accent-color";
 import { useTheme } from "@/hooks/use-theme";
 import { resolveAppLanguage } from "@/lib/i18n";
 
-const ICON_SIZE = 30;
-const ICON_COLUMN = 44;
+const ICON_SIZE = 40;
+const ICON_COLUMN = 56;
 
 export function FeatureRow({ feature }: { feature: WhatsNewFeature }) {
   const theme = useTheme();
