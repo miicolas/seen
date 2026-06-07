@@ -44,14 +44,15 @@ export function MediaActions({
       ) : null}
       {canShowWatchlist ? (
         <IconButton
-          icon={isInWatchlist ? "bookmark.slash.fill" : "bookmark.fill"}
+          icon={isInWatchlist ? "bookmark.slash.fill" : "bookmark"}
           accessibilityLabel={watchlistLabel}
           onPress={onToggleWatchlist}
           tintColor="#FFFFFF"
           iconColor={accentHex}
           disabled={isWatchlistSaving}
           haptic
-          role="cancel"
+          role={isInWatchlist ? "cancel" : "default"}
+          symbolTransitionValue={isInWatchlist}
         />
       ) : null}
     </View>

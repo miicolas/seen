@@ -50,6 +50,11 @@ export function ProfileScreen() {
     router.push("/profile/edit");
   }, [router]);
 
+  const handleWhatsNew = useCallback(() => {
+    hapticTap();
+    router.push("/whats-new");
+  }, [router]);
+
   const handleSignOut = useCallback(async () => {
     hapticTap();
     const { error } = await authClient.signOut();
@@ -67,6 +72,9 @@ export function ProfileScreen() {
       <Stack.Toolbar placement="right">
         <Stack.Toolbar.Menu icon="ellipsis">
           <Stack.Toolbar.Label>{t("profile.menuTitle")}</Stack.Toolbar.Label>
+          <Stack.Toolbar.MenuAction icon="sparkles" onPress={handleWhatsNew}>
+            {t("whatsNew.title")}
+          </Stack.Toolbar.MenuAction>
           <Stack.Toolbar.MenuAction
             icon="rectangle.portrait.and.arrow.right"
             onPress={handleSignOut}>
