@@ -49,7 +49,7 @@ export function PosterCard({ movie, width, showMeta = true }: PosterCardProps) {
         {
           id: "toggle-watchlist",
           title: watchlist.isInWatchlist ? t("watchlist.remove") : t("watchlist.add"),
-          image: watchlist.isInWatchlist ? "bookmark.slash" : "bookmark",
+          image: watchlist.isInWatchlist ? "bookmark.slash.fill" : "bookmark",
         },
       ]}
       onPressAction={handleMenuAction}>

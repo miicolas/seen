@@ -1,5 +1,7 @@
 import { Button as UIButton, Host } from "@expo/ui/swift-ui";
 import {
+  Animation,
+  animation,
   buttonStyle,
   controlSize,
   disabled as disabledModifier,
@@ -12,6 +14,7 @@ import type { SFSymbol } from "sf-symbols-typescript";
 
 import { useAccentColor } from "@/hooks/use-accent-color";
 import { hapticTap } from "@/lib/haptics";
+import { symbolReplaceTransition } from "@/lib/symbol-replace-transition";
 
 export function IconButton({
   icon,
@@ -22,6 +25,7 @@ export function IconButton({
   disabled = false,
   haptic = true,
   role = "default",
+  symbolTransitionValue,
 }: {
   icon: SFSymbol;
   accessibilityLabel: string;
@@ -31,9 +35,14 @@ export function IconButton({
   disabled?: boolean;
   haptic?: boolean;
   role?: "default" | "cancel" | "destructive";
+  symbolTransitionValue?: number | boolean;
 }) {
   const { accentHex } = useAccentColor();
   const tintValue = tintColor ?? accentHex;
+  const symbolTransitionModifiers =
+    symbolTransitionValue == null
+      ? []
+      : [symbolReplaceTransition(), animation(Animation.default, symbolTransitionValue)];
 
   function handlePress() {
     if (disabled) return;
@@ -52,6 +61,7 @@ export function IconButton({
           controlSize("large"),
           tint(tintValue),
           labelStyle("iconOnly"),
+          ...symbolTransitionModifiers,
           ...(iconColor ? [foregroundColor(iconColor)] : []),
           disabledModifier(disabled),
         ]}

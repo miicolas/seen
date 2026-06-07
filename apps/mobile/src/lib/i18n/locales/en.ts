@@ -220,4 +220,8 @@ export const en = {
     watchlist: "Watchlist",
     profile: "Profile",
   },
+  whatsNew: {
+    title: "What's New in Seen",
+    continue: "Continue",
+  },
 };

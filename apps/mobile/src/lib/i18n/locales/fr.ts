@@ -224,4 +224,8 @@ export const fr: typeof en = {
     watchlist: "Watchlist",
     profile: "Profil",
   },
+  whatsNew: {
+    title: "Quoi de neuf dans Seen",
+    continue: "Continuer",
+  },
 };

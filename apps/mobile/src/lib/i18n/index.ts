@@ -6,9 +6,13 @@ import { resources, SUPPORTED_LANGUAGES, type AppLanguage } from "./locales/reso
 
 const FALLBACK: AppLanguage = "en";
 
+export function resolveAppLanguage(language: string | undefined | null): AppLanguage {
+  return language?.startsWith("fr") ? "fr" : FALLBACK;
+}
+
 export function detectDeviceLanguage(): AppLanguage {
   try {
-    return getLocales()[0]?.languageCode === "fr" ? "fr" : FALLBACK;
+    return resolveAppLanguage(getLocales()[0]?.languageCode);
   } catch {
     return FALLBACK;
   }

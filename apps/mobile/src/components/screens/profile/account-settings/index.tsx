@@ -38,6 +38,11 @@ export function AccountSettingsSheet() {
     router.push("/import-letterboxd");
   }, [router]);
 
+  const openWhatsNew = useCallback(() => {
+    hapticTap();
+    router.push("/whats-new");
+  }, [router]);
+
   const handleSignOut = useCallback(async () => {
     hapticTap();
     try {
@@ -73,6 +78,7 @@ export function AccountSettingsSheet() {
               label={t("import.menuAction")}
               onPress={openImport}
             />
+            <AccountRow icon="sparkles" label={t("whatsNew.title")} onPress={openWhatsNew} />
           </Section>
 
           <LinkedAccountsSection linked={linked} />
