@@ -1,56 +1,134 @@
-# Welcome to your Expo app 👋
+# SeenBox 🎬
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+> A native, open-source, Letterboxd-style app for iOS — track the movies and shows you've **seen**, rate them, and build your watchlist.
 
-## Get started
+SeenBox is built **iOS-first** with [Expo](https://expo.dev) (SDK 56) and a fully native UI powered by **Expo UI + SwiftUI** (`@expo/ui/swift-ui`). The backend is a [Bun](https://bun.sh) + [Elysia](https://elysiajs.com) API with Postgres, Redis, and S3. Movie data comes from [TMDB](https://www.themoviedb.org/).
 
-1. Install dependencies
+This project is open source and contributions are very welcome — see [Contributing](#contributing) below.
 
-   ```bash
-   npm install
-   ```
+---
 
-2. Start the app
+## ✨ Features
 
-   ```bash
-   npx expo start
-   ```
+- 🎞️ Browse and search movies & TV via TMDB
+- ⭐ Rate and review what you've seen
+- 📋 Personal watchlist
+- 🍿 Import from Letterboxd
+- 🔐 Sign in with Apple (Better Auth)
+- 📱 100% native iOS UI (SwiftUI under the hood)
 
-In the output, you'll find options to open the app in a
+## 🧱 Tech stack
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+| Layer   | Tech                                                                       |
+| ------- | -------------------------------------------------------------------------- |
+| Mobile  | Expo SDK 56, React Native 0.85, React 19, Expo Router, `@expo/ui/swift-ui` |
+| State   | Zustand, TanStack Query                                                    |
+| Auth    | Better Auth (+ `@better-auth/expo`)                                        |
+| API     | Bun, Elysia, Eden                                                          |
+| Data    | Postgres + Drizzle ORM, Redis, S3 (MinIO locally)                          |
+| Movies  | TMDB                                                                       |
+| Tooling | Turborepo, bun workspaces, ESLint, Prettier, TypeScript (strict)           |
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+> ⚠️ SeenBox is **iOS-only**. There is no web or Android target.
 
-## Get a fresh project
+## 📦 Monorepo layout
 
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+apps/
+  mobile/   # Expo iOS app (source under src/)
+  api/      # Bun + Elysia backend
+packages/
+  db/       # Drizzle schema & migrations
+  shared/   # Shared types/utilities
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 🚀 Getting started
 
-### Other setup steps
+### Prerequisites
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+- [Bun](https://bun.sh) `1.3+` (package manager — do not use npm/yarn)
+- [Xcode](https://developer.apple.com/xcode/) + iOS Simulator (macOS only)
+- [Docker](https://www.docker.com/) (for local Postgres / Redis / MinIO)
+- A [TMDB API token](https://www.themoviedb.org/settings/api)
 
-## Learn more
+### 1. Clone & install
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+git clone git@github.com:miicolas/seen.git
+cd seen
+bun install
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### 2. Configure environment
 
-## Join the community
+```bash
+cp .env.example .env.local
+```
 
-Join our community of developers creating universal apps.
+Then fill in the values — at minimum a `TMDB_TOKEN`, a long random `BETTER_AUTH_SECRET`, and (for Apple sign-in) the `APPLE_*` credentials.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### 3. Start local infrastructure
+
+```bash
+docker compose up -d   # Postgres, Redis, MinIO
+bun run db:migrate     # apply database migrations
+```
+
+### 4. Run the app
+
+```bash
+bun run dev:api        # start the backend (http://localhost:3000)
+bun run dev:mobile     # start Expo, then press "i" for the iOS simulator
+```
+
+Or run everything at once with `bun run dev` (Turborepo).
+
+## 🛠️ Useful scripts
+
+Run from the repo root:
+
+| Command               | Description                 |
+| --------------------- | --------------------------- |
+| `bun run dev`         | Run all apps (Turbo)        |
+| `bun run dev:mobile`  | Run the Expo iOS app        |
+| `bun run dev:api`     | Run the backend API         |
+| `bun run lint`        | Lint everything             |
+| `bun run typecheck`   | Type-check everything       |
+| `bun run format`      | Format with Prettier        |
+| `bun run db:generate` | Generate Drizzle migrations |
+| `bun run db:migrate`  | Apply migrations            |
+| `bun run db:studio`   | Open Drizzle Studio         |
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome! Here's how to get involved:
+
+1. **Find or open an issue.** Check the [issues](https://github.com/miicolas/seen/issues) for something to work on, or open a new one to propose a change. For larger features, open an issue first so we can align before you build.
+2. **Fork & branch.** Fork the repo and create a descriptive branch (`feature/...`, `fix/...`, `chore/...`).
+3. **Make your change.** Follow the conventions below.
+4. **Verify locally.** Run `bun run ci` (lint + typecheck + format check) before pushing.
+5. **Open a Pull Request** against `main` with a clear description of what and why. Link the related issue.
+
+### Conventions
+
+- **Commits** follow [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `chore:`, `docs:`, …).
+- **Package manager is bun** — use `bun` / `bunx`, never `npm` / `npx`.
+- **Files are kebab-case** with a single primary export each; keep files small, flat, and DRY.
+- **UI is SwiftUI-first** via `@expo/ui/swift-ui`; only fall back to plain React Native views when there's no native equivalent.
+- User-facing text is in **English**.
+- See [`AGENTS.md`](./AGENTS.md) for the full architecture and contributor guidelines.
+
+### Good first contributions
+
+- Bug fixes from the issue tracker
+- UI polish and accessibility improvements
+- Documentation improvements
+- New TMDB-powered browsing/discovery features
+
+## 📄 License
+
+Released under the [MIT License](./LICENSE). You're free to use, modify, and distribute this software.
+
+---
+
+Made with ❤️ for movie lovers. If you find SeenBox useful, consider giving it a ⭐ on GitHub!
