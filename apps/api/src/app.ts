@@ -13,8 +13,16 @@ export const app = new Elysia()
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
       credentials: true,
       allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+      exposeHeaders: ["Content-Length", "Authorization", "Set-Cookie", "set-auth-token"],
     }),
   )
+  .derive(() => ({
+    startTime: performance.now(),
+  }))
+  .onAfterResponse(({ request, path, set, startTime }) => {
+    const durationMs = Math.round(performance.now() - startTime);
+    console.log(`${request.method} ${path} ${set.status ?? 200} - ${durationMs}ms`);
+  })
   .use(betterAuthRoutes)
   .onError(({ error, set }) => {
     if (error instanceof HttpError) {
