@@ -4,7 +4,7 @@ import { StyleSheet, View } from "react-native";
 
 import { Text } from "@/components/ui/text";
 import { SPACING } from "@/constants/design-tokens";
-import type { WhatsNewFeature } from "@/constants/whats-new";
+import type { WhatsNewFeature } from "@/services/whats-new";
 import { useAccentColor } from "@/hooks/use-accent-color";
 import { useTheme } from "@/hooks/use-theme";
 import { resolveAppLanguage } from "@/lib/i18n";

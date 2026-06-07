@@ -5,6 +5,10 @@ export const profileKeys = {
   activity: () => ["profile", "activity"] as const,
 };
 
+export const whatsNewKeys = {
+  releases: () => ["whats-new", "releases"] as const,
+};
+
 export const accountKeys = {
   session: () => ["account", "session"] as const,
   sessions: () => ["account", "sessions"] as const,

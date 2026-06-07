@@ -81,9 +81,6 @@
       }
     },
     "owner": "miicolass",
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
     "updates": {
       "url": "https://u.expo.dev/f5bacb4d-9027-4a2c-88d9-221a1ea91c3d"
     }

@@ -1,25 +1,23 @@
-import Constants from "expo-constants";
 import { useCallback } from "react";
 
-import {
-  getLatestApplicableRelease,
-  shouldShowWhatsNew,
-  WHATS_NEW_RELEASES,
-} from "@/constants/whats-new";
+import { useWhatsNewReleases } from "@/hooks/whats-new/use-whats-new-releases";
 import { useWhatsNewStore } from "@/store/use-whats-new-store";
 
 export function useWhatsNew() {
-  const appVersion = Constants.expoConfig?.version ?? "0.0.0";
-  const lastSeenVersion = useWhatsNewStore((state) => state.lastSeenVersion);
-  const setLastSeenVersion = useWhatsNewStore((state) => state.setLastSeenVersionAction);
+  const { releases, isLoading } = useWhatsNewReleases();
+  const seenIds = useWhatsNewStore((state) => state.seenIds);
+  const markSeenAction = useWhatsNewStore((state) => state.markSeenAction);
 
-  const release = getLatestApplicableRelease(WHATS_NEW_RELEASES, appVersion);
-  const isFirstRun = lastSeenVersion === null;
-  const shouldAutoShow = release !== null && shouldShowWhatsNew(release.version, lastSeenVersion);
+  // Everyone — newcomer or returning — only ever sees the latest release, and
+  // only until they've seen it. Dismissing marks every release as seen.
+  const latest = releases[0];
+  const alreadySeen = latest ? (seenIds?.includes(latest.id) ?? false) : true;
+  const features = latest && !alreadySeen ? latest.features : [];
+  const shouldAutoShow = features.length > 0;
 
   const markSeen = useCallback(() => {
-    if (release) setLastSeenVersion(release.version);
-  }, [release, setLastSeenVersion]);
+    markSeenAction(releases.map((release) => release.id));
+  }, [releases, markSeenAction]);
 
-  return { release, isFirstRun, shouldAutoShow, markSeen };
+  return { features, shouldAutoShow, markSeen, isLoading };
 }

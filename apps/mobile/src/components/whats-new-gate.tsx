@@ -8,9 +8,9 @@ import { useWhatsNewStore } from "@/store/use-whats-new-store";
 
 export function WhatsNewGate() {
   const router = useRouter();
-  const { isLoading, isLoggedIn } = useAuthContext();
+  const { isLoading: authLoading, isLoggedIn } = useAuthContext();
   const onboardingCompleted = useOnboardingStore((state) => state.completed);
-  const { release, isFirstRun, shouldAutoShow, markSeen } = useWhatsNew();
+  const { shouldAutoShow, isLoading } = useWhatsNew();
   const [hydrated, setHydrated] = useState(() => useWhatsNewStore.persist.hasHydrated());
   const handled = useRef(false);
 
@@ -20,29 +20,22 @@ export function WhatsNewGate() {
   }, [hydrated]);
 
   useEffect(() => {
-    if (handled.current || !hydrated || isLoading || !isLoggedIn || !onboardingCompleted) return;
-    handled.current = true;
-
-    if (isFirstRun) {
-      if (release) markSeen();
+    if (
+      handled.current ||
+      !hydrated ||
+      isLoading ||
+      authLoading ||
+      !isLoggedIn ||
+      !onboardingCompleted
+    )
       return;
-    }
+    handled.current = true;
 
     if (!shouldAutoShow) return;
 
     const id = setTimeout(() => router.push("/whats-new"), 350);
     return () => clearTimeout(id);
-  }, [
-    hydrated,
-    isLoading,
-    isLoggedIn,
-    onboardingCompleted,
-    isFirstRun,
-    shouldAutoShow,
-    release,
-    markSeen,
-    router,
-  ]);
+  }, [hydrated, isLoading, authLoading, isLoggedIn, onboardingCompleted, shouldAutoShow, router]);
 
   return null;
 }

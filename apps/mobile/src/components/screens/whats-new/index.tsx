@@ -16,7 +16,7 @@ export function WhatsNew() {
   const router = useRouter();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const { release, markSeen } = useWhatsNew();
+  const { features, markSeen } = useWhatsNew();
 
   function handleContinue() {
     markSeen();
@@ -34,8 +34,8 @@ export function WhatsNew() {
         </Text>
 
         <View style={styles.features}>
-          {release ? (
-            release.features.map((feature, index) => (
+          {features.length > 0 ? (
+            features.map((feature, index) => (
               <FeatureRow key={`${feature.icon}-${index}`} feature={feature} />
             ))
           ) : (

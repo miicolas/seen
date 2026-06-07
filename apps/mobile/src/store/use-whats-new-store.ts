@@ -4,15 +4,19 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { Storage } from "@/store/storage";
 
 interface WhatsNewStore {
-  lastSeenVersion: string | null;
-  setLastSeenVersionAction: (version: string) => void;
+  // null = never initialized (first launch / fresh install).
+  seenIds: string[] | null;
+  markSeenAction: (ids: string[]) => void;
 }
 
 export const useWhatsNewStore = create(
   persist<WhatsNewStore>(
     (set) => ({
-      lastSeenVersion: null,
-      setLastSeenVersionAction: (version) => set({ lastSeenVersion: version }),
+      seenIds: null,
+      markSeenAction: (ids) =>
+        set((state) => ({
+          seenIds: Array.from(new Set([...(state.seenIds ?? []), ...ids])),
+        })),
     }),
     {
       name: "whats-new-store",
