@@ -7,6 +7,7 @@ import { useMediaDetail } from "@/hooks/tmdb/use-media-detail";
 import { useMediaReviewPreview } from "@/hooks/reviews/use-media-reviews";
 import { useMediaStats } from "@/hooks/reviews/use-media-stats";
 import { useMyReview } from "@/hooks/reviews/use-my-review";
+import { useLikesMembership } from "@/hooks/likes/use-likes-membership";
 import { useWatchlistMembership } from "@/hooks/watchlist/use-watchlist-membership";
 import { hapticTap } from "@/lib/haptics";
 import { reviewSheetHref, reviewsSheetHref } from "@/lib/navigation";
@@ -40,6 +41,10 @@ export function useMediaDetailViewModel() {
   const watchlist = useWatchlistMembership(tmdbId, mediaType);
   const refetchWatchlist = watchlist.refetch;
   const toggleWatchlistMutation = watchlist.toggle;
+  const likes = useLikesMembership(tmdbId, mediaType);
+  const refetchLikes = likes.refetch;
+  const toggleLikeMutation = likes.toggleLike;
+  const toggleFavoriteMutation = likes.toggleFavorite;
   const {
     reviews,
     count: reviewCount,
@@ -51,9 +56,10 @@ export function useMediaDetailViewModel() {
     useCallback(() => {
       refetch();
       refetchWatchlist();
+      refetchLikes();
       refetchReviews();
       refetchStats();
-    }, [refetch, refetchReviews, refetchStats, refetchWatchlist]),
+    }, [refetch, refetchLikes, refetchReviews, refetchStats, refetchWatchlist]),
   );
 
   useEffect(() => {
@@ -154,6 +160,16 @@ export function useMediaDetailViewModel() {
     toggleWatchlistMutation().catch(() => {});
   }, [toggleWatchlistMutation]);
 
+  const toggleLike = useCallback(() => {
+    hapticTap();
+    toggleLikeMutation().catch(() => {});
+  }, [toggleLikeMutation]);
+
+  const toggleFavorite = useCallback(() => {
+    hapticTap();
+    toggleFavoriteMutation().catch(() => {});
+  }, [toggleFavoriteMutation]);
+
   const shareTitle = useCallback(() => {
     Share.share({ message: title }).catch(() => {});
   }, [title]);
@@ -191,6 +207,12 @@ export function useMediaDetailViewModel() {
     isInWatchlist: watchlist.isInWatchlist,
     isWatchlistSaving: watchlist.isSaving,
     toggleWatchlist,
+    isLiked: likes.isLiked,
+    isFavorited: likes.isFavorited,
+    isLikeSaving: likes.isLikeSaving,
+    isFavoriteSaving: likes.isFavoriteSaving,
+    toggleLike,
+    toggleFavorite,
     openReview,
     openReviews,
     shareTitle,

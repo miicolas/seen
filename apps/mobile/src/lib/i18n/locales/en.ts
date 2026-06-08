@@ -139,6 +139,12 @@ export const en = {
     noReviewsHint: "Be the first to share what you thought.",
     retry: "Retry",
   },
+  likes: {
+    like: "Like",
+    unlike: "Unlike",
+    favorite: "Add to Favorites",
+    unfavorite: "Remove from Favorites",
+  },
   watchlist: {
     title: "Watchlist",
     add: "Add to Watchlist",

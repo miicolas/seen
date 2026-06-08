@@ -143,6 +143,12 @@ export const fr: typeof en = {
     noReviewsHint: "Sois le premier à partager ton avis.",
     retry: "Réessayer",
   },
+  likes: {
+    like: "J'aime",
+    unlike: "Je n'aime plus",
+    favorite: "Ajouter aux favoris",
+    unfavorite: "Retirer des favoris",
+  },
   watchlist: {
     title: "Watchlist",
     add: "Ajouter à la Watchlist",

@@ -4,7 +4,7 @@ import { StyleSheet, View } from "react-native";
 import { Stack } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { ScreenHeader } from "@/components/navigation";
+import { ScreenHeader, ScreenToolbar, type ScreenAction } from "@/components/navigation";
 import { Text } from "@/components/ui/text";
 import { useTheme } from "@/hooks/use-theme";
 
@@ -26,9 +26,29 @@ export function MediaDetail() {
 
   const handleRate = useCallback(() => vm.openReview(vm.myStars || undefined), [vm]);
 
+  const likeActions: ScreenAction[] = [
+    {
+      key: "like",
+      icon: vm.isLiked ? "heart.fill" : "heart",
+      onPress: vm.toggleLike,
+      label: vm.isLiked ? t("likes.unlike") : t("likes.like"),
+      tintColor: vm.isLiked ? vm.accentHex : undefined,
+      disabled: vm.isLikeSaving,
+    },
+    {
+      key: "favorite",
+      icon: vm.isFavorited ? "star.fill" : "star",
+      onPress: vm.toggleFavorite,
+      label: vm.isFavorited ? t("likes.unfavorite") : t("likes.favorite"),
+      tintColor: vm.isFavorited ? vm.accentHex : undefined,
+      disabled: vm.isFavoriteSaving,
+    },
+  ];
+
   return (
     <>
       <ScreenHeader />
+      <ScreenToolbar placement="right" actions={likeActions} />
       <Stack.Title>{vm.title}</Stack.Title>
 
       <View style={[styles.root, { backgroundColor: theme.background }]}>
