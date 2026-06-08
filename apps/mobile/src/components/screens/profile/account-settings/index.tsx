@@ -38,6 +38,11 @@ export function AccountSettingsSheet() {
     router.push("/import-letterboxd");
   }, [router]);
 
+  const openPlatforms = useCallback(() => {
+    hapticTap();
+    router.push("/profile/platforms");
+  }, [router]);
+
   const openWhatsNew = useCallback(() => {
     hapticTap();
     router.push("/whats-new");
@@ -78,6 +83,7 @@ export function AccountSettingsSheet() {
               label={t("import.menuAction")}
               onPress={openImport}
             />
+            <AccountRow icon="tv" label={t("platforms.menuAction")} onPress={openPlatforms} />
             <AccountRow icon="sparkles" label={t("whatsNew.title")} onPress={openWhatsNew} />
           </Section>
 

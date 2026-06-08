@@ -43,6 +43,13 @@
       "when": 1780914506261,
       "tag": "0006_light_rumiko_fujikawa",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1780927130561,
+      "tag": "0007_slippery_chameleon",
+      "breakpoints": true
     }
   ]
 }

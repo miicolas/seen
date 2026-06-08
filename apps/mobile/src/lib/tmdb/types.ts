@@ -12,6 +12,8 @@ export type {
   SummaryDto as TmdbMovieSummary,
   DiscoverFeedDto as DiscoverFeed,
   GenreRowDto as GenreRow,
+  ProviderRefDto as TmdbProviderRef,
+  WatchProvidersDto as TmdbWatchProviders,
 } from "@seen/api/tmdb";
 
 export type MediaType = "movie" | "tv";

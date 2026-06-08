@@ -33,6 +33,7 @@ function RootNavigator() {
         </Stack.Protected>
         <Stack.Protected guard={isLoggedIn && !onboardingCompleted}>
           <Stack.Screen name="(setup)/import" options={{ headerShown: false }} />
+          <Stack.Screen name="(setup)/platforms" options={{ headerShown: false }} />
         </Stack.Protected>
         <Stack.Protected guard={!isLoggedIn}>
           <Stack.Screen name="(onboarding)/index" options={{ headerShown: false }} />

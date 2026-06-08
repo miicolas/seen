@@ -13,6 +13,14 @@
     "./tmdb": {
       "types": "./src/modules/tmdb/model.ts",
       "default": "./src/modules/tmdb/model.ts"
+    },
+    "./platforms": {
+      "types": "./src/modules/platforms/model.ts",
+      "default": "./src/modules/platforms/model.ts"
+    },
+    "./recommendations": {
+      "types": "./src/modules/recommendations/model.ts",
+      "default": "./src/modules/recommendations/model.ts"
     }
   },
   "scripts": {

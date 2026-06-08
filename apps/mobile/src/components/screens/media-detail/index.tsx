@@ -17,6 +17,7 @@ import { MediaSummary } from "./media-summary";
 import { OverviewSection } from "./overview-section";
 import { RatingsSection } from "./ratings-section";
 import { useMediaDetailViewModel } from "./use-media-detail-view-model";
+import { WatchProvidersSection } from "./watch-providers-section";
 
 export function MediaDetail() {
   const theme = useTheme();
@@ -95,6 +96,8 @@ export function MediaDetail() {
           ) : null}
 
           <OverviewSection overview={vm.detail?.overview} />
+
+          <WatchProvidersSection mediaType={vm.mediaType} tmdbId={vm.tmdbId} />
 
           {vm.mediaType === "tv" ? (
             <EpisodesSection

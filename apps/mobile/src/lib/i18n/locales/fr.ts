@@ -99,6 +99,13 @@ export const fr: typeof en = {
     genreAction: "Action",
     genreComedy: "Comédie",
     genreSciFiFantasy: "Science-fiction & Fantastique",
+    availableOnYourServices: "Disponible sur tes services",
+    availableEyebrow: "Sur tes abonnements",
+    shortAndAvailable: "Court & dispo ce soir",
+    shortAndAvailableEyebrow: "Moins de 100 min",
+    pickPlatformsTitle: "Dis-nous où tu regardes",
+    pickPlatformsSubtitle: "Choisis tes services pour voir ce qui est disponible ce soir.",
+    pickPlatformsAction: "Choisir mes services",
   },
   review: {
     screenTitle: "Critique",
@@ -143,6 +150,7 @@ export const fr: typeof en = {
     noReviewsYet: "Aucune critique pour le moment.",
     noReviewsHint: "Sois le premier à partager ton avis.",
     retry: "Réessayer",
+    whereToWatch: "Où regarder",
   },
   likes: {
     like: "J'aime",
@@ -233,6 +241,22 @@ export const fr: typeof en = {
     title: "Quoi de neuf dans Seen",
     continue: "Continuer",
     empty: "Rien de neuf pour le moment.",
+  },
+  platforms: {
+    title: "Mes services de streaming",
+    subtitle:
+      "Choisis les plateformes auxquelles tu es abonné. On te montrera ce que tu peux regarder ce soir.",
+    menuAction: "Mes services",
+    empty: "Aucun service de streaming disponible pour ta région.",
+    save: "Enregistrer",
+    skip: "Passer",
+    saving: "Enregistrement…",
+    selectedCount: "{{count}} sélectionné{{plural}}",
+    saveError: "Impossible d'enregistrer tes services. Réessaie.",
+    onboardingTitle: "Où regardes-tu ?",
+    onboardingSubtitle:
+      "Choisis tes services pour qu'on te propose ce que tu peux regarder maintenant.",
+    onboardingContinue: "Continuer",
   },
   notInterested: {
     dismiss: "Pas intéressé",

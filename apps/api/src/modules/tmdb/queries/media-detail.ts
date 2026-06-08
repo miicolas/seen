@@ -46,6 +46,6 @@ export async function getMediaDetail(
     60 * 60,
   );
   const dto = toMovieDetail(detail, mediaType, "miss");
-  await upsertMovieDetail(dto, language);
+  await upsertMovieDetail(dto, detail, language);
   return dto;
 }

@@ -58,6 +58,16 @@ For every concept there is **one canonical word**. The others are **forbidden** 
 
 Don't use `user` for profile data or `profile` for the auth session. `user` = who is logged in; `profile` = the editable public record in our DB.
 
+### Streaming services (providers vs platforms)
+
+| Concept | ✅ Canonical |
+|---|---|
+| The TMDB catalog entity (e.g. Netflix, the row in `providers`) — id, name, logo | **`provider`** (`providerId`, `name`, `logoPath`; `providers` table; `tmdb.WatchProviders`) |
+| The user's selected services — what *they* subscribe to | **`platforms`** (`user_platforms` table; `GET/PUT /platforms/me`; `services/platforms`; `useMyPlatforms`) |
+| Availability of a title on a given provider in a region | **`mediaProviders`** (the cache table) — never `streaming-rights`, never `offers` as a top-level noun |
+
+Why split: a `provider` is the global thing (one Netflix exists), a `platform` is *the user's chosen subset* of providers (which services *I* pay for). Mixing the two leads to ambiguous APIs (`/providers/me` could mean either the catalog or my subscriptions). Keep `provider` for catalog/availability, `platforms` for the user's selection — both in URLs, files, types, and locale keys (`platforms.menuAction`, `mediaDetail.whereToWatch`).
+
 ---
 
 ## 2. File & folder architecture

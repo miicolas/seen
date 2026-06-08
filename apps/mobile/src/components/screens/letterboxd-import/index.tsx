@@ -36,7 +36,6 @@ export function LetterboxdImport({ mode }: LetterboxdImportProps) {
   const theme = useTheme();
   const router = useRouter();
   const { accentHex } = useAccentColor();
-  const completeOnboarding = useOnboardingStore((state) => state.completeOnboardingAction);
   const markImportSkipped = useOnboardingStore((state) => state.markLetterboxdImportSkippedAction);
   const markImportCompleted = useOnboardingStore(
     (state) => state.markLetterboxdImportCompletedAction,
@@ -99,11 +98,11 @@ export function LetterboxdImport({ mode }: LetterboxdImportProps) {
     hapticTap();
     if (mode === "onboarding") {
       if (!summary) markImportSkipped();
-      completeOnboarding();
+      router.replace("/platforms");
     } else {
       router.back();
     }
-  }, [completeOnboarding, markImportSkipped, mode, router, summary]);
+  }, [markImportSkipped, mode, router, summary]);
 
   const summaryText = summary
     ? unmatched.length > 0

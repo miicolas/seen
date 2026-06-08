@@ -106,6 +106,20 @@ const episodeDetail = t.Composite([
   }),
 ]);
 
+const providerRef = t.Object({
+  providerId: t.Number(),
+  name: t.String(),
+  logoPath: t.Nullable(t.String()),
+});
+
+const watchProviders = t.Object({
+  region: t.String(),
+  link: t.Nullable(t.String()),
+  flatrate: t.Array(providerRef),
+  rent: t.Array(providerRef),
+  buy: t.Array(providerRef),
+});
+
 const genreRow = t.Object({
   key: t.String(),
   name: t.String(),
@@ -141,6 +155,12 @@ export const TmdbModel = new Elysia({ name: "Tmdb.Model" }).model({
   "tmdb.LanguageQuery": t.Object({
     language: t.Optional(t.String({ minLength: 2, maxLength: 12 })),
   }),
+  "tmdb.RegionQuery": t.Object({
+    region: t.Optional(t.String({ minLength: 2, maxLength: 4 })),
+    language: t.Optional(t.String({ minLength: 2, maxLength: 12 })),
+  }),
+  "tmdb.WatchProviders": watchProviders,
+  "tmdb.ProviderRef": providerRef,
   "tmdb.SeasonParams": t.Object({
     seriesId: t.Numeric(),
     seasonNumber: t.Numeric(),
@@ -169,3 +189,5 @@ export type SeasonDetailDto = Static<typeof seasonDetail>;
 export type EpisodeDetailDto = Static<typeof episodeDetail>;
 export type DiscoverFeedDto = Static<typeof discoverFeed>;
 export type GenreRowDto = Static<typeof genreRow>;
+export type ProviderRefDto = Static<typeof providerRef>;
+export type WatchProvidersDto = Static<typeof watchProviders>;

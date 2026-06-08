@@ -6,10 +6,12 @@ export type {
   TmdbMovieSummary,
   TmdbMovieDetail,
   TmdbCredit,
+  TmdbProviderRef,
   TmdbTvEpisodeDetail,
   TmdbTvEpisodeSummary,
   TmdbTvSeasonDetail,
   TmdbTvSeasonSummary,
+  TmdbWatchProviders,
 } from "./types";
 
 export { tmdbImageUrl } from "./images";
@@ -20,4 +22,5 @@ export { trendingMedia } from "./trending";
 export { findByExternalId } from "./find";
 export { getMovieDetail } from "./movie";
 export { getTvEpisodeDetail, getTvSeasonDetail } from "./tv";
+export { getWatchProviders } from "./watch-providers";
 export { tmdbLanguage } from "./client";

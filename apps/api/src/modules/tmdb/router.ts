@@ -1,15 +1,15 @@
 import { Elysia } from "elysia";
 
+import { DEFAULT_LANGUAGE, DEFAULT_REGION } from "./client";
 import { TmdbModel } from "./model";
 import {
   discoverFeed,
   getMediaDetail,
   getTvEpisodeDetail,
   getTvSeasonDetail,
+  getWatchProviders,
   search,
 } from "./queries";
-
-const DEFAULT_LANGUAGE = "fr-FR";
 
 export const tmdbController = new Elysia({
   name: "Tmdb.Controller",
@@ -46,6 +46,23 @@ export const tmdbController = new Elysia({
       query: "tmdb.LanguageQuery",
       response: {
         200: "tmdb.MovieDetail",
+      },
+    },
+  )
+  .get(
+    "/:mediaType/:tmdbId/watch-providers",
+    ({ params, query }) =>
+      getWatchProviders(
+        params.mediaType,
+        params.tmdbId,
+        query.region ?? DEFAULT_REGION,
+        query.language ?? DEFAULT_LANGUAGE,
+      ),
+    {
+      params: "tmdb.MediaParams",
+      query: "tmdb.RegionQuery",
+      response: {
+        200: "tmdb.WatchProviders",
       },
     },
   )
