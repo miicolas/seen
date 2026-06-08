@@ -1,8 +1,9 @@
 import { db } from "@seen/db";
-import { movies as moviesTable } from "@seen/db/schema";
+import { mediaProviders, movies as moviesTable } from "@seen/db/schema";
+import { and, eq } from "@seen/db/orm";
 
 import { env } from "../../env";
-import { asDateString, asNumber, asString } from "../../lib/coerce";
+import { asDateString, asNumber, asRecord, asString } from "../../lib/coerce";
 import { HttpError } from "../../lib/http-error";
 import { redisGetJson, redisSetJson, withRedisLock } from "../../lib/redis";
 import type { MovieDetailDto } from "./model";
@@ -13,13 +14,17 @@ import type { MovieDetailDto } from "./model";
 
 const TMDB_BASE = "https://api.themoviedb.org/3";
 export const DEFAULT_LANGUAGE = "fr-FR";
+export const DEFAULT_REGION = "FR";
 const HOT_TTL_SECONDS = 5 * 60;
 export const DETAIL_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 export const DETAIL_APPEND: Record<MediaType, string> = {
-  movie: "credits,videos,images,release_dates",
-  tv: "credits,videos,images,content_ratings",
+  movie: "credits,videos,images,release_dates,watch/providers",
+  tv: "credits,videos,images,content_ratings,watch/providers",
 };
+
+const OFFER_TYPES = ["flatrate", "rent", "buy", "ads", "free"] as const;
+type OfferType = (typeof OFFER_TYPES)[number];
 
 export const MEDIA_GENRE_SHELVES = [
   { key: "Action", name: "Action", movieGenreId: 28, tvGenreId: 10759 },
@@ -244,7 +249,11 @@ export async function upsertMovieList(
   );
 }
 
-export async function upsertMovieDetail(detail: MovieDetailDto, language: string): Promise<void> {
+export async function upsertMovieDetail(
+  detail: MovieDetailDto,
+  raw: Record<string, unknown>,
+  language: string,
+): Promise<void> {
   const values = {
     ...movieSummaryValues(detail, language),
     runtime: detail.runtime ?? null,
@@ -262,6 +271,61 @@ export async function upsertMovieDetail(detail: MovieDetailDto, language: string
       target: [moviesTable.tmdbId, moviesTable.mediaType],
       set: values,
     });
+
+  void upsertMediaProvidersFromDetail(detail.id, detail.media_type, raw).catch((error) =>
+    console.error("media providers cache warm failed", error),
+  );
+}
+
+type WatchProvidersByRegion = Record<string, Record<string, unknown>>;
+
+function readRegionResults(detail: Record<string, unknown>): WatchProvidersByRegion {
+  const providers = asRecord(detail["watch/providers"]);
+  const results = asRecord(providers.results);
+  return results as WatchProvidersByRegion;
+}
+
+export async function upsertMediaProvidersFromDetail(
+  tmdbId: number,
+  mediaType: MediaType,
+  detail: Record<string, unknown>,
+): Promise<void> {
+  const results = readRegionResults(detail);
+  const regions = Object.keys(results);
+  if (regions.length === 0) return;
+
+  const rows: (typeof mediaProviders.$inferInsert)[] = [];
+  for (const region of regions) {
+    const regionEntry = asRecord(results[region]);
+    for (const offerType of OFFER_TYPES) {
+      const offers = regionEntry[offerType];
+      if (!Array.isArray(offers)) continue;
+      for (const offer of offers) {
+        const providerId = asNumber(asRecord(offer).provider_id);
+        if (providerId === undefined) continue;
+        rows.push({
+          tmdbId,
+          mediaType,
+          region,
+          providerId,
+          offerType,
+          updatedAt: new Date(),
+        });
+      }
+    }
+  }
+
+  // Authoritatively replace this title's cached availability: the detail
+  // response carries every region/offer, so delete-then-insert prunes providers
+  // that dropped the title. A plain upsert would leave stale rows forever, since
+  // cache freshness uses the newest row and removed offers are never refreshed.
+  await db.transaction(async (tx) => {
+    await tx
+      .delete(mediaProviders)
+      .where(and(eq(mediaProviders.tmdbId, tmdbId), eq(mediaProviders.mediaType, mediaType)));
+    if (rows.length === 0) return;
+    await tx.insert(mediaProviders).values(rows).onConflictDoNothing();
+  });
 }
 
 export async function discover(

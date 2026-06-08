@@ -1,10 +1,15 @@
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 
+import { Button } from "@/components/ui/button/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Text } from "@/components/ui/text";
 import { SPACING } from "@/constants/design-tokens";
+import { useMyPlatforms } from "@/hooks/platforms/use-my-platforms";
+import { useAvailableFeed } from "@/hooks/recommendations/use-available-feed";
 import { useDiscoverMedia } from "@/hooks/tmdb/use-discover-media";
+import { hapticTap } from "@/lib/haptics";
 import type { MediaFilter, TmdbMovieSummary } from "@/lib/tmdb";
 
 import { DiscoverSkeleton } from "./discover-skeleton";
@@ -18,8 +23,13 @@ const keyOf = (media: TmdbMovieSummary, index: number) =>
 
 export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
   const { t } = useTranslation();
+  const router = useRouter();
   const { trending, topToday, newReleases, genres, isLoading, error, isOffline } =
     useDiscoverMedia(filter);
+  const myPlatforms = useMyPlatforms();
+  const hasPlatforms = (myPlatforms.data?.providers.length ?? 0) > 0;
+  const available = useAvailableFeed({ filter, enabled: hasPlatforms });
+  const availableShort = available.data.filter((entry) => entry.isShort);
 
   if (isOffline) {
     return (
@@ -82,6 +92,48 @@ export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
         renderItem={(media, _index, cardWidth) => <PosterCard movie={media} width={cardWidth} />}
       />
 
+      {hasPlatforms ? (
+        <>
+          <Shelf
+            title={t("discover.availableOnYourServices")}
+            eyebrow={t("discover.availableEyebrow")}
+            data={available.data}
+            keyExtractor={keyOf}
+            visibleCards={2.2}
+            renderItem={(media, _index, cardWidth) => (
+              <PosterCard movie={media} width={cardWidth} />
+            )}
+          />
+          <Shelf
+            title={t("discover.shortAndAvailable")}
+            eyebrow={t("discover.shortAndAvailableEyebrow")}
+            data={availableShort}
+            keyExtractor={keyOf}
+            visibleCards={2.2}
+            renderItem={(media, _index, cardWidth) => (
+              <PosterCard movie={media} width={cardWidth} />
+            )}
+          />
+        </>
+      ) : !myPlatforms.isLoading ? (
+        <View style={styles.platformsPrompt}>
+          <EmptyState
+            icon="tv"
+            title={t("discover.pickPlatformsTitle")}
+            subtitle={t("discover.pickPlatformsSubtitle")}
+            action={
+              <Button
+                title={t("discover.pickPlatformsAction")}
+                onPress={() => {
+                  hapticTap();
+                  router.push("/profile/platforms");
+                }}
+              />
+            }
+          />
+        </View>
+      ) : null}
+
       <Shelf
         title={t("discover.topTodayTitle")}
         eyebrow={t("discover.topTodayEyebrow")}
@@ -127,5 +179,9 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.XXL,
     alignItems: "center",
     justifyContent: "center",
+  },
+  platformsPrompt: {
+    paddingHorizontal: SPACING.MD,
+    paddingVertical: SPACING.LG,
   },
 });
