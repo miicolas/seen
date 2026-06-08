@@ -17,6 +17,27 @@ type TmdbProvidersResponse = {
   results?: TmdbProvider[];
 };
 
+// Cap the catalog so the picker stays scannable. TMDB returns 100+ entries per
+// region, most of them niche or reseller channels.
+const MAX_PROVIDERS = 30;
+
+// Ad-funded tiers and reseller "channels" (e.g. "Netflix Standard with Ads",
+// "Max Amazon Channel") are the same service to the user. Collapse them onto a
+// single canonical key so the list shows one row per provider.
+function canonicalKey(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/\s+(amazon|apple tv|roku premium|verizon)\s+channel$/, "")
+    .replace(/\s+(standard|basic|premium)?\s*with ads$/, "")
+    .replace(/\bplus\b/g, "+")
+    .replace(/[^a-z0-9+]/g, "");
+}
+
+// Prefer the clean base entry over an ad/reseller variant when collapsing.
+function isVariant(name: string): boolean {
+  return /(with ads|amazon channel|apple tv channel|roku premium channel)$/i.test(name.trim());
+}
+
 async function fetchCatalog(mediaType: "movie" | "tv", region: string): Promise<TmdbProvider[]> {
   const res = await tmdbFetch<TmdbProvidersResponse>(
     `/watch/providers/${mediaType}`,
@@ -77,12 +98,34 @@ export async function listProviders(region: string): Promise<ProviderRefDto[]> {
     }
   }
 
-  const list = [...dedup.values()].sort((a, b) => {
-    const pa = priorities.get(a.providerId) ?? 9999;
-    const pb = priorities.get(b.providerId) ?? 9999;
-    if (pa !== pb) return pa - pb;
-    return a.name.localeCompare(b.name);
-  });
+  const priorityOf = (id: number) => priorities.get(id) ?? 9999;
+
+  // Collapse ad/reseller variants onto one canonical row, keeping the cleanest,
+  // highest-priority entry of each group, and drop entries with no logo so the
+  // picker can render a logo per row.
+  const byCanonical = new Map<string, ProviderRefDto>();
+  for (const entry of dedup.values()) {
+    if (!entry.logoPath) continue;
+    const key = canonicalKey(entry.name);
+    const current = byCanonical.get(key);
+    if (!current) {
+      byCanonical.set(key, entry);
+      continue;
+    }
+    const better =
+      (isVariant(current.name) ? 1 : 0) - (isVariant(entry.name) ? 1 : 0) ||
+      priorityOf(current.providerId) - priorityOf(entry.providerId);
+    if (better > 0) byCanonical.set(key, entry);
+  }
+
+  const list = [...byCanonical.values()]
+    .sort((a, b) => {
+      const pa = priorityOf(a.providerId);
+      const pb = priorityOf(b.providerId);
+      if (pa !== pb) return pa - pb;
+      return a.name.localeCompare(b.name);
+    })
+    .slice(0, MAX_PROVIDERS);
 
   // Await the warm so the `providers` table is authoritative before the client
   // can POST a selection back: setUserPlatforms validates provider ids against
