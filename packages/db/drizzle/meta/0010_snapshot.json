@@ -1,6 +1,6 @@
 {
-  "id": "9d68764f-2924-4e81-a6b6-db96fc63155d",
-  "prevId": "37f4a969-8db8-4bc7-9614-931a0ee18718",
+  "id": "2cb1636e-e9dd-4122-942c-e1b5e3ff34ef",
+  "prevId": "9d68764f-2924-4e81-a6b6-db96fc63155d",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -548,6 +548,34 @@
           "primaryKey": false,
           "notNull": false
         },
+        "follow_policy": {
+          "name": "follow_policy",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'open'"
+        },
+        "profile_visibility": {
+          "name": "profile_visibility",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'public'"
+        },
+        "default_watchlist_visibility": {
+          "name": "default_watchlist_visibility",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'private'"
+        },
+        "contact_discovery_enabled": {
+          "name": "contact_discovery_enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -598,6 +626,18 @@
         "profiles_username_format": {
           "name": "profiles_username_format",
           "value": "\"profiles\".\"username\" = lower(\"profiles\".\"username\") and \"profiles\".\"username\" ~ '^[a-z0-9_.]{3,20}$'"
+        },
+        "profiles_follow_policy_check": {
+          "name": "profiles_follow_policy_check",
+          "value": "\"profiles\".\"follow_policy\" in ('open', 'approval_required')"
+        },
+        "profiles_profile_visibility_check": {
+          "name": "profiles_profile_visibility_check",
+          "value": "\"profiles\".\"profile_visibility\" in ('public', 'followers')"
+        },
+        "profiles_default_watchlist_visibility_check": {
+          "name": "profiles_default_watchlist_visibility_check",
+          "value": "\"profiles\".\"default_watchlist_visibility\" in ('private', 'followers', 'public')"
         }
       },
       "isRLSEnabled": false
@@ -1371,7 +1411,7 @@
         },
         "watchlist_visibility_check": {
           "name": "watchlist_visibility_check",
-          "value": "\"watchlist\".\"visibility\" in ('private')"
+          "value": "\"watchlist\".\"visibility\" in ('private', 'followers', 'public')"
         }
       },
       "isRLSEnabled": false
@@ -2100,6 +2140,351 @@
       },
       "policies": {},
       "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.follow_requests": {
+      "name": "follow_requests",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "requester_id": {
+          "name": "requester_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "target_id": {
+          "name": "target_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "follow_requests_target_status_created_idx": {
+          "name": "follow_requests_target_status_created_idx",
+          "columns": [
+            {
+              "expression": "target_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "follow_requests_requester_id_user_id_fk": {
+          "name": "follow_requests_requester_id_user_id_fk",
+          "tableFrom": "follow_requests",
+          "tableTo": "user",
+          "columnsFrom": [
+            "requester_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "follow_requests_target_id_user_id_fk": {
+          "name": "follow_requests_target_id_user_id_fk",
+          "tableFrom": "follow_requests",
+          "tableTo": "user",
+          "columnsFrom": [
+            "target_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "follow_requests_requester_target_unique": {
+          "name": "follow_requests_requester_target_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "requester_id",
+            "target_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "follow_requests_no_self": {
+          "name": "follow_requests_no_self",
+          "value": "\"follow_requests\".\"requester_id\" <> \"follow_requests\".\"target_id\""
+        },
+        "follow_requests_status_check": {
+          "name": "follow_requests_status_check",
+          "value": "\"follow_requests\".\"status\" in ('pending', 'approved', 'rejected')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.follows": {
+      "name": "follows",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "follower_id": {
+          "name": "follower_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "followee_id": {
+          "name": "followee_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "follows_followee_created_idx": {
+          "name": "follows_followee_created_idx",
+          "columns": [
+            {
+              "expression": "followee_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "follows_follower_created_idx": {
+          "name": "follows_follower_created_idx",
+          "columns": [
+            {
+              "expression": "follower_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "follows_follower_id_user_id_fk": {
+          "name": "follows_follower_id_user_id_fk",
+          "tableFrom": "follows",
+          "tableTo": "user",
+          "columnsFrom": [
+            "follower_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "follows_followee_id_user_id_fk": {
+          "name": "follows_followee_id_user_id_fk",
+          "tableFrom": "follows",
+          "tableTo": "user",
+          "columnsFrom": [
+            "followee_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "follows_follower_followee_unique": {
+          "name": "follows_follower_followee_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "follower_id",
+            "followee_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "follows_no_self_follow": {
+          "name": "follows_no_self_follow",
+          "value": "\"follows\".\"follower_id\" <> \"follows\".\"followee_id\""
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.profile_contact_identifiers": {
+      "name": "profile_contact_identifiers",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hash": {
+          "name": "hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "profile_contact_identifiers_kind_hash_idx": {
+          "name": "profile_contact_identifiers_kind_hash_idx",
+          "columns": [
+            {
+              "expression": "kind",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "hash",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "profile_contact_identifiers_user_id_user_id_fk": {
+          "name": "profile_contact_identifiers_user_id_user_id_fk",
+          "tableFrom": "profile_contact_identifiers",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "profile_contact_identifiers_user_kind_hash_unique": {
+          "name": "profile_contact_identifiers_user_kind_hash_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id",
+            "kind",
+            "hash"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "profile_contact_identifiers_kind_check": {
+          "name": "profile_contact_identifiers_kind_check",
+          "value": "\"profile_contact_identifiers\".\"kind\" in ('email', 'phone')"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.user_preferences": {

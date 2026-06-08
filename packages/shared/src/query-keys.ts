@@ -77,6 +77,11 @@ export const likeKeys = {
   list: (kind: string = "favorite") => ["likes", "list", kind] as const,
 };
 
+export const preferenceKeys = {
+  me: () => ["preferences", "me"] as const,
+  onboardingSeed: () => ["preferences", "onboarding-seed"] as const,
+};
+
 export const episodeReviewKeys = {
   my: (seriesTmdbId: number, seasonNumber: number, episodeNumber: number) =>
     ["episode-reviews", "my", seriesTmdbId, seasonNumber, episodeNumber] as const,

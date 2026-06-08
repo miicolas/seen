@@ -7,3 +7,4 @@ export * from "./rating-stats";
 export * from "./events";
 export * from "./providers";
 export * from "./social";
+export * from "./preferences";

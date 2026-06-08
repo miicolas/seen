@@ -98,7 +98,7 @@ export function LetterboxdImport({ mode }: LetterboxdImportProps) {
     hapticTap();
     if (mode === "onboarding") {
       if (!summary) markImportSkipped();
-      router.replace("/platforms");
+      router.replace("/taste");
     } else {
       router.back();
     }
@@ -111,7 +111,11 @@ export function LetterboxdImport({ mode }: LetterboxdImportProps) {
     : null;
 
   return (
-    <Host style={{ flex: 1 }}>
+    <Host
+      matchContents={false}
+      ignoreSafeArea="keyboard"
+      useViewportSizeMeasurement
+      style={{ flex: 1 }}>
       <Form modifiers={[tint(accentHex)]}>
         <QuickConnectSection
           username={usernameState}

@@ -4,18 +4,16 @@ import type { SFSymbol } from "sf-symbols-typescript";
 
 import { useTheme } from "@/hooks/use-theme";
 
-interface AccountRowProps {
+interface SettingsRowProps {
   icon: SFSymbol;
   label: string;
   onPress?: () => void;
   destructive?: boolean;
 }
 
-// A settings row. The icon color comes from the parent Form's `tint` (the app
-// accent) — a Form Button's local tint only colors the label, not the SF Symbol.
-// So here the label is tinted to the primary text color while the Form keeps the
-// accent on the icon; destructive rows stay fully red via `role`.
-export function AccountRow({ icon, label, onPress, destructive }: AccountRowProps) {
+// A native settings row. The icon color comes from the parent Form's `tint`
+// while non-destructive labels use the primary text color.
+export function SettingsRow({ icon, label, onPress, destructive }: SettingsRowProps) {
   const theme = useTheme();
 
   if (destructive) {

@@ -8,7 +8,9 @@
   "exports": {
     ".": "./src/index.ts",
     "./query-keys": "./src/query-keys.ts",
-    "./types": "./src/types.ts"
+    "./types": "./src/types.ts",
+    "./genres": "./src/genres.ts",
+    "./moods": "./src/moods.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",
