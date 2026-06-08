@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
+    flexGrow: 1,
     paddingHorizontal: LAYOUT.SCREEN_PADDING,
     paddingTop: SPACING.XL,
     paddingBottom: SPACING.LG,
