@@ -5,12 +5,7 @@ import { useCallback, useState } from "react";
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { errorMessage } from "@/lib/format";
 import type { MediaType } from "@/lib/tmdb";
-import {
-  dismiss,
-  getMyItem,
-  undismiss,
-  type NotInterestedItem,
-} from "@/services/not-interested";
+import { dismiss, getMyItem, undismiss, type NotInterestedItem } from "@/services/not-interested";
 
 interface NotInterestedMembershipState {
   item: NotInterestedItem | null;

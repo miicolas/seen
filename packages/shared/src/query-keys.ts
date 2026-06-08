@@ -36,7 +36,8 @@ export const watchlistKeys = {
 };
 
 export const notInterestedKeys = {
-  my: (mediaType: MediaType, tmdbId: number) => ["not-interested", "my", mediaType, tmdbId] as const,
+  my: (mediaType: MediaType, tmdbId: number) =>
+    ["not-interested", "my", mediaType, tmdbId] as const,
   list: () => ["not-interested", "list"] as const,
 };
 
