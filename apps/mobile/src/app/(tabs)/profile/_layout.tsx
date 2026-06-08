@@ -16,6 +16,14 @@ export default function ProfileLayout() {
       }}>
       <Stack.Screen name="index" />
       <Stack.Screen
+        name="platforms"
+        options={{
+          title: t("platforms.title"),
+          headerLargeTitle: false,
+          headerBackButtonDisplayMode: "minimal",
+        }}
+      />
+      <Stack.Screen
         name="edit"
         options={{
           title: t("profile.editTitle"),
