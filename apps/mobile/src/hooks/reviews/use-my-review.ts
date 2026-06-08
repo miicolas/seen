@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
 import { useAuthContext } from "@/hooks/use-auth-context";
+import { track } from "@/services/events";
 import { errorMessage } from "@/lib/format";
 import {
   deleteReview,
@@ -54,9 +55,11 @@ export function useMyReview(tmdbId: number, mediaType: MediaType): MyReviewState
         media_type: mediaType,
         ...input,
       }),
-    onSuccess: (saved) => {
+    onSuccess: (saved, input) => {
       queryClient.setQueryData(key, saved);
       invalidateDerived();
+      if (input.rating != null) track("rated", { tmdbId, mediaType });
+      if (input.title || input.comment) track("reviewed", { tmdbId, mediaType });
     },
   });
 

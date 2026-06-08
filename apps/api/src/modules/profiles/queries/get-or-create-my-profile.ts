@@ -1,6 +1,6 @@
 import { db } from "@seen/db";
 import { profiles } from "@seen/db/schema";
-import { eq } from "drizzle-orm";
+import { eq } from "@seen/db/orm";
 
 import { toApiRow } from "../../../lib/rows";
 import { isUniqueViolation } from "../shared";

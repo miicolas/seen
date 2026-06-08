@@ -1,6 +1,6 @@
 import { db } from "@seen/db";
 import { movies as moviesTable } from "@seen/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq } from "@seen/db/orm";
 
 import {
   DEFAULT_LANGUAGE,

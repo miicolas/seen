@@ -4,7 +4,7 @@ import { db } from "@seen/db";
 import * as schema from "@seen/db/schema";
 import { betterAuth } from "better-auth";
 import { bearer } from "better-auth/plugins";
-import { eq } from "drizzle-orm";
+import { eq } from "@seen/db/orm";
 import { SignJWT, importPKCS8 } from "jose";
 import { ulid } from "ulid";
 

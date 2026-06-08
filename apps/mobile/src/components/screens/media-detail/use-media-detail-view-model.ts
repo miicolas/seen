@@ -1,5 +1,5 @@
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { Linking, Share, useWindowDimensions } from "react-native";
 
 import { useAccentColor } from "@/hooks/use-accent-color";
@@ -11,6 +11,7 @@ import { useWatchlistMembership } from "@/hooks/watchlist/use-watchlist-membersh
 import { hapticTap } from "@/lib/haptics";
 import { reviewSheetHref, reviewsSheetHref } from "@/lib/navigation";
 import { tmdbImageUrl, type MediaType } from "@/lib/tmdb";
+import { track } from "@/services/events";
 import { ratingToStars } from "@/services/reviews";
 
 import { formatDate, releaseYear } from "@/lib/format";
@@ -54,6 +55,12 @@ export function useMediaDetailViewModel() {
       refetchStats();
     }, [refetch, refetchReviews, refetchStats, refetchWatchlist]),
   );
+
+  useEffect(() => {
+    if (Number.isFinite(tmdbId) && tmdbId > 0) {
+      track("opened_detail", { tmdbId, mediaType });
+    }
+  }, [tmdbId, mediaType]);
 
   const title = detail?.title ?? params.title ?? "Untitled";
   const posterPath =

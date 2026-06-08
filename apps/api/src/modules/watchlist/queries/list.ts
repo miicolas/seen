@@ -1,6 +1,6 @@
 import { db } from "@seen/db";
 import { movies, watchlist } from "@seen/db/schema";
-import { and, count, desc, eq, ilike, or } from "drizzle-orm";
+import { and, count, desc, eq, ilike, or } from "@seen/db/orm";
 
 import type { MediaType } from "../../tmdb";
 import { toWatchlistItemWithMedia } from "../shared";
