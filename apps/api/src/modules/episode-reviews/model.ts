@@ -22,11 +22,7 @@ const episodeReview = t.Object({
   title: t.Nullable(t.String()),
   comment: t.Nullable(t.String()),
   runtime_minutes: t.Nullable(t.Number()),
-  runtime_confidence: t.Union([
-    t.Literal("exact"),
-    t.Literal("estimated"),
-    t.Literal("unknown"),
-  ]),
+  runtime_confidence: t.Union([t.Literal("exact"), t.Literal("estimated"), t.Literal("unknown")]),
   watched_at: t.String(),
   created_at: t.String(),
   updated_at: t.String(),

@@ -11,7 +11,12 @@ describe("accumulateWatchedTime", () => {
     const time = accumulateWatchedTime([
       entry({ mediaType: "movie", runtimeMinutes: 120, runtimeConfidence: "exact" }),
       entry({ mediaType: "movie", runtimeMinutes: null, runtimeConfidence: "unknown" }),
-      entry({ kind: "episode", mediaType: "tv", runtimeMinutes: 45, runtimeConfidence: "estimated" }),
+      entry({
+        kind: "episode",
+        mediaType: "tv",
+        runtimeMinutes: 45,
+        runtimeConfidence: "estimated",
+      }),
       entry({ kind: "episode", mediaType: "tv", runtimeMinutes: 50, runtimeConfidence: "exact" }),
       // a series-level tv review: a log, not minutes — must not touch any bucket
       entry({ mediaType: "tv", kind: "media", runtimeMinutes: null, countsTowardTime: false }),
@@ -22,9 +27,7 @@ describe("accumulateWatchedTime", () => {
   });
 
   test("an exact entry with zero minutes counts as unknown, not exact", () => {
-    const time = accumulateWatchedTime([
-      entry({ runtimeMinutes: 0, runtimeConfidence: "exact" }),
-    ]);
+    const time = accumulateWatchedTime([entry({ runtimeMinutes: 0, runtimeConfidence: "exact" })]);
     expect(time.exact_minutes).toBe(0);
     expect(time.unknown_count).toBe(1);
   });
@@ -55,16 +58,21 @@ describe("buildOverview", () => {
     const previous = [
       entry({ mediaType: "movie", runtimeMinutes: 50, runtimeConfidence: "exact" }),
     ];
-    const overview = buildOverview(current, previous, {
-      count: 3,
-      movie_count: 2,
-      tv_count: 1,
-      added_in_range: 1,
-      watched_in_range: 1,
-      per_week: 1,
-      weeks_to_clear: 3,
-      oldest_added_at: null,
-    }, period);
+    const overview = buildOverview(
+      current,
+      previous,
+      {
+        count: 3,
+        movie_count: 2,
+        tv_count: 1,
+        added_in_range: 1,
+        watched_in_range: 1,
+        per_week: 1,
+        weeks_to_clear: 3,
+        oldest_added_at: null,
+      },
+      period,
+    );
 
     expect(overview.total_minutes).toBe(150);
     expect(overview.media_count).toBe(1);

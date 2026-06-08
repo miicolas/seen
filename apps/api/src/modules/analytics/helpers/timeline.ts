@@ -40,7 +40,9 @@ export function buildTimeline(entries: WatchEntry[], period: Period, timeZone: s
   const granularity = granularityFor(period.range);
   const keys = enumerateBuckets(period.from, period.to, granularity, timeZone);
   const keyOf = (entry: WatchEntry) =>
-    granularity === "day" ? tzDayKey(entry.watchedAt, timeZone) : tzMonthKey(entry.watchedAt, timeZone);
+    granularity === "day"
+      ? tzDayKey(entry.watchedAt, timeZone)
+      : tzMonthKey(entry.watchedAt, timeZone);
 
   const grouped = new Map<string, WatchEntry[]>();
   for (const key of keys) grouped.set(key, []);
@@ -51,7 +53,9 @@ export function buildTimeline(entries: WatchEntry[], period: Period, timeZone: s
 
   const buckets: TimelineBucket[] = keys.map((key) => {
     const bucketEntries = grouped.get(key) ?? [];
-    const watchedTime = bucketEntries.length ? accumulateWatchedTime(bucketEntries) : emptyWatchedTime();
+    const watchedTime = bucketEntries.length
+      ? accumulateWatchedTime(bucketEntries)
+      : emptyWatchedTime();
     return {
       key,
       label: labelFor(key, period.range, granularity),

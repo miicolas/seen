@@ -24,9 +24,9 @@ describe("computeRange", () => {
     expect(period.to).toBe(now.toISOString());
     expect(period.previous_to).toBe(period.from);
     // previous window is exactly 7 days earlier
-    expect(new Date(period.from).getTime() - new Date(period.previous_from as string).getTime()).toBe(
-      7 * 24 * 60 * 60 * 1000,
-    );
+    expect(
+      new Date(period.from).getTime() - new Date(period.previous_from as string).getTime(),
+    ).toBe(7 * 24 * 60 * 60 * 1000);
     expect(from.getTime()).toBeLessThanOrEqual(now.getTime());
   });
 
@@ -61,22 +61,12 @@ describe("computeRange", () => {
 
 describe("enumerateBuckets", () => {
   test("day buckets are contiguous and inclusive of the end", () => {
-    const keys = enumerateBuckets(
-      "2026-06-01T00:00:00Z",
-      "2026-06-03T12:00:00Z",
-      "day",
-      "UTC",
-    );
+    const keys = enumerateBuckets("2026-06-01T00:00:00Z", "2026-06-03T12:00:00Z", "day", "UTC");
     expect(keys).toEqual(["2026-06-01", "2026-06-02", "2026-06-03"]);
   });
 
   test("month buckets roll over the year boundary", () => {
-    const keys = enumerateBuckets(
-      "2025-11-15T00:00:00Z",
-      "2026-02-01T00:00:00Z",
-      "month",
-      "UTC",
-    );
+    const keys = enumerateBuckets("2025-11-15T00:00:00Z", "2026-02-01T00:00:00Z", "month", "UTC");
     expect(keys).toEqual(["2025-11", "2025-12", "2026-01", "2026-02"]);
   });
 });

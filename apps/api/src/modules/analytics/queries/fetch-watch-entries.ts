@@ -45,7 +45,9 @@ export async function fetchWatchEntries(
         movies,
         and(eq(reviews.tmdbId, movies.tmdbId), eq(reviews.mediaType, movies.mediaType)),
       )
-      .where(and(eq(reviews.userId, userId), gte(reviews.watchedAt, from), lt(reviews.watchedAt, to))),
+      .where(
+        and(eq(reviews.userId, userId), gte(reviews.watchedAt, from), lt(reviews.watchedAt, to)),
+      ),
     db
       .select({
         watchedAt: episodeReviews.watchedAt,

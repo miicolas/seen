@@ -24,6 +24,14 @@ export default function ProfileLayout() {
         }}
       />
       <Stack.Screen
+        name="taste-preferences"
+        options={{
+          title: t("taste.settingsTitle"),
+          headerLargeTitle: false,
+          headerBackButtonDisplayMode: "minimal",
+        }}
+      />
+      <Stack.Screen
         name="edit"
         options={{
           title: t("profile.editTitle"),

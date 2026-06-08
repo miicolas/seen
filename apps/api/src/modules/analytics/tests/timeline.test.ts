@@ -17,9 +17,25 @@ describe("buildTimeline", () => {
   test("buckets entries by day and fills empty days", () => {
     const timeline = buildTimeline(
       [
-        entry({ mediaType: "movie", runtimeMinutes: 100, runtimeConfidence: "exact", watchedAt: new Date("2026-06-02T10:00:00Z") }),
-        entry({ kind: "episode", mediaType: "tv", runtimeMinutes: 50, runtimeConfidence: "exact", watchedAt: new Date("2026-06-02T20:00:00Z") }),
-        entry({ mediaType: "movie", runtimeMinutes: 90, runtimeConfidence: "exact", watchedAt: new Date("2026-06-05T10:00:00Z") }),
+        entry({
+          mediaType: "movie",
+          runtimeMinutes: 100,
+          runtimeConfidence: "exact",
+          watchedAt: new Date("2026-06-02T10:00:00Z"),
+        }),
+        entry({
+          kind: "episode",
+          mediaType: "tv",
+          runtimeMinutes: 50,
+          runtimeConfidence: "exact",
+          watchedAt: new Date("2026-06-02T20:00:00Z"),
+        }),
+        entry({
+          mediaType: "movie",
+          runtimeMinutes: 90,
+          runtimeConfidence: "exact",
+          watchedAt: new Date("2026-06-05T10:00:00Z"),
+        }),
       ],
       WEEK,
       "UTC",

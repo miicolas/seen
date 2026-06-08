@@ -38,15 +38,11 @@ export const analyticsController = new Elysia({
       response: { 200: "analytics.Timeline" },
     },
   )
-  .get(
-    "/timeline/items",
-    ({ user, query }) => getTimelineItems(user.id, query.from, query.to),
-    {
-      auth: true,
-      query: "analytics.TimelineItemsQuery",
-      response: { 200: "analytics.TimelineItems" },
-    },
-  )
+  .get("/timeline/items", ({ user, query }) => getTimelineItems(user.id, query.from, query.to), {
+    auth: true,
+    query: "analytics.TimelineItemsQuery",
+    response: { 200: "analytics.TimelineItems" },
+  })
   .get(
     "/taste",
     ({ user, query }) => getTaste(user.id, query.range ?? DEFAULT_RANGE, query.timezone),

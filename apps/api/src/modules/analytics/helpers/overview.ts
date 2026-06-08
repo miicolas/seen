@@ -61,7 +61,9 @@ export function buildOverview(
     total_minutes: minutes,
     media_count: current.media,
     episode_count: current.episode,
-    average_rating: current.ratingCount ? storedToStars(current.ratingSum / current.ratingCount) : null,
+    average_rating: current.ratingCount
+      ? storedToStars(current.ratingSum / current.ratingCount)
+      : null,
     current_era: computeCurrentEra(currentEntries.filter((entry) => entry.kind === "media")),
     previous: {
       total_minutes: previousMinutes,
@@ -72,7 +74,9 @@ export function buildOverview(
       minutes: minutes - previousMinutes,
       media_count: current.media - previous.media,
       minutes_pct:
-        previousMinutes > 0 ? Math.round(((minutes - previousMinutes) / previousMinutes) * 100) / 100 : null,
+        previousMinutes > 0
+          ? Math.round(((minutes - previousMinutes) / previousMinutes) * 100) / 100
+          : null,
     },
     watchlist_backlog: watchlistBacklog,
   };

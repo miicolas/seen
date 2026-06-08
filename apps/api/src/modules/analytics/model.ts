@@ -1,12 +1,7 @@
 import { Elysia, t } from "elysia";
 
 const mediaType = t.Union([t.Literal("movie"), t.Literal("tv")]);
-const range = t.Union([
-  t.Literal("week"),
-  t.Literal("month"),
-  t.Literal("year"),
-  t.Literal("all"),
-]);
+const range = t.Union([t.Literal("week"), t.Literal("month"), t.Literal("year"), t.Literal("all")]);
 const source = t.Union([
   t.Literal("content"),
   t.Literal("collaborative"),

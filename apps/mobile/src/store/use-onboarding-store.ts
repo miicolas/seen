@@ -13,10 +13,13 @@ interface OnboardingStore {
   // flash the setup step before we know whether it was already completed.
   hasHydrated: boolean;
   letterboxdImportStatus: OnboardingStepStatus;
+  tasteStatus: OnboardingStepStatus;
   platformsStatus: OnboardingStepStatus;
   completeOnboardingAction: () => void;
   markLetterboxdImportSkippedAction: () => void;
   markLetterboxdImportCompletedAction: () => void;
+  markTasteSkippedAction: () => void;
+  markTasteCompletedAction: () => void;
   markPlatformsSkippedAction: () => void;
   markPlatformsCompletedAction: () => void;
   setHasHydratedAction: (value: boolean) => void;
@@ -28,10 +31,13 @@ export const useOnboardingStore = create(
       completed: false,
       hasHydrated: false,
       letterboxdImportStatus: "pending",
+      tasteStatus: "pending",
       platformsStatus: "pending",
       completeOnboardingAction: () => set({ completed: true }),
       markLetterboxdImportSkippedAction: () => set({ letterboxdImportStatus: "skipped" }),
       markLetterboxdImportCompletedAction: () => set({ letterboxdImportStatus: "completed" }),
+      markTasteSkippedAction: () => set({ tasteStatus: "skipped" }),
+      markTasteCompletedAction: () => set({ tasteStatus: "completed" }),
       markPlatformsSkippedAction: () => set({ platformsStatus: "skipped" }),
       markPlatformsCompletedAction: () => set({ platformsStatus: "completed" }),
       setHasHydratedAction: (value) => set({ hasHydrated: value }),

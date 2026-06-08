@@ -12,7 +12,14 @@ const PERIOD: Period = {
   previous_to: "2026-06-01T00:00:00.000Z",
 };
 
-const noFlags = { clicked: false, addedToWatchlist: false, markedWatched: false, rated: false, shared: false, dismissed: false };
+const noFlags = {
+  clicked: false,
+  addedToWatchlist: false,
+  markedWatched: false,
+  rated: false,
+  shared: false,
+  dismissed: false,
+};
 
 type ImpressionOverrides = Partial<Omit<DiscoveryImpression, "flags">> & {
   flags?: Partial<DiscoveryImpression["flags"]>;
@@ -41,15 +48,42 @@ function interaction(o: Partial<DiscoveryInteraction>): DiscoveryInteraction {
 describe("attributeDiscovery", () => {
   test("credits outcomes to the most recent impression, dedupes flags, ignores stale/organic", () => {
     const impressions = [
-      impression({ tmdbId: 1, source: "trending", shownAt: new Date("2026-06-05T10:00:00Z"), flags: { clicked: true } }),
-      impression({ tmdbId: 2, source: "availability", shownAt: new Date("2026-06-10T10:00:00Z"), flags: { dismissed: true } }),
+      impression({
+        tmdbId: 1,
+        source: "trending",
+        shownAt: new Date("2026-06-05T10:00:00Z"),
+        flags: { clicked: true },
+      }),
+      impression({
+        tmdbId: 2,
+        source: "availability",
+        shownAt: new Date("2026-06-10T10:00:00Z"),
+        flags: { dismissed: true },
+      }),
       // shown 17 days before the interaction → outside the 14-day window
-      impression({ tmdbId: 3, source: "content", shownAt: new Date("2026-05-20T10:00:00Z"), inRange: false }),
+      impression({
+        tmdbId: 3,
+        source: "content",
+        shownAt: new Date("2026-05-20T10:00:00Z"),
+        inRange: false,
+      }),
     ];
     const interactions = [
-      interaction({ tmdbId: 1, type: "opened_detail", createdAt: new Date("2026-06-05T11:00:00Z") }),
-      interaction({ tmdbId: 1, type: "added_watchlist", createdAt: new Date("2026-06-06T09:00:00Z") }),
-      interaction({ tmdbId: 3, type: "opened_detail", createdAt: new Date("2026-06-06T09:00:00Z") }),
+      interaction({
+        tmdbId: 1,
+        type: "opened_detail",
+        createdAt: new Date("2026-06-05T11:00:00Z"),
+      }),
+      interaction({
+        tmdbId: 1,
+        type: "added_watchlist",
+        createdAt: new Date("2026-06-06T09:00:00Z"),
+      }),
+      interaction({
+        tmdbId: 3,
+        type: "opened_detail",
+        createdAt: new Date("2026-06-06T09:00:00Z"),
+      }),
       interaction({ tmdbId: 99, type: "rated", createdAt: new Date("2026-06-07T09:00:00Z") }),
     ];
 
@@ -72,7 +106,13 @@ describe("attributeDiscovery", () => {
   test("interactions outside the period window are not counted", () => {
     const flow = attributeDiscovery(
       [impression({ tmdbId: 1, source: "trending", shownAt: new Date("2026-06-05T10:00:00Z") })],
-      [interaction({ tmdbId: 1, type: "opened_detail", createdAt: new Date("2026-07-05T10:00:00Z") })],
+      [
+        interaction({
+          tmdbId: 1,
+          type: "opened_detail",
+          createdAt: new Date("2026-07-05T10:00:00Z"),
+        }),
+      ],
       PERIOD,
     );
     const trending = flow.by_source.find((row) => row.source === "trending");

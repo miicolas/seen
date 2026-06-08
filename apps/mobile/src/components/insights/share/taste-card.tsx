@@ -21,7 +21,9 @@ export function TasteCard({ recap, accent }: { recap: ShareRecap; accent: string
       {genres.length > 0 ? (
         <View style={styles.chips}>
           {genres.map((genre) => (
-            <Text key={genre} style={[styles.chip, { color: shareCardTextColors.text, borderColor: accent }]}>
+            <Text
+              key={genre}
+              style={[styles.chip, { color: shareCardTextColors.text, borderColor: accent }]}>
               {genre}
             </Text>
           ))}

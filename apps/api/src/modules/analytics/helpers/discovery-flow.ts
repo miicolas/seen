@@ -78,7 +78,8 @@ export function attributeDiscovery(
     list.push(impression);
     byMedia.set(key, list);
   }
-  for (const list of byMedia.values()) list.sort((a, b) => a.shownAt.getTime() - b.shownAt.getTime());
+  for (const list of byMedia.values())
+    list.sort((a, b) => a.shownAt.getTime() - b.shownAt.getTime());
 
   // Impressions always carry a concrete media type; an interaction logged without
   // one matches a title across both, oldest-first.

@@ -83,7 +83,10 @@ type ReviewSource = {
   priority: number;
 };
 
-function rowWatchedDate(record: CsvRecord, dateColumn: "Watched Date" | "Date"): string | undefined {
+function rowWatchedDate(
+  record: CsvRecord,
+  dateColumn: "Watched Date" | "Date",
+): string | undefined {
   if (dateColumn === "Watched Date") {
     return parseLetterboxdDate(record["Watched Date"]) ?? parseLetterboxdDate(record["Date"]);
   }
@@ -161,8 +164,18 @@ export function parseLetterboxdFiles(files: Record<string, string>): NormalizedR
   const records = (name: string) => (files[name] ? toRecords(files[name]) : []);
   return [
     ...buildReviewRows([
-      { records: records("diary.csv"), withComment: false, dateColumn: "Watched Date", priority: 4 },
-      { records: records("reviews.csv"), withComment: true, dateColumn: "Watched Date", priority: 3 },
+      {
+        records: records("diary.csv"),
+        withComment: false,
+        dateColumn: "Watched Date",
+        priority: 4,
+      },
+      {
+        records: records("reviews.csv"),
+        withComment: true,
+        dateColumn: "Watched Date",
+        priority: 3,
+      },
       { records: records("ratings.csv"), withComment: false, dateColumn: "Date", priority: 2 },
       { records: records("watched.csv"), withComment: false, dateColumn: "Date", priority: 1 },
     ]),

@@ -64,12 +64,7 @@ function tzOffsetMs(instant: Date, timeZone: string): number {
 
 // The UTC instant for wall-clock midnight of a calendar day in the tz. Resolved in
 // two passes so DST transition days still land on the correct midnight.
-export function zonedMidnight(
-  year: number,
-  month: number,
-  day: number,
-  timeZone: string,
-): Date {
+export function zonedMidnight(year: number, month: number, day: number, timeZone: string): Date {
   const guess = Date.UTC(year, month - 1, day, 0, 0, 0);
   const offset = tzOffsetMs(new Date(guess), timeZone);
   let utc = guess - offset;

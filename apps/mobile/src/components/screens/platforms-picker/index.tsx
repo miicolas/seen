@@ -14,6 +14,7 @@ import { useSetMyPlatforms } from "@/hooks/platforms/use-set-my-platforms";
 import { useTheme } from "@/hooks/use-theme";
 import { hapticSelection, hapticTap } from "@/lib/haptics";
 import { getRegion } from "@/lib/region";
+import { toggleInSet } from "@/lib/set";
 import { useOnboardingStore } from "@/store/use-onboarding-store";
 
 import { ProviderRow } from "./provider-row";
@@ -53,12 +54,7 @@ export function PlatformsPicker({ mode }: Props) {
 
   function toggle(providerId: number) {
     hapticSelection();
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(providerId)) next.delete(providerId);
-      else next.add(providerId);
-      return next;
-    });
+    setSelected((prev) => toggleInSet(prev, providerId));
   }
 
   async function save({ skipped }: { skipped: boolean }) {

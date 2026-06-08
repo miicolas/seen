@@ -31,8 +31,7 @@ export function TasteSection({ taste }: { taste: Taste }) {
   const moviePct =
     taste.media_type_mix.movie + taste.media_type_mix.tv > 0
       ? Math.round(
-          (taste.media_type_mix.movie /
-            (taste.media_type_mix.movie + taste.media_type_mix.tv)) *
+          (taste.media_type_mix.movie / (taste.media_type_mix.movie + taste.media_type_mix.tv)) *
             100,
         )
       : 0;

@@ -38,10 +38,7 @@ export function BarChart({
   describeValue,
 }: BarChartProps) {
   const theme = useTheme();
-  const max = useMemo(
-    () => Math.max(1, ...bars.map((bar) => bar.exact + bar.estimated)),
-    [bars],
-  );
+  const max = useMemo(() => Math.max(1, ...bars.map((bar) => bar.exact + bar.estimated)), [bars]);
   const labelStride = Math.ceil(bars.length / MAX_LABELS);
 
   return (

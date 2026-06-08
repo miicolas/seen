@@ -80,7 +80,10 @@ export function TimelineSection({ timeline }: { timeline: Timeline }) {
             </Text>
           ) : (
             itemsQuery.data?.items.map((item) => (
-              <TimelineItemRow key={`${item.kind}-${item.tmdb_id}-${item.watched_at}`} item={item} />
+              <TimelineItemRow
+                key={`${item.kind}-${item.tmdb_id}-${item.watched_at}`}
+                item={item}
+              />
             ))
           )}
         </View>
@@ -104,7 +107,12 @@ function TimelineItemRow({ item }: { item: TimelineItem }) {
   return (
     <Link
       href={mediaDetailHref(
-        { id: item.tmdb_id, media_type: item.media_type, title: item.title, poster_path: item.poster_path },
+        {
+          id: item.tmdb_id,
+          media_type: item.media_type,
+          title: item.title,
+          poster_path: item.poster_path,
+        },
         "insights",
       )}
       asChild>

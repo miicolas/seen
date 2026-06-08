@@ -52,7 +52,9 @@ export async function getTimelineItems(
         movies,
         and(eq(reviews.tmdbId, movies.tmdbId), eq(reviews.mediaType, movies.mediaType)),
       )
-      .where(and(eq(reviews.userId, userId), gte(reviews.watchedAt, from), lt(reviews.watchedAt, to)))
+      .where(
+        and(eq(reviews.userId, userId), gte(reviews.watchedAt, from), lt(reviews.watchedAt, to)),
+      )
       .orderBy(desc(reviews.watchedAt))
       .limit(MAX_ITEMS),
     db

@@ -86,26 +86,28 @@ export function Insights() {
           styles.content,
           { paddingBottom: insets.bottom + BottomTabInset + SPACING.LG },
         ]}>
-      <Segmented options={rangeOptions} selection={range} onChange={onRangeChange} />
+        <Segmented options={rangeOptions} selection={range} onChange={onRangeChange} />
 
-      {overview.isLoading ? (
-        <View style={styles.center}>
-          <ActivityIndicator />
-        </View>
-      ) : overview.error ? (
-        <Text style={[styles.error, { color: theme.textSecondary }]}>{t("insights.loadError")}</Text>
-      ) : isEmpty ? (
-        <InsightsEmptyState />
-      ) : (
-        <>
-          {ov ? <HeroSection overview={ov} /> : null}
-          {timeline.data ? <TimelineSection timeline={timeline.data} /> : null}
-          {ov ? <EraSection era={ov.current_era} /> : null}
-          {taste.data ? <TasteSection taste={taste.data} /> : null}
-          {ov ? <BacklogSection backlog={ov.watchlist_backlog} /> : null}
-          {discovery.data ? <DiscoverySection flow={discovery.data} /> : null}
-        </>
-      )}
+        {overview.isLoading ? (
+          <View style={styles.center}>
+            <ActivityIndicator />
+          </View>
+        ) : overview.error ? (
+          <Text style={[styles.error, { color: theme.textSecondary }]}>
+            {t("insights.loadError")}
+          </Text>
+        ) : isEmpty ? (
+          <InsightsEmptyState />
+        ) : (
+          <>
+            {ov ? <HeroSection overview={ov} /> : null}
+            {timeline.data ? <TimelineSection timeline={timeline.data} /> : null}
+            {ov ? <EraSection era={ov.current_era} /> : null}
+            {taste.data ? <TasteSection taste={taste.data} /> : null}
+            {ov ? <BacklogSection backlog={ov.watchlist_backlog} /> : null}
+            {discovery.data ? <DiscoverySection flow={discovery.data} /> : null}
+          </>
+        )}
       </ScrollView>
     </>
   );
