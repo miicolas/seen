@@ -1,6 +1,6 @@
 import { db } from "@seen/db";
 import { reviews, watchlist } from "@seen/db/schema";
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray } from "@seen/db/orm";
 
 import {
   DEFAULT_LANGUAGE,

@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { track } from "@/services/events";
 import { errorMessage } from "@/lib/format";
 import {
   hasRating,
@@ -34,6 +36,12 @@ export function useSearchMedia(query: string, filter: MediaFilter = "all"): Sear
     enabled: isOnline && debouncedQuery.length > 0,
     select: (data) => data.filter(hasRating),
   });
+
+  useEffect(() => {
+    if (debouncedQuery.length > 0) {
+      track("searched", { metadata: { query: debouncedQuery } });
+    }
+  }, [debouncedQuery]);
 
   if (!isOnline) {
     return { results: [], isLoading: false, error: null, isOffline: true };

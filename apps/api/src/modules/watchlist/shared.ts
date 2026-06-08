@@ -1,5 +1,5 @@
 import { movies, watchlist } from "@seen/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq } from "@seen/db/orm";
 
 import type { MediaType, TmdbMovieSummary } from "../tmdb";
 
