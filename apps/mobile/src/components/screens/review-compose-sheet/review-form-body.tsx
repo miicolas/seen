@@ -9,7 +9,13 @@ import { ScreenToolbar } from "@/components/navigation";
 import { Button } from "@/components/ui/button";
 import { LAYOUT } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
-import { hapticDelete, hapticError, hapticSuccess, hapticTap } from "@/lib/haptics";
+import {
+  hapticDelete,
+  hapticError,
+  hapticSelection,
+  hapticSuccess,
+  hapticTap,
+} from "@/lib/haptics";
 import { runReviewStatusActivity } from "@/lib/review-status-activity";
 import { starsToRating } from "@/services/core";
 
@@ -29,10 +35,19 @@ export function ReviewFormBody({ controller }: { controller: ReviewController })
   const commentState = useNativeState(controller.initialComment);
 
   const [stars, setStars] = useState(controller.initialStars);
+  // Default to today for a new log; seed the saved watch date when editing.
+  const [watchedDate, setWatchedDate] = useState<Date>(() =>
+    controller.initialWatchedAt ? new Date(controller.initialWatchedAt) : new Date(),
+  );
   // Cheap emptiness signals so `canSave` stays reactive without mirroring the
   // full text into React: they only flip at the empty↔non-empty boundary.
   const [titleHasText, setTitleHasText] = useState(controller.initialTitle.trim().length > 0);
   const [commentHasText, setCommentHasText] = useState(controller.initialComment.trim().length > 0);
+
+  const onWatchedDateChange = useCallback((date: Date) => {
+    setWatchedDate(date);
+    hapticSelection();
+  }, []);
 
   const onTitleChange = useCallback((text: string) => {
     setTitleHasText((prev) => {
@@ -62,6 +77,7 @@ export function ReviewFormBody({ controller }: { controller: ReviewController })
           rating: stars > 0 ? starsToRating(stars) : null,
           title: trimmedTitle.length > 0 ? trimmedTitle : null,
           comment: trimmedComment.length > 0 ? trimmedComment : null,
+          watched_at: watchedDate.toISOString(),
         }),
       );
       hapticSuccess();
@@ -69,7 +85,7 @@ export function ReviewFormBody({ controller }: { controller: ReviewController })
     } catch {
       hapticError();
     }
-  }, [canSave, isSaving, reviewTitleState, commentState, stars, controller, router]);
+  }, [canSave, isSaving, reviewTitleState, commentState, stars, watchedDate, controller, router]);
 
   const handleDelete = useCallback(async () => {
     try {
@@ -105,6 +121,8 @@ export function ReviewFormBody({ controller }: { controller: ReviewController })
         onTitleChange={onTitleChange}
         commentState={commentState}
         onCommentChange={onCommentChange}
+        watchedDate={watchedDate}
+        onWatchedDateChange={onWatchedDateChange}
         nickname={controller.nickname}
         error={controller.error}
       />

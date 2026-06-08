@@ -12,7 +12,9 @@ export type ImportTarget = "review" | "watchlist";
 
 // One Letterboxd entry, normalized across CSV files and the RSS feed. `rating`
 // is already on Seen's stored 1..10 scale; `tmdbId` is only present for RSS rows
-// (the CSV export carries no external ids).
+// (the CSV export carries no external ids). `watchedAt` is the ISO date the entry
+// happened — the watch date for reviews, the add date for watchlist rows — so the
+// import preserves history instead of stamping everything with the import day.
 export type NormalizedRow = {
   target: ImportTarget;
   title: string;
@@ -20,6 +22,7 @@ export type NormalizedRow = {
   uri?: string;
   rating?: number | null;
   comment?: string | null;
+  watchedAt?: string;
   tmdbId?: number;
 };
 
@@ -37,6 +40,7 @@ export type UnmatchedRow = {
   uri?: string;
   rating?: number | null;
   comment?: string | null;
+  watched_at?: string;
   candidates: TmdbCandidate[];
 };
 
@@ -57,6 +61,17 @@ export function parseYear(value: string | undefined): number | undefined {
   if (!value) return undefined;
   const year = Number.parseInt(value.trim().slice(0, 4), 10);
   return Number.isFinite(year) ? year : undefined;
+}
+
+// Letterboxd date cells are "YYYY-MM-DD" (a calendar day, no time). Anchor them to
+// UTC midnight so the stored watched_at lands on the day the user logged, and drop
+// anything unparseable or in the future rather than guessing.
+export function parseLetterboxdDate(value: string | undefined): string | undefined {
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value?.trim() ?? "");
+  if (!match) return undefined;
+  const ms = Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  if (Number.isNaN(ms) || ms > Date.now()) return undefined;
+  return new Date(ms).toISOString();
 }
 
 export function releaseYear(summary: TmdbMovieSummary): number | undefined {

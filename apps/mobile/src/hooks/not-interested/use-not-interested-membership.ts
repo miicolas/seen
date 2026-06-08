@@ -2,6 +2,7 @@ import { notInterestedKeys } from "@seen/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
+import { useInvalidateAnalytics } from "@/hooks/analytics/use-invalidate-analytics";
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { errorMessage } from "@/lib/format";
 import type { MediaType } from "@/lib/tmdb";
@@ -35,10 +36,12 @@ export function useNotInterestedMembership(
     enabled: canLoad,
   });
   const refetchQuery = query.refetch;
+  const invalidateAnalytics = useInvalidateAnalytics();
 
   const invalidateList = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: notInterestedKeys.list() });
-  }, [queryClient]);
+    invalidateAnalytics();
+  }, [queryClient, invalidateAnalytics]);
 
   const dismissMutation = useMutation({
     mutationFn: () => dismiss({ tmdb_id: tmdbId, media_type: mediaType }),

@@ -2,6 +2,7 @@ import { episodeReviewKeys, profileKeys } from "@seen/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
+import { useInvalidateAnalytics } from "@/hooks/analytics/use-invalidate-analytics";
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { errorMessage } from "@/lib/format";
 import {
@@ -12,7 +13,10 @@ import {
   type EpisodeReviewInput,
 } from "@/services/episode-reviews";
 
-type SaveEpisodeReviewInput = Pick<EpisodeReviewInput, "rating" | "title" | "comment">;
+type SaveEpisodeReviewInput = Pick<
+  EpisodeReviewInput,
+  "rating" | "title" | "comment" | "watched_at"
+>;
 
 interface MyEpisodeReviewState {
   review: EpisodeReview | null;
@@ -41,6 +45,8 @@ export function useMyEpisodeReview(params: {
     enabled: canLoad,
   });
 
+  const invalidateAnalytics = useInvalidateAnalytics();
+
   const invalidateDerived = useCallback(() => {
     queryClient.invalidateQueries({
       queryKey: episodeReviewKeys.list(
@@ -63,7 +69,8 @@ export function useMyEpisodeReview(params: {
       queryKey: episodeReviewKeys.seasonRatings(params.seriesTmdbId, params.seasonNumber),
     });
     queryClient.invalidateQueries({ queryKey: profileKeys.activity() });
-  }, [params, queryClient]);
+    invalidateAnalytics();
+  }, [params, queryClient, invalidateAnalytics]);
 
   const saveMutation = useMutation({
     mutationFn: (input: SaveEpisodeReviewInput) =>

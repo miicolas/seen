@@ -23,6 +23,13 @@ export function formatRuntime(minutes?: number | null): string | undefined {
   return `${hours}h ${mins}m`;
 }
 
+// Like formatRuntime but always returns a value (including "0m") — for analytics
+// totals where zero is a real, displayable number rather than "no runtime".
+export function formatWatchMinutes(minutes?: number | null): string {
+  const total = typeof minutes === "number" && minutes > 0 ? Math.round(minutes) : 0;
+  return formatRuntime(total) ?? "0m";
+}
+
 export function formatDate(
   value?: string | null,
   style: "long" | "short" = "long",

@@ -1,3 +1,4 @@
+import { DatePicker, Host } from "@expo/ui/swift-ui";
 import { Image as PosterImage } from "expo-image";
 import { SymbolView } from "expo-symbols";
 import { useTranslation } from "react-i18next";
@@ -22,6 +23,8 @@ export interface ReviewFormProps {
   onTitleChange?: (value: string) => void;
   commentState: ObservableText;
   onCommentChange?: (value: string) => void;
+  watchedDate: Date;
+  onWatchedDateChange: (date: Date) => void;
   nickname: string | null;
   error: string | null;
 }
@@ -36,6 +39,8 @@ export function ReviewForm({
   onTitleChange,
   commentState,
   onCommentChange,
+  watchedDate,
+  onWatchedDateChange,
   nickname,
   error,
 }: ReviewFormProps) {
@@ -85,6 +90,20 @@ export function ReviewForm({
             size="md"
             emptyColor={theme.backgroundSelected}
           />
+        </View>
+
+        <View style={styles.ratingRow}>
+          <Text style={[styles.ratingLabel, { color: theme.textSecondary }]}>
+            {t("review.watchedOn")}
+          </Text>
+          <Host matchContents>
+            <DatePicker
+              selection={watchedDate}
+              range={{ end: new Date() }}
+              displayedComponents={["date"]}
+              onDateChange={onWatchedDateChange}
+            />
+          </Host>
         </View>
 
         <GlassPanel style={styles.fieldsPanel} fallbackColor={theme.backgroundElement}>

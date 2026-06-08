@@ -72,6 +72,16 @@ function RootNavigator() {
           }}
         />
         <Stack.Screen
+          name="share-recap"
+          options={{
+            title: t("insights.shareTitle"),
+            presentation: "formSheet",
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: [0.7],
+            contentStyle: { backgroundColor: theme.background },
+          }}
+        />
+        <Stack.Screen
           name="whats-new"
           options={{
             headerShown: true,
