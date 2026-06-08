@@ -32,6 +32,11 @@ export default function AppTabs() {
         <NativeTabs.Trigger.Icon sf={{ default: "bookmark", selected: "bookmark.fill" }} />
       </NativeTabs.Trigger>
 
+      <NativeTabs.Trigger name="insights">
+        <NativeTabs.Trigger.Label hidden>{t("tabs.insights")}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf={{ default: "chart.bar", selected: "chart.bar.fill" }} />
+      </NativeTabs.Trigger>
+
       <NativeTabs.Trigger name="profile">
         <NativeTabs.Trigger.Label hidden>{t("tabs.profile")}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf={{ default: "person", selected: "person.fill" }} />

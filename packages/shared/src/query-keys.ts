@@ -89,3 +89,20 @@ export const episodeReviewKeys = {
   seasonStats: (seriesTmdbId: number, seasonNumber: number) =>
     ["episode-reviews", "season-stats", seriesTmdbId, seasonNumber] as const,
 };
+
+export const analyticsKeys = {
+  // Broad key for blanket invalidation after any action that changes what the
+  // Insights screen reads (a review, watchlist edit, like, import, …).
+  all: () => ["analytics"] as const,
+  overview: (range: string, timezone: string) =>
+    ["analytics", "overview", range, timezone] as const,
+  timeline: (range: string, timezone: string) =>
+    ["analytics", "timeline", range, timezone] as const,
+  timelineItems: (from: string, to: string, timezone: string) =>
+    ["analytics", "timeline-items", from, to, timezone] as const,
+  taste: (range: string, timezone: string) => ["analytics", "taste", range, timezone] as const,
+  discoveryFlow: (range: string, timezone: string) =>
+    ["analytics", "discovery-flow", range, timezone] as const,
+  shareRecap: (template: string, timezone: string) =>
+    ["analytics", "share-recap", template, timezone] as const,
+};

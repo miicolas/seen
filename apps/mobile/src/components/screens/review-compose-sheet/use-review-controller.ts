@@ -24,6 +24,7 @@ type SaveReviewInput = {
   rating: number | null;
   title: string | null;
   comment: string | null;
+  watched_at: string | null;
 };
 
 export interface ReviewController {
@@ -33,6 +34,7 @@ export interface ReviewController {
   initialStars: number;
   initialTitle: string;
   initialComment: string;
+  initialWatchedAt: string | null;
   nickname: string | null;
   hasReview: boolean;
   isLoading: boolean;
@@ -85,6 +87,7 @@ export function useReviewController(params: ReviewSheetParams): ReviewController
     initialStars,
     initialTitle: review?.title ?? "",
     initialComment: review?.comment ?? "",
+    initialWatchedAt: review?.watched_at ?? null,
     nickname: isEpisode ? null : userNickname(user),
     hasReview: review != null,
     isLoading: active.isLoading,

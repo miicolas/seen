@@ -2,6 +2,7 @@ import { profileKeys, reviewKeys, watchlistKeys } from "@seen/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
+import { useInvalidateAnalytics } from "@/hooks/analytics/use-invalidate-analytics";
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { track } from "@/services/events";
 import { errorMessage } from "@/lib/format";
@@ -36,6 +37,8 @@ export function useMyReview(tmdbId: number, mediaType: MediaType): MyReviewState
     enabled: canLoad,
   });
 
+  const invalidateAnalytics = useInvalidateAnalytics();
+
   const invalidateDerived = useCallback(() => {
     queryClient.invalidateQueries({
       queryKey: reviewKeys.list(mediaType, tmdbId),
@@ -46,7 +49,8 @@ export function useMyReview(tmdbId: number, mediaType: MediaType): MyReviewState
     queryClient.setQueryData(watchlistKeys.my(mediaType, tmdbId), null);
     queryClient.invalidateQueries({ queryKey: ["watchlist", "list"] });
     queryClient.invalidateQueries({ queryKey: profileKeys.activity() });
-  }, [mediaType, queryClient, tmdbId]);
+    invalidateAnalytics();
+  }, [mediaType, queryClient, tmdbId, invalidateAnalytics]);
 
   const saveMutation = useMutation({
     mutationFn: (input: Omit<ReviewInput, "tmdb_id" | "media_type">) =>

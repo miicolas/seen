@@ -1,6 +1,7 @@
 import { Elysia } from "elysia";
 
 import { accountController } from "./account";
+import { analyticsController } from "./analytics";
 import { episodeReviewController } from "./episode-reviews";
 import { eventsController } from "./events";
 import { importController } from "./import";
@@ -30,4 +31,5 @@ export const apiRouter = new Elysia({ name: "api.router" })
   .use(platformsController)
   .use(recommendationsController)
   .use(socialController)
+  .use(analyticsController)
   .use(whatsNewController);

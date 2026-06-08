@@ -15,6 +15,8 @@ export type MatchedItem = {
   target: ImportTarget;
   rating?: number | null;
   comment?: string | null;
+  // ISO date the entry happened (watch date for reviews, add date for watchlist).
+  watchedAt?: string;
   // Present for CSV rows (the search summary); absent for RSS / resolve rows,
   // which already have an exact id but need the movie row fetched.
   summary?: TmdbMovieSummary;
@@ -31,6 +33,7 @@ function dedupe(items: MatchedItem[]): MatchedItem[] {
             ...existing,
             rating: existing.rating ?? item.rating,
             comment: existing.comment ?? item.comment,
+            watchedAt: existing.watchedAt ?? item.watchedAt,
             summary: existing.summary ?? item.summary,
           }
         : item,
@@ -79,6 +82,7 @@ export async function writeImport(userId: string, items: MatchedItem[]): Promise
             mediaType: IMPORT_MEDIA_TYPE,
             rating: item.rating ?? null,
             comment: item.comment ?? null,
+            ...(item.watchedAt ? { watchedAt: new Date(item.watchedAt) } : {}),
           })),
         )
         .onConflictDoNothing({ target: [reviews.userId, reviews.tmdbId, reviews.mediaType] })
@@ -105,6 +109,7 @@ export async function writeImport(userId: string, items: MatchedItem[]): Promise
             userId,
             tmdbId: item.tmdbId,
             mediaType: IMPORT_MEDIA_TYPE,
+            ...(item.watchedAt ? { addedAt: new Date(item.watchedAt) } : {}),
           })),
         )
         .onConflictDoNothing({ target: [watchlist.userId, watchlist.tmdbId, watchlist.mediaType] })
