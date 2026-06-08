@@ -13,6 +13,7 @@ export const fr: typeof en = {
     edit: "Modifier",
     editTitle: "Modifier le profil",
     activityTitle: "Activité récente",
+    favoritesTitle: "Favoris",
     emptyActivity: "Tes notes et critiques apparaîtront ici.",
     emptyActivityHint: "Note un titre pour commencer ton historique.",
     discover: "Découvrir",
@@ -142,6 +143,12 @@ export const fr: typeof en = {
     noReviewsYet: "Aucune critique pour le moment.",
     noReviewsHint: "Sois le premier à partager ton avis.",
     retry: "Réessayer",
+  },
+  likes: {
+    like: "J'aime",
+    unlike: "Je n'aime plus",
+    favorite: "Ajouter aux favoris",
+    unfavorite: "Retirer des favoris",
   },
   watchlist: {
     title: "Watchlist",

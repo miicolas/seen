@@ -29,6 +29,13 @@
       "when": 1780905786903,
       "tag": "0004_odd_daimon_hellstrom",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1780912161837,
+      "tag": "0005_deep_lester",
+      "breakpoints": true
     }
   ]
 }

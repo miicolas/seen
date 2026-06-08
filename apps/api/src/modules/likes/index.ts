@@ -1,0 +1,1 @@
+export { likesController } from "./router";
