@@ -20,7 +20,12 @@ export async function approveAllFollowRequests(viewerId: string) {
     const updated = await tx
       .update(followRequests)
       .set({ status: "approved", updatedAt: new Date() })
-      .where(inArray(followRequests.id, pending.map((request) => request.id)))
+      .where(
+        inArray(
+          followRequests.id,
+          pending.map((request) => request.id),
+        ),
+      )
       .returning({ id: followRequests.id });
 
     return { approved: updated.length };
