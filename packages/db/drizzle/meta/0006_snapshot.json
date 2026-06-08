@@ -1,6 +1,6 @@
 {
-  "id": "ff55c8ca-2bb5-46bb-9471-07d37f5f9035",
-  "prevId": "5e188821-004b-488a-afb9-58d9fa8830e5",
+  "id": "824208cb-7adc-4cee-8f04-98114d463dd7",
+  "prevId": "ff55c8ca-2bb5-46bb-9471-07d37f5f9035",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -1088,6 +1088,108 @@
         "movies_media_type_check": {
           "name": "movies_media_type_check",
           "value": "\"movies\".\"media_type\" in ('movie', 'tv')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.not_interested": {
+      "name": "not_interested",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tmdb_id": {
+          "name": "tmdb_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "media_type": {
+          "name": "media_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reason": {
+          "name": "reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "not_interested_user_created_idx": {
+          "name": "not_interested_user_created_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "not_interested_user_id_user_id_fk": {
+          "name": "not_interested_user_id_user_id_fk",
+          "tableFrom": "not_interested",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "not_interested_user_media_unique": {
+          "name": "not_interested_user_media_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id",
+            "tmdb_id",
+            "media_type"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "not_interested_media_type_check": {
+          "name": "not_interested_media_type_check",
+          "value": "\"not_interested\".\"media_type\" in ('movie', 'tv')"
         }
       },
       "isRLSEnabled": false

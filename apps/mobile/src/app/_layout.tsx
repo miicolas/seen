@@ -73,9 +73,13 @@ function RootNavigator() {
         <Stack.Screen
           name="whats-new"
           options={{
-            headerShown: false,
+            headerShown: true,
+            headerTransparent: true,
+            headerTitle: "",
+            headerShadowVisible: false,
             presentation: "formSheet",
             sheetGrabberVisible: true,
+            sheetAllowedDetents: [0.9],
             contentStyle: { backgroundColor: theme.background },
           }}
         />

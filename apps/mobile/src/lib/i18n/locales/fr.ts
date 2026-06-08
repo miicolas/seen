@@ -13,6 +13,7 @@ export const fr: typeof en = {
     edit: "Modifier",
     editTitle: "Modifier le profil",
     activityTitle: "Activité récente",
+    favoritesTitle: "Favoris",
     emptyActivity: "Tes notes et critiques apparaîtront ici.",
     emptyActivityHint: "Note un titre pour commencer ton historique.",
     discover: "Découvrir",
@@ -151,6 +152,12 @@ export const fr: typeof en = {
     retry: "Réessayer",
     whereToWatch: "Où regarder",
   },
+  likes: {
+    like: "J'aime",
+    unlike: "Je n'aime plus",
+    favorite: "Ajouter aux favoris",
+    unfavorite: "Retirer des favoris",
+  },
   watchlist: {
     title: "Watchlist",
     add: "Ajouter à la Watchlist",
@@ -250,5 +257,9 @@ export const fr: typeof en = {
     onboardingSubtitle:
       "Choisis tes services pour qu'on te propose ce que tu peux regarder maintenant.",
     onboardingContinue: "Continuer",
+  },
+  notInterested: {
+    dismiss: "Pas intéressé",
+    undismiss: "Intéressé à nouveau",
   },
 };

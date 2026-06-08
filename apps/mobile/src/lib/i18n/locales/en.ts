@@ -11,6 +11,7 @@ export const en = {
     edit: "Edit",
     editTitle: "Edit Profile",
     activityTitle: "Recent Activity",
+    favoritesTitle: "Favorites",
     emptyActivity: "Your ratings and reviews will appear here.",
     emptyActivityHint: "Rate something to start building your history.",
     discover: "Discover",
@@ -147,6 +148,12 @@ export const en = {
     retry: "Retry",
     whereToWatch: "Where to watch",
   },
+  likes: {
+    like: "Like",
+    unlike: "Unlike",
+    favorite: "Add to Favorites",
+    unfavorite: "Remove from Favorites",
+  },
   watchlist: {
     title: "Watchlist",
     add: "Add to Watchlist",
@@ -244,5 +251,9 @@ export const en = {
     onboardingTitle: "Where do you stream?",
     onboardingSubtitle: "Pick your services so we can surface things you can watch right now.",
     onboardingContinue: "Continue",
+  },
+  notInterested: {
+    dismiss: "Not interested",
+    undismiss: "Interested again",
   },
 };
