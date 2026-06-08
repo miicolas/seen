@@ -1,7 +1,6 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool, types } from "pg";
 
-import * as relations from "./relations";
 import * as schema from "./schema";
 
 const connectionString = process.env.DATABASE_URL ?? "postgres://seen:seen@localhost:5432/seen";
@@ -15,7 +14,7 @@ export const pool = new Pool({
 });
 
 export const db = drizzle(pool, {
-  schema: { ...schema, ...relations },
+  schema,
   casing: "snake_case",
 });
 
