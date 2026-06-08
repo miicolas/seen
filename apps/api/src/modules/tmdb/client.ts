@@ -24,7 +24,6 @@ export const DETAIL_APPEND: Record<MediaType, string> = {
 };
 
 const OFFER_TYPES = ["flatrate", "rent", "buy", "ads", "free"] as const;
-type OfferType = (typeof OFFER_TYPES)[number];
 
 export const MEDIA_GENRE_SHELVES = [
   { key: "Action", name: "Action", movieGenreId: 28, tvGenreId: 10759 },
