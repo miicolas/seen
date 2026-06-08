@@ -1,6 +1,6 @@
 import { db } from "@seen/db";
 import { episodeReviews } from "@seen/db/schema";
-import { and, eq, isNotNull } from "drizzle-orm";
+import { and, eq, isNotNull } from "@seen/db/orm";
 
 export async function getMySeasonEpisodeRatings(
   userId: string,

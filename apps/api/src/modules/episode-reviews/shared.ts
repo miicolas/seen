@@ -1,5 +1,5 @@
 import { episodeRatingStats, episodeReviews } from "@seen/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq } from "@seen/db/orm";
 
 export type EpisodeReviewInput = {
   series_tmdb_id: number;

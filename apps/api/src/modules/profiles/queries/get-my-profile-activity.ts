@@ -1,6 +1,6 @@
 import { db } from "@seen/db";
 import { episodeReviews, movies, reviews } from "@seen/db/schema";
-import { desc, eq, inArray } from "drizzle-orm";
+import { desc, eq, inArray } from "@seen/db/orm";
 
 import { toApiRow } from "../../../lib/rows";
 

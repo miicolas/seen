@@ -1,6 +1,6 @@
 import { db } from "@seen/db";
 import { reviews, watchlist } from "@seen/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq } from "@seen/db/orm";
 
 import { HttpError } from "../../../lib/http-error";
 import { toApiRow } from "../../../lib/rows";
