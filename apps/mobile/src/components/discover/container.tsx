@@ -4,6 +4,7 @@ import { StyleSheet, View } from "react-native";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Text } from "@/components/ui/text";
 import { SPACING } from "@/constants/design-tokens";
+import { useNotInterestedList } from "@/hooks/not-interested/use-not-interested-list";
 import { useDiscoverMedia } from "@/hooks/tmdb/use-discover-media";
 import type { MediaFilter, TmdbMovieSummary } from "@/lib/tmdb";
 
@@ -20,6 +21,8 @@ export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
   const { t } = useTranslation();
   const { trending, topToday, newReleases, genres, isLoading, error, isOffline } =
     useDiscoverMedia(filter);
+  const { isDismissed } = useNotInterestedList();
+  const filterDismissed = (media: TmdbMovieSummary) => !isDismissed(media.id, media.media_type);
 
   if (isOffline) {
     return (
@@ -45,9 +48,10 @@ export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
     );
   }
 
-  const featured = trending.slice(0, 5);
-  const trendingRow = trending.slice(5);
-  const topTen = topToday.slice(0, 10);
+  const visibleTrending = trending.filter(filterDismissed);
+  const featured = visibleTrending.slice(0, 5);
+  const trendingRow = visibleTrending.slice(5);
+  const topTen = topToday.filter(filterDismissed).slice(0, 10);
 
   const trendingEyebrow =
     filter === "all"
@@ -96,7 +100,7 @@ export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
       <Shelf
         title={t("discover.newReleasesTitle")}
         subtitle={newReleasesSubtitle}
-        data={newReleases}
+        data={newReleases.filter(filterDismissed)}
         keyExtractor={keyOf}
         visibleCards={1.6}
         renderItem={(media, _index, cardWidth) => <PosterCard movie={media} width={cardWidth} />}
@@ -106,7 +110,7 @@ export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
         <Shelf
           key={genre.key}
           title={t(`discover.genre${genre.key}` as const, genre.name)}
-          data={genre.media}
+          data={genre.media.filter(filterDismissed)}
           keyExtractor={keyOf}
           visibleCards={2.2}
           renderItem={(media, _index, cardWidth) => <PosterCard movie={media} width={cardWidth} />}

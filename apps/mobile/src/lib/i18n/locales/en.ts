@@ -230,4 +230,8 @@ export const en = {
     continue: "Continue",
     empty: "Nothing new right now.",
   },
+  notInterested: {
+    dismiss: "Not interested",
+    undismiss: "Interested again",
+  },
 };

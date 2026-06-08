@@ -26,7 +26,7 @@ export function MediaDetail() {
 
   const handleRate = useCallback(() => vm.openReview(vm.myStars || undefined), [vm]);
 
-  const likeActions: ScreenAction[] = [
+  const toolbarActions: ScreenAction[] = [
     {
       key: "like",
       icon: vm.isLiked ? "heart.fill" : "heart",
@@ -43,12 +43,19 @@ export function MediaDetail() {
       tintColor: vm.isFavorited ? vm.accentHex : undefined,
       disabled: vm.isFavoriteSaving,
     },
+    {
+      key: "not-interested",
+      icon: vm.isDismissed ? "eye" : "eye.slash",
+      onPress: vm.toggleNotInterested,
+      label: vm.isDismissed ? t("notInterested.undismiss") : t("notInterested.dismiss"),
+      disabled: vm.isNotInterestedSaving,
+    },
   ];
 
   return (
     <>
       <ScreenHeader />
-      <ScreenToolbar placement="right" actions={likeActions} />
+      <ScreenToolbar placement="right" actions={toolbarActions} />
       <Stack.Title>{vm.title}</Stack.Title>
 
       <View style={[styles.root, { backgroundColor: theme.background }]}>

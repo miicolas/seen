@@ -142,6 +142,25 @@ export const likes = pgTable(
   ],
 );
 
+export const notInterested = pgTable(
+  "not_interested",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    tmdbId: bigint("tmdb_id", { mode: "number" }).notNull(),
+    mediaType: text("media_type").notNull(),
+    reason: text("reason"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    unique("not_interested_user_media_unique").on(table.userId, table.tmdbId, table.mediaType),
+    index("not_interested_user_created_idx").on(table.userId, table.createdAt),
+    check("not_interested_media_type_check", sql`${table.mediaType} in ('movie', 'tv')`),
+  ],
+);
+
 export const episodeReviews = pgTable(
   "episode_reviews",
   {

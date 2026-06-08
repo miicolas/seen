@@ -8,6 +8,7 @@ import { useMediaReviewPreview } from "@/hooks/reviews/use-media-reviews";
 import { useMediaStats } from "@/hooks/reviews/use-media-stats";
 import { useMyReview } from "@/hooks/reviews/use-my-review";
 import { useLikesMembership } from "@/hooks/likes/use-likes-membership";
+import { useNotInterestedMembership } from "@/hooks/not-interested/use-not-interested-membership";
 import { useWatchlistMembership } from "@/hooks/watchlist/use-watchlist-membership";
 import { hapticTap } from "@/lib/haptics";
 import { reviewSheetHref, reviewsSheetHref } from "@/lib/navigation";
@@ -45,6 +46,9 @@ export function useMediaDetailViewModel() {
   const refetchLikes = likes.refetch;
   const toggleLikeMutation = likes.toggleLike;
   const toggleFavoriteMutation = likes.toggleFavorite;
+  const notInterested = useNotInterestedMembership(tmdbId, mediaType);
+  const refetchNotInterested = notInterested.refetch;
+  const toggleNotInterestedMutation = notInterested.toggle;
   const {
     reviews,
     count: reviewCount,
@@ -57,9 +61,17 @@ export function useMediaDetailViewModel() {
       refetch();
       refetchWatchlist();
       refetchLikes();
+      refetchNotInterested();
       refetchReviews();
       refetchStats();
-    }, [refetch, refetchLikes, refetchReviews, refetchStats, refetchWatchlist]),
+    }, [
+      refetch,
+      refetchLikes,
+      refetchNotInterested,
+      refetchReviews,
+      refetchStats,
+      refetchWatchlist,
+    ]),
   );
 
   useEffect(() => {
@@ -170,6 +182,11 @@ export function useMediaDetailViewModel() {
     toggleFavoriteMutation().catch(() => {});
   }, [toggleFavoriteMutation]);
 
+  const toggleNotInterested = useCallback(() => {
+    hapticTap();
+    toggleNotInterestedMutation().catch(() => {});
+  }, [toggleNotInterestedMutation]);
+
   const shareTitle = useCallback(() => {
     Share.share({ message: title }).catch(() => {});
   }, [title]);
@@ -213,6 +230,9 @@ export function useMediaDetailViewModel() {
     isFavoriteSaving: likes.isFavoriteSaving,
     toggleLike,
     toggleFavorite,
+    isDismissed: notInterested.isDismissed,
+    isNotInterestedSaving: notInterested.isSaving,
+    toggleNotInterested,
     openReview,
     openReviews,
     shareTitle,
