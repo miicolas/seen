@@ -1,12 +1,27 @@
 import type { MediaType } from "@/lib/tmdb";
 
+export type FollowPolicy = "open" | "approval_required";
+export type ProfileVisibility = "public" | "followers";
+export type WatchlistVisibility = "private" | "followers" | "public";
+
 export interface Profile {
   id: string;
   full_name: string;
   username: string;
   avatar_path: string | null;
+  follow_policy: FollowPolicy;
+  profile_visibility: ProfileVisibility;
+  default_watchlist_visibility: WatchlistVisibility;
+  contact_discovery_enabled: boolean;
   created_at: string;
   updated_at: string;
+}
+
+export interface PrivacyInput {
+  followPolicy?: FollowPolicy;
+  profileVisibility?: ProfileVisibility;
+  defaultWatchlistVisibility?: WatchlistVisibility;
+  contactDiscoveryEnabled?: boolean;
 }
 
 export interface ProfileInput {

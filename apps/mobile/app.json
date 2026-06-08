@@ -54,6 +54,12 @@
       "expo-secure-store",
       "expo-sqlite",
       [
+        "expo-contacts",
+        {
+          "contactsPermission": "Seen uses your contacts to help you find friends who are already on Seen. Your contacts are matched privately and never stored in plain text."
+        }
+      ],
+      [
         "expo-localization",
         {
           "supportedLocales": ["en", "fr"]

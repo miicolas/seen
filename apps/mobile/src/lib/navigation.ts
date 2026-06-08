@@ -160,3 +160,33 @@ export function episodeReviewSheetHref(params: {
     },
   } as Href;
 }
+
+// Social routes live under the profile tab's `social/` segment so they don't
+// collide with the media-detail `[id]` route. See AGENTS.md "Screens vs routes".
+export type ConnectionsKind = "followers" | "following";
+
+export function findFriendsHref(): Href {
+  return "/(tabs)/profile/social/search" as Href;
+}
+
+export function followRequestsHref(): Href {
+  return "/(tabs)/profile/social/requests" as Href;
+}
+
+export function privacyHref(): Href {
+  return "/(tabs)/profile/privacy" as Href;
+}
+
+export function socialProfileHref(profileId: string): Href {
+  return {
+    pathname: "/(tabs)/profile/social/[profileId]",
+    params: { profileId },
+  } as Href;
+}
+
+export function connectionsHref(profileId: string, kind: ConnectionsKind, title: string): Href {
+  return {
+    pathname: "/(tabs)/profile/social/connections",
+    params: { profileId, kind, title },
+  } as Href;
+}

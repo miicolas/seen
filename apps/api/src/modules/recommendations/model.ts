@@ -31,6 +31,10 @@ const availableEntry = t.Composite([
   t.Object({
     providers: t.Array(providerRef),
     isShort: t.Boolean(),
+    // How many followed profiles reviewed/rated/watchlisted this title, and a
+    // short human reason. 0 / null when no followed profile has engaged with it.
+    friendSignalCount: t.Number(),
+    friendReason: t.Nullable(t.String()),
   }),
 ]);
 

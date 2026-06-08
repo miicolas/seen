@@ -13,6 +13,7 @@ import { normalizeSummary, trending } from "../../tmdb/client";
 import { getMediaDetail } from "../../tmdb/queries/media-detail";
 import type { MediaFilter, TmdbMovieSummary } from "../../tmdb";
 import type { AvailableEntryDto } from "../model";
+import { computeFriendSignals, getFolloweeIds } from "./friend-signal";
 
 // Cap on how many cache-cold titles we warm per request, so a fresh feed
 // populates itself over a few loads without fanning out to TMDB unbounded.
@@ -227,8 +228,28 @@ export async function getAvailableFeed(
       ...normalizeSummary(candidate.summary, candidate.summary.media_type),
       providers: matching,
       isShort: passesShortFilter(candidate),
+      friendSignalCount: 0,
+      friendReason: null,
     });
   }
 
-  return entries.sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0));
+  // Annotate each surviving entry with how many followed profiles engaged with it,
+  // then float social matches above equal non-social ones.
+  const followeeIds = await getFolloweeIds(userId);
+  const signals = await computeFriendSignals(
+    followeeIds,
+    entries.map((entry) => ({ id: entry.id, media_type: entry.media_type })),
+  );
+  for (const entry of entries) {
+    const signal = signals.get(`${entry.media_type}:${entry.id}`);
+    if (signal) {
+      entry.friendSignalCount = signal.count;
+      entry.friendReason = signal.reason;
+    }
+  }
+
+  return entries.sort(
+    (a, b) =>
+      b.friendSignalCount - a.friendSignalCount || (b.popularity ?? 0) - (a.popularity ?? 0),
+  );
 }

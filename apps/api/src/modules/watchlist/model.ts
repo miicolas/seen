@@ -18,13 +18,15 @@ const summary = t.Object({
   genre_ids: t.Optional(t.Array(t.Number())),
 });
 
+const visibility = t.Union([t.Literal("private"), t.Literal("followers"), t.Literal("public")]);
+
 const item = t.Object({
   id: t.String(),
   user_id: t.String(),
   tmdb_id: t.Number(),
   media_type: mediaType,
   added_at: t.String(),
-  visibility: t.Literal("private"),
+  visibility,
 });
 
 const itemWithMedia = t.Composite([

@@ -2,11 +2,23 @@ import { Elysia, t } from "elysia";
 
 const mediaType = t.Union([t.Literal("movie"), t.Literal("tv")]);
 
+const followPolicy = t.Union([t.Literal("open"), t.Literal("approval_required")]);
+const profileVisibility = t.Union([t.Literal("public"), t.Literal("followers")]);
+const watchlistVisibility = t.Union([
+  t.Literal("private"),
+  t.Literal("followers"),
+  t.Literal("public"),
+]);
+
 const profile = t.Object({
   id: t.String(),
   full_name: t.String(),
   username: t.String(),
   avatar_path: t.Nullable(t.String()),
+  follow_policy: followPolicy,
+  profile_visibility: profileVisibility,
+  default_watchlist_visibility: watchlistVisibility,
+  contact_discovery_enabled: t.Boolean(),
   created_at: t.String(),
   updated_at: t.String(),
 });
@@ -34,6 +46,12 @@ export const ProfileModel = new Elysia({ name: "Profile.Model" }).model({
     fullName: t.String({ minLength: 1 }),
     username: t.String({ minLength: 3, maxLength: 20, pattern: "^[a-z0-9_.]+$" }),
     avatarPath: t.Optional(t.Nullable(t.String())),
+  }),
+  "profile.PrivacyBody": t.Object({
+    followPolicy: t.Optional(followPolicy),
+    profileVisibility: t.Optional(profileVisibility),
+    defaultWatchlistVisibility: t.Optional(watchlistVisibility),
+    contactDiscoveryEnabled: t.Optional(t.Boolean()),
   }),
   "profile.ActivityQuery": t.Object({
     limit: t.Optional(t.Numeric({ minimum: 1, maximum: 50 })),

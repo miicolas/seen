@@ -33,8 +33,9 @@ import {
   type Profile,
 } from "@/services/profiles";
 
+import { ProfileAvatar } from "@/components/ui/profile-avatar";
+
 import { EditSheetScaffold } from "./edit-sheet-scaffold";
-import { ProfileAvatar } from "./profile-avatar";
 
 function profileErrorMessage(
   error: unknown,

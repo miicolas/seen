@@ -1,3 +1,5 @@
+import { DEFAULT_CONTACT_HASH_SALT } from "@seen/shared";
+
 function optionalEnv(name: string) {
   const value = process.env[name];
   return value && value.trim().length > 0 ? value : undefined;
@@ -36,4 +38,7 @@ export const env = {
   s3SecretAccessKey: requiredEnv("S3_SECRET_ACCESS_KEY", "minio-password"),
   s3AvatarsBucket: requiredEnv("S3_AVATARS_BUCKET", "seen-avatars"),
   s3PublicBaseUrl: requiredEnv("S3_PUBLIC_BASE_URL", "http://localhost:3000"),
+  // Must match the client's EXPO_PUBLIC_CONTACT_HASH_SALT so device-computed
+  // contact hashes line up with server-stored ones.
+  contactHashSalt: requiredEnv("CONTACT_HASH_SALT", DEFAULT_CONTACT_HASH_SALT),
 };

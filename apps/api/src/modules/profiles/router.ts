@@ -3,7 +3,7 @@ import { Elysia } from "elysia";
 import { authGuard } from "../../auth-plugin";
 import { ProfileModel } from "./model";
 import { getAvatar, getMyProfileActivity, getOrCreateMyProfile } from "./queries";
-import { deleteAvatar, updateMyProfile, uploadAvatar } from "./mutations";
+import { deleteAvatar, updateMyPrivacy, updateMyProfile, uploadAvatar } from "./mutations";
 
 export const profileController = new Elysia({
   name: "Profile.Controller",
@@ -20,6 +20,13 @@ export const profileController = new Elysia({
   .patch("/me", ({ user, body }) => updateMyProfile(user.id, body), {
     auth: true,
     body: "profile.UpdateBody",
+    response: {
+      200: "profile.Profile",
+    },
+  })
+  .patch("/me/privacy", ({ user, body }) => updateMyPrivacy(user, body), {
+    auth: true,
+    body: "profile.PrivacyBody",
     response: {
       200: "profile.Profile",
     },
