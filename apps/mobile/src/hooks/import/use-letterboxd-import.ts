@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import * as DocumentPicker from "expo-document-picker";
 import { useCallback, useState } from "react";
 
+import { useInvalidateAnalytics } from "@/hooks/analytics/use-invalidate-analytics";
 import { errorMessage } from "@/lib/format";
 import { hapticError, hapticSuccess, hapticTap } from "@/lib/haptics";
 import {
@@ -32,6 +33,7 @@ interface LetterboxdImport {
 
 export function useLetterboxdImport(): LetterboxdImport {
   const queryClient = useQueryClient();
+  const invalidateAnalytics = useInvalidateAnalytics();
   const [isImporting, setIsImporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,6 +46,7 @@ export function useLetterboxdImport(): LetterboxdImport {
         // Surface the imported ratings/watchlist immediately.
         queryClient.invalidateQueries({ queryKey: ["watchlist", "list"] });
         queryClient.invalidateQueries({ queryKey: profileKeys.activity() });
+        invalidateAnalytics();
         hapticSuccess();
         return result;
       } catch (err) {
@@ -54,7 +57,7 @@ export function useLetterboxdImport(): LetterboxdImport {
         setIsImporting(false);
       }
     },
-    [queryClient],
+    [queryClient, invalidateAnalytics],
   );
 
   const importFromUsername = useCallback(

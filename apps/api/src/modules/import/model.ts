@@ -16,6 +16,7 @@ const unmatchedRow = t.Object({
   uri: t.Optional(t.String()),
   rating: t.Optional(t.Nullable(t.Number())),
   comment: t.Optional(t.Nullable(t.String())),
+  watched_at: t.Optional(t.String()),
   candidates: t.Array(candidate),
 });
 
@@ -42,6 +43,7 @@ export const ImportModel = new Elysia({ name: "Import.Model" }).model({
         target,
         rating: t.Optional(t.Nullable(t.Number({ minimum: 1, maximum: 10 }))),
         comment: t.Optional(t.Nullable(t.String())),
+        watched_at: t.Optional(t.Nullable(t.String())),
       }),
     ),
   }),

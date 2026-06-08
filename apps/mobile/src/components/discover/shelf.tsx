@@ -1,11 +1,22 @@
-import { Fragment, type ReactNode } from "react";
-import { ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
+import { Fragment, type ReactNode, useCallback, useEffect, useId, useRef } from "react";
+import {
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+  ScrollView,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from "react-native";
 
 import { SectionHeader } from "@/components/discover/section-header";
 import { SPACING } from "@/constants/design-tokens";
 import { MaxContentWidth } from "@/constants/theme";
+import type { MediaType } from "@/lib/tmdb";
+import { trackImpression, type RecommendationSource } from "@/services/events";
 
 const DEFAULT_PEEK = 0.16;
+
+type ImpressionRef = { tmdbId: number; mediaType: MediaType };
 
 interface ShelfProps<T> {
   title?: string;
@@ -19,6 +30,10 @@ interface ShelfProps<T> {
   visibleCards: number;
   peek?: number;
   snap?: boolean;
+  // When set, records a recommendation impression for each item as it scrolls
+  // into view (once per item/source/position, deduped in the events queue).
+  impressionSource?: RecommendationSource;
+  impressionItem?: (item: T, index: number) => ImpressionRef | null;
 }
 
 export function Shelf<T>({
@@ -33,13 +48,56 @@ export function Shelf<T>({
   visibleCards,
   peek = DEFAULT_PEEK,
   snap = false,
+  impressionSource,
+  impressionItem,
 }: ShelfProps<T>) {
   const { width } = useWindowDimensions();
-
-  if (data.length === 0) return null;
+  const recordedRef = useRef<Set<number>>(new Set());
+  // Stable per-instance id so two shelves sharing an impressionSource don't dedupe
+  // each other's cards in the events queue.
+  const scope = useId();
 
   const usable = Math.min(width, MaxContentWidth) - SPACING.MD * 2 - SPACING.MD;
   const cardWidth = usable / (visibleCards + peek);
+  const step = cardWidth + SPACING.MD;
+  const viewport = Math.min(width, MaxContentWidth);
+
+  const recordVisible = useCallback(
+    (scrollX: number) => {
+      if (!impressionSource || !impressionItem) return;
+      const first = Math.max(0, Math.floor((scrollX - SPACING.MD) / step));
+      const last = Math.min(data.length - 1, Math.floor((scrollX + viewport - SPACING.MD) / step));
+      for (let i = first; i <= last; i += 1) {
+        if (recordedRef.current.has(i)) continue;
+        const ref = impressionItem(data[i], i);
+        if (!ref) continue;
+        recordedRef.current.add(i);
+        trackImpression({
+          tmdbId: ref.tmdbId,
+          mediaType: ref.mediaType,
+          source: impressionSource,
+          position: i,
+          scope,
+        });
+      }
+    },
+    [data, impressionItem, impressionSource, scope, step, viewport],
+  );
+
+  // Record whatever is on screen at rest; scrolling records the rest.
+  useEffect(() => {
+    recordedRef.current = new Set();
+    recordVisible(0);
+  }, [recordVisible]);
+
+  const onScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      recordVisible(event.nativeEvent.contentOffset.x);
+    },
+    [recordVisible],
+  );
+
+  if (data.length === 0) return null;
 
   return (
     <View style={styles.container}>
@@ -57,6 +115,8 @@ export function Shelf<T>({
         decelerationRate="fast"
         snapToInterval={snap ? cardWidth + SPACING.MD : undefined}
         snapToAlignment="start"
+        onScroll={impressionSource ? onScroll : undefined}
+        scrollEventThrottle={200}
         contentContainerStyle={styles.content}>
         {data.map((item, index) => (
           <Fragment key={keyExtractor(item, index)}>{renderItem(item, index, cardWidth)}</Fragment>

@@ -6,6 +6,7 @@ export type Resolution = {
   target: ImportTarget;
   rating?: number | null;
   comment?: string | null;
+  watched_at?: string | null;
 };
 
 // Apply the user's picks from the review-unmatched screen. Each resolution already
@@ -19,6 +20,7 @@ export async function resolveUnmatched(
     target: resolution.target,
     rating: resolution.rating,
     comment: resolution.comment,
+    watchedAt: resolution.watched_at ?? undefined,
   }));
 
   const imported = await writeImport(userId, items);

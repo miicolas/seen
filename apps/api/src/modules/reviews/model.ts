@@ -10,6 +10,7 @@ const review = t.Object({
   rating: t.Nullable(t.Number()),
   title: t.Nullable(t.String()),
   comment: t.Nullable(t.String()),
+  watched_at: t.String(),
   created_at: t.String(),
   updated_at: t.String(),
 });
@@ -35,6 +36,7 @@ export const ReviewModel = new Elysia({ name: "Review.Model" }).model({
     rating: t.Optional(t.Nullable(t.Number({ minimum: 1, maximum: 10 }))),
     title: t.Optional(t.Nullable(t.String())),
     comment: t.Optional(t.Nullable(t.String())),
+    watched_at: t.Optional(t.Nullable(t.String())),
   }),
   "review.Page": t.Object({
     reviews: t.Array(review),

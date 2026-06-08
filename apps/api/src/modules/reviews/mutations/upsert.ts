@@ -4,6 +4,7 @@ import { and, eq } from "@seen/db/orm";
 
 import { HttpError } from "../../../lib/http-error";
 import { toApiRow } from "../../../lib/rows";
+import { parseWatchedAt } from "../../../lib/watched-at";
 import { getMediaDetail } from "../../tmdb";
 import type { ReviewInput } from "../shared";
 
@@ -20,6 +21,11 @@ export function assertReviewInput(input: ReviewInput) {
 export async function upsertReview(userId: string, input: ReviewInput) {
   await getMediaDetail(input.media_type, input.tmdb_id);
 
+  // When the client omits `watched_at` we leave the column untouched: the DB
+  // default (now) applies on insert, and the existing watch date is preserved on
+  // update — so editing a review's text never silently re-dates the watch.
+  const watchedAt = parseWatchedAt(input.watched_at);
+
   const review = await db.transaction(async (tx) => {
     const values = {
       userId,
@@ -28,6 +34,7 @@ export async function upsertReview(userId: string, input: ReviewInput) {
       rating: input.rating ?? null,
       title: input.title ?? null,
       comment: input.comment ?? null,
+      ...(watchedAt ? { watchedAt } : {}),
     };
 
     const [saved] = await tx
@@ -39,6 +46,7 @@ export async function upsertReview(userId: string, input: ReviewInput) {
           rating: input.rating ?? null,
           title: input.title ?? null,
           comment: input.comment ?? null,
+          ...(watchedAt ? { watchedAt } : {}),
         },
       })
       .returning();

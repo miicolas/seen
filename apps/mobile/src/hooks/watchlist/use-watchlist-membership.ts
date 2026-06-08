@@ -2,6 +2,7 @@ import { watchlistKeys } from "@seen/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
+import { useInvalidateAnalytics } from "@/hooks/analytics/use-invalidate-analytics";
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { errorMessage } from "@/lib/format";
 import type { MediaType } from "@/lib/tmdb";
@@ -41,10 +42,12 @@ export function useWatchlistMembership(
     enabled: canLoad,
   });
   const refetchQuery = query.refetch;
+  const invalidateAnalytics = useInvalidateAnalytics();
 
   const invalidateLists = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ["watchlist", "list"] });
-  }, [queryClient]);
+    invalidateAnalytics();
+  }, [queryClient, invalidateAnalytics]);
 
   const addMutation = useMutation({
     mutationFn: () => addToWatchlist({ tmdb_id: tmdbId, media_type: mediaType }),

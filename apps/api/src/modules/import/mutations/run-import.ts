@@ -25,7 +25,13 @@ async function resolveRow(row: NormalizedRow): Promise<RowResult> {
   if (row.tmdbId != null) {
     return {
       kind: "matched",
-      item: { tmdbId: row.tmdbId, target: row.target, rating: row.rating, comment: row.comment },
+      item: {
+        tmdbId: row.tmdbId,
+        target: row.target,
+        rating: row.rating,
+        comment: row.comment,
+        watchedAt: row.watchedAt,
+      },
     };
   }
 
@@ -38,6 +44,7 @@ async function resolveRow(row: NormalizedRow): Promise<RowResult> {
         target: row.target,
         rating: row.rating,
         comment: row.comment,
+        watchedAt: row.watchedAt,
         summary: result.summary,
       },
     };
@@ -52,6 +59,7 @@ async function resolveRow(row: NormalizedRow): Promise<RowResult> {
       uri: row.uri,
       rating: row.rating,
       comment: row.comment,
+      watched_at: row.watchedAt,
       candidates: result.candidates.map(toCandidate),
     },
   };

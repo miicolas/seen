@@ -20,6 +20,11 @@ import { Shelf } from "./shelf";
 const keyOf = (media: TmdbMovieSummary, index: number) =>
   `${media.media_type}-${media.id}-${index}`;
 
+const impressionRef = (media: TmdbMovieSummary) => ({
+  tmdbId: media.id,
+  mediaType: media.media_type,
+});
+
 export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
   const { t } = useTranslation();
   const { trending, topToday, newReleases, genres, isLoading, error, isOffline } =
@@ -82,6 +87,8 @@ export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
         data={featured}
         keyExtractor={keyOf}
         visibleCards={1.05}
+        impressionSource="content"
+        impressionItem={impressionRef}
         renderItem={(media, _index, cardWidth) => <HeroCard movie={media} width={cardWidth} />}
       />
 
@@ -91,6 +98,8 @@ export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
         data={trendingRow}
         keyExtractor={keyOf}
         visibleCards={2.2}
+        impressionSource="trending"
+        impressionItem={impressionRef}
         renderItem={(media, _index, cardWidth) => <PosterCard movie={media} width={cardWidth} />}
       />
 
@@ -102,6 +111,8 @@ export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
             data={availableMedia}
             keyExtractor={keyOf}
             visibleCards={2.2}
+            impressionSource="availability"
+            impressionItem={impressionRef}
             renderItem={(media, _index, cardWidth) => (
               <PosterCard movie={media} width={cardWidth} />
             )}
@@ -112,6 +123,8 @@ export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
             data={availableShort}
             keyExtractor={keyOf}
             visibleCards={2.2}
+            impressionSource="availability"
+            impressionItem={impressionRef}
             renderItem={(media, _index, cardWidth) => (
               <PosterCard movie={media} width={cardWidth} />
             )}
@@ -127,6 +140,8 @@ export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
         data={topTen}
         keyExtractor={keyOf}
         visibleCards={2.2}
+        impressionSource="trending"
+        impressionItem={impressionRef}
         renderItem={(media, index, cardWidth) => (
           <RankingCard movie={media} rank={index + 1} width={cardWidth} />
         )}
@@ -138,6 +153,8 @@ export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
         data={newReleases.filter(filterDismissed)}
         keyExtractor={keyOf}
         visibleCards={1.6}
+        impressionSource="content"
+        impressionItem={impressionRef}
         renderItem={(media, _index, cardWidth) => <PosterCard movie={media} width={cardWidth} />}
       />
 
@@ -148,6 +165,8 @@ export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
           data={genre.media.filter(filterDismissed)}
           keyExtractor={keyOf}
           visibleCards={2.2}
+          impressionSource="content"
+          impressionItem={impressionRef}
           renderItem={(media, _index, cardWidth) => <PosterCard movie={media} width={cardWidth} />}
         />
       ))}
