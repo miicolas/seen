@@ -29,3 +29,30 @@ export type InteractionEventPayload = {
   media_type?: MediaType;
   metadata?: Record<string, unknown>;
 };
+
+// Which recommendation surface an item was shown on. Mirrors the API's source enum.
+export type RecommendationSource =
+  | "content"
+  | "collaborative"
+  | "trending"
+  | "availability"
+  | "social";
+
+export type ImpressionInput = {
+  tmdbId: number;
+  mediaType: MediaType;
+  source: RecommendationSource;
+  position: number;
+  // Distinguishes the shelf instance the card was shown in. Used only for client
+  // dedupe (never sent to the server): the same title can legitimately appear in
+  // two shelves that share a source (e.g. several "content" rows), and those are
+  // genuinely two impressions — without a scope they'd collide on source+position.
+  scope: string;
+};
+
+export type ImpressionPayload = {
+  tmdb_id: number;
+  media_type: MediaType;
+  source: RecommendationSource;
+  position: number;
+};

@@ -8,6 +8,9 @@ export interface EpisodeReview {
   rating: number | null;
   title: string | null;
   comment: string | null;
+  runtime_minutes: number | null;
+  runtime_confidence: "exact" | "estimated" | "unknown";
+  watched_at: string;
   created_at: string;
   updated_at: string;
 }
@@ -20,4 +23,6 @@ export interface EpisodeReviewInput {
   rating?: number | null;
   title?: string | null;
   comment?: string | null;
+  // ISO date the user watched it; omitted keeps the existing/default date.
+  watched_at?: string | null;
 }

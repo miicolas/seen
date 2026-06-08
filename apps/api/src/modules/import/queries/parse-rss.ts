@@ -1,4 +1,9 @@
-import { letterboxdRatingToStored, parseYear, type NormalizedRow } from "../shared";
+import {
+  letterboxdRatingToStored,
+  parseLetterboxdDate,
+  parseYear,
+  type NormalizedRow,
+} from "../shared";
 
 function decodeEntities(value: string): string {
   return value
@@ -43,6 +48,7 @@ export function parseLetterboxdRss(xml: string): NormalizedRow[] {
       year: parseYear(tag(item, "letterboxd:filmYear")),
       tmdbId,
       rating: stored,
+      watchedAt: parseLetterboxdDate(tag(item, "letterboxd:watchedDate")),
     });
   }
 

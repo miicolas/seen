@@ -9,7 +9,10 @@ export type EpisodeReviewInput = {
   rating?: number | null;
   title?: string | null;
   comment?: string | null;
+  watched_at?: string | null;
 };
+
+export type RuntimeConfidence = "exact" | "estimated" | "unknown";
 
 export type EpisodeRef = {
   seriesTmdbId: number;

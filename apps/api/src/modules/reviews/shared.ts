@@ -9,6 +9,7 @@ export type ReviewInput = {
   rating?: number | null;
   title?: string | null;
   comment?: string | null;
+  watched_at?: string | null;
 };
 
 export function mediaWhere(tmdbId: number, mediaType: MediaType) {

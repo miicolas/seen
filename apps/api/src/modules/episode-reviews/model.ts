@@ -21,6 +21,13 @@ const episodeReview = t.Object({
   rating: t.Nullable(t.Number()),
   title: t.Nullable(t.String()),
   comment: t.Nullable(t.String()),
+  runtime_minutes: t.Nullable(t.Number()),
+  runtime_confidence: t.Union([
+    t.Literal("exact"),
+    t.Literal("estimated"),
+    t.Literal("unknown"),
+  ]),
+  watched_at: t.String(),
   created_at: t.String(),
   updated_at: t.String(),
 });
@@ -47,6 +54,7 @@ export const EpisodeReviewModel = new Elysia({
     rating: t.Optional(t.Nullable(t.Number({ minimum: 1, maximum: 10 }))),
     title: t.Optional(t.Nullable(t.String())),
     comment: t.Optional(t.Nullable(t.String())),
+    watched_at: t.Optional(t.Nullable(t.String())),
   }),
   "episodeReview.Page": t.Object({
     reviews: t.Array(episodeReview),
