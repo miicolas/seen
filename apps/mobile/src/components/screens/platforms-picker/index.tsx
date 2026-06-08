@@ -1,10 +1,13 @@
-import { Button, Form, Host, Label, Section, Toggle } from "@expo/ui/swift-ui";
-import { tint } from "@expo/ui/swift-ui/modifiers";
+import { SymbolView } from "expo-symbols";
 import { useRouter } from "expo-router";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useAccentColor } from "@/hooks/use-accent-color";
+import { Button } from "@/components/ui/button/button";
+import { Text } from "@/components/ui/text";
+import { BORDER_RADIUS, SPACING } from "@/constants/design-tokens";
 import { useMyPlatforms } from "@/hooks/platforms/use-my-platforms";
 import { useProviders } from "@/hooks/platforms/use-providers";
 import { useSetMyPlatforms } from "@/hooks/platforms/use-set-my-platforms";
@@ -12,6 +15,8 @@ import { useTheme } from "@/hooks/use-theme";
 import { hapticSelection, hapticTap } from "@/lib/haptics";
 import { getRegion } from "@/lib/region";
 import { useOnboardingStore } from "@/store/use-onboarding-store";
+
+import { ProviderRow } from "./provider-row";
 
 type Props = {
   mode: "onboarding" | "settings";
@@ -21,7 +26,7 @@ export function PlatformsPicker({ mode }: Props) {
   const { t } = useTranslation();
   const theme = useTheme();
   const router = useRouter();
-  const { accentHex } = useAccentColor();
+  const insets = useSafeAreaInsets();
 
   const region = getRegion();
   const providers = useProviders(region);
@@ -84,57 +89,123 @@ export function PlatformsPicker({ mode }: Props) {
       ? t("platforms.onboardingContinue")
       : t("platforms.save");
 
-  return (
-    <Host style={{ flex: 1 }}>
-      <Form modifiers={[tint(accentHex)]}>
-        <Section title={headerTitle}>
-          <Label systemImage="tv" title={subtitle} color={theme.textSecondary} />
-        </Section>
+  const isOnboarding = mode === "onboarding";
 
-        <Section
-          title={t("platforms.selectedCount", {
+  return (
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <ScrollView
+        contentInsetAdjustmentBehavior={isOnboarding ? "never" : "automatic"}
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingTop: isOnboarding ? insets.top + SPACING.LG : SPACING.MD,
+            paddingBottom: insets.bottom + SPACING.LG,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}>
+        {isOnboarding ? (
+          <View style={styles.header}>
+            <Text size="3xl" weight="bold" color={theme.text}>
+              {headerTitle}
+            </Text>
+            <Text inline size="md" weight="regular" color={theme.textSecondary}>
+              {subtitle}
+            </Text>
+          </View>
+        ) : (
+          <Text inline size="md" weight="regular" color={theme.textSecondary}>
+            {subtitle}
+          </Text>
+        )}
+
+        <Text inline size="xs" weight="semibold" color={theme.textSecondary}>
+          {t("platforms.selectedCount", {
             count: selected.size,
             plural: selected.size === 1 ? "" : "s",
-          })}>
-          {providers.data.length === 0 ? (
-            <Label
-              systemImage="tray"
-              title={providers.isLoading ? "…" : t("platforms.empty")}
-              color={theme.textSecondary}
-            />
-          ) : (
-            providers.data.map((provider) => (
-              <Toggle
-                key={provider.providerId}
-                label={provider.name}
-                isOn={selected.has(provider.providerId)}
-                onIsOnChange={() => toggle(provider.providerId)}
-              />
-            ))
-          )}
-        </Section>
+          }).toUpperCase()}
+        </Text>
+
+        {providers.data.length === 0 ? (
+          <View style={styles.empty}>
+            <SymbolView name="tray" size={28} tintColor={theme.textSecondary} />
+            <Text inline size="sm" color={theme.textSecondary} align="center">
+              {providers.isLoading ? "…" : t("platforms.empty")}
+            </Text>
+          </View>
+        ) : (
+          <View style={[styles.list, { backgroundColor: theme.backgroundElement }]}>
+            {providers.data.map((provider, index) => (
+              <Fragment key={provider.providerId}>
+                {index > 0 ? (
+                  <View style={[styles.separator, { backgroundColor: theme.background }]} />
+                ) : null}
+                <ProviderRow
+                  name={provider.name}
+                  logoPath={provider.logoPath}
+                  selected={selected.has(provider.providerId)}
+                  onToggle={() => toggle(provider.providerId)}
+                />
+              </Fragment>
+            ))}
+          </View>
+        )}
 
         {errorMessage ? (
-          <Section>
-            <Label
-              systemImage="exclamationmark.triangle"
-              title={errorMessage}
-              color={theme.error}
-            />
-          </Section>
+          <View style={styles.error}>
+            <SymbolView name="exclamationmark.triangle" size={16} tintColor={theme.error} />
+            <Text inline size="sm" color={theme.error}>
+              {errorMessage}
+            </Text>
+          </View>
         ) : null}
 
-        <Section>
-          <Button label={primaryLabel} onPress={() => save({ skipped: false })} />
+        <View style={styles.actions}>
+          <Button title={primaryLabel} width="fill" onPress={() => save({ skipped: false })} />
           {mode === "onboarding" ? (
             <Button
-              label={t("platforms.skip")}
+              title={t("platforms.skip")}
+              variant="link"
+              width="fill"
               onPress={() => save({ skipped: true })}
-              modifiers={[tint(theme.textSecondary)]}
             />
           ) : null}
-        </Section>
-      </Form>
-    </Host>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    paddingHorizontal: SPACING.MD,
+    gap: SPACING.MD,
+  },
+  header: {
+    gap: SPACING.XS,
+  },
+  list: {
+    borderRadius: BORDER_RADIUS.MD,
+    overflow: "hidden",
+  },
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: SPACING.MD + 40 + SPACING.MD,
+  },
+  empty: {
+    alignItems: "center",
+    gap: SPACING.SM,
+    paddingVertical: SPACING.XL,
+  },
+  error: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.XS,
+  },
+  actions: {
+    gap: SPACING.XS,
+    paddingTop: SPACING.SM,
+  },
+});

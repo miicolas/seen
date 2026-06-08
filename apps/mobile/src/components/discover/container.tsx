@@ -1,8 +1,6 @@
-import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 
-import { Button } from "@/components/ui/button/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Text } from "@/components/ui/text";
 import { SPACING } from "@/constants/design-tokens";
@@ -10,11 +8,11 @@ import { useMyPlatforms } from "@/hooks/platforms/use-my-platforms";
 import { useNotInterestedList } from "@/hooks/not-interested/use-not-interested-list";
 import { useAvailableFeed } from "@/hooks/recommendations/use-available-feed";
 import { useDiscoverMedia } from "@/hooks/tmdb/use-discover-media";
-import { hapticTap } from "@/lib/haptics";
 import type { MediaFilter, TmdbMovieSummary } from "@/lib/tmdb";
 
 import { DiscoverSkeleton } from "./discover-skeleton";
 import { HeroCard } from "./hero-card";
+import { PlatformsPrompt } from "./platforms-prompt";
 import { PosterCard } from "./poster-card";
 import { RankingCard } from "./ranking-card";
 import { Shelf } from "./shelf";
@@ -24,7 +22,6 @@ const keyOf = (media: TmdbMovieSummary, index: number) =>
 
 export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
   const { t } = useTranslation();
-  const router = useRouter();
   const { trending, topToday, newReleases, genres, isLoading, error, isOffline } =
     useDiscoverMedia(filter);
   const myPlatforms = useMyPlatforms();
@@ -121,22 +118,7 @@ export const DiscoverContainer = ({ filter }: { filter: MediaFilter }) => {
           />
         </>
       ) : !myPlatforms.isLoading ? (
-        <View style={styles.platformsPrompt}>
-          <EmptyState
-            icon="tv"
-            title={t("discover.pickPlatformsTitle")}
-            subtitle={t("discover.pickPlatformsSubtitle")}
-            action={
-              <Button
-                title={t("discover.pickPlatformsAction")}
-                onPress={() => {
-                  hapticTap();
-                  router.push("/profile/platforms");
-                }}
-              />
-            }
-          />
-        </View>
+        <PlatformsPrompt />
       ) : null}
 
       <Shelf
@@ -184,9 +166,5 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.XXL,
     alignItems: "center",
     justifyContent: "center",
-  },
-  platformsPrompt: {
-    paddingHorizontal: SPACING.MD,
-    paddingVertical: SPACING.LG,
   },
 });
