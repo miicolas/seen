@@ -13,6 +13,7 @@ export const fr: typeof en = {
     edit: "Modifier",
     editTitle: "Modifier le profil",
     activityTitle: "Activité récente",
+    favoritesTitle: "Favoris",
     emptyActivity: "Tes notes et critiques apparaîtront ici.",
     emptyActivityHint: "Note un titre pour commencer ton historique.",
     discover: "Découvrir",

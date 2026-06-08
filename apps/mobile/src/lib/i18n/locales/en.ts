@@ -11,6 +11,7 @@ export const en = {
     edit: "Edit",
     editTitle: "Edit Profile",
     activityTitle: "Recent Activity",
+    favoritesTitle: "Favorites",
     emptyActivity: "Your ratings and reviews will appear here.",
     emptyActivityHint: "Rate something to start building your history.",
     discover: "Discover",
