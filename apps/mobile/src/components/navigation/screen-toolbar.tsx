@@ -7,8 +7,6 @@ interface ScreenToolbarProps {
   actions: ScreenAction[];
 }
 
-// Declarative header toolbar: pass a list of actions instead of hand-writing
-// Stack.Toolbar.Button blocks at every call-site.
 export function ScreenToolbar({ placement, actions }: ScreenToolbarProps) {
   return (
     <Stack.Toolbar placement={placement}>
