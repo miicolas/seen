@@ -8,7 +8,7 @@ import type { useLinkedAccounts } from "@/hooks/account/use-linked-accounts";
 import { useTheme } from "@/hooks/use-theme";
 import { hapticDelete, hapticError } from "@/lib/haptics";
 
-import { AccountRow } from "./account-row";
+import { SettingsRow } from "../settings-row";
 
 type LinkedAccounts = ReturnType<typeof useLinkedAccounts>;
 
@@ -49,7 +49,7 @@ export function LinkedAccountsSection({ linked }: { linked: LinkedAccounts }) {
         <ProgressView />
       ) : linked.accounts.length > 0 ? (
         linked.accounts.map((account) => (
-          <AccountRow
+          <SettingsRow
             key={account.id}
             icon={providerIcon(account.provider_id)}
             label={providerLabel(account.provider_id, t)}

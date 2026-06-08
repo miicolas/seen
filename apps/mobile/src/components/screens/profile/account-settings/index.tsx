@@ -11,7 +11,7 @@ import { useSessions } from "@/hooks/account/use-sessions";
 import { hapticError, hapticSuccess, hapticTap } from "@/lib/haptics";
 import { signOut } from "@/services/account";
 
-import { AccountRow } from "./account-row";
+import { SettingsRow } from "../settings-row";
 import { LinkedAccountsSection } from "./linked-accounts-section";
 import { SessionsSection } from "./sessions-section";
 
@@ -43,6 +43,11 @@ export function AccountSettingsSheet() {
     router.push("/profile/platforms");
   }, [router]);
 
+  const openTastePreferences = useCallback(() => {
+    hapticTap();
+    router.push("/profile/taste-preferences");
+  }, [router]);
+
   const openWhatsNew = useCallback(() => {
     hapticTap();
     router.push("/whats-new");
@@ -70,21 +75,30 @@ export function AccountSettingsSheet() {
         </Stack.Toolbar.Button>
       </Stack.Toolbar>
 
-      <Host style={{ flex: 1 }}>
+      <Host
+        matchContents={false}
+        ignoreSafeArea="keyboard"
+        useViewportSizeMeasurement
+        style={{ flex: 1 }}>
         <Form modifiers={[tint(accentHex)]}>
           <Section>
-            <AccountRow
+            <SettingsRow
               icon="person.crop.circle"
               label={t("profile.edit")}
               onPress={openEditProfile}
             />
-            <AccountRow
+            <SettingsRow
               icon="square.and.arrow.down"
               label={t("import.menuAction")}
               onPress={openImport}
             />
-            <AccountRow icon="tv" label={t("platforms.menuAction")} onPress={openPlatforms} />
-            <AccountRow icon="sparkles" label={t("whatsNew.title")} onPress={openWhatsNew} />
+            <SettingsRow icon="tv" label={t("platforms.menuAction")} onPress={openPlatforms} />
+            <SettingsRow
+              icon="heart.text.square"
+              label={t("taste.menuAction")}
+              onPress={openTastePreferences}
+            />
+            <SettingsRow icon="sparkles" label={t("whatsNew.title")} onPress={openWhatsNew} />
           </Section>
 
           <LinkedAccountsSection linked={linked} />
@@ -92,7 +106,7 @@ export function AccountSettingsSheet() {
           <SessionsSection sessions={sessions} />
 
           <Section>
-            <AccountRow
+            <SettingsRow
               icon="rectangle.portrait.and.arrow.right"
               label={t("account.signOut")}
               onPress={handleSignOut}
@@ -100,7 +114,7 @@ export function AccountSettingsSheet() {
           </Section>
 
           <Section>
-            <AccountRow
+            <SettingsRow
               icon="trash"
               label={
                 deleteAccount.isDeleting ? t("account.deletingAccount") : t("account.deleteAccount")

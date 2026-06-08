@@ -18,6 +18,10 @@
       "types": "./src/modules/platforms/model.ts",
       "default": "./src/modules/platforms/model.ts"
     },
+    "./preferences": {
+      "types": "./src/modules/preferences/model.ts",
+      "default": "./src/modules/preferences/model.ts"
+    },
     "./recommendations": {
       "types": "./src/modules/recommendations/model.ts",
       "default": "./src/modules/recommendations/model.ts"

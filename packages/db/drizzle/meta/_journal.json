@@ -50,6 +50,13 @@
       "when": 1780927130561,
       "tag": "0007_slippery_chameleon",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1780948804348,
+      "tag": "0008_far_sunspot",
+      "breakpoints": true
     }
   ]
 }
