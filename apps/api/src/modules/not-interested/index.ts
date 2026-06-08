@@ -1,0 +1,1 @@
+export { notInterestedController } from "./router";

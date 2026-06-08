@@ -3,6 +3,7 @@ import { Elysia } from "elysia";
 import { accountController } from "./account";
 import { episodeReviewController } from "./episode-reviews";
 import { importController } from "./import";
+import { notInterestedController } from "./not-interested";
 import { profileController } from "./profiles";
 import { reviewController } from "./reviews";
 import { tmdbController } from "./tmdb";
@@ -15,6 +16,7 @@ export const apiRouter = new Elysia({ name: "api.router" })
   .use(profileController)
   .use(reviewController)
   .use(watchlistController)
+  .use(notInterestedController)
   .use(episodeReviewController)
   .use(importController)
   .use(accountController)

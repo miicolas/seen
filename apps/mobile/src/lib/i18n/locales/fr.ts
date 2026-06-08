@@ -227,4 +227,8 @@ export const fr: typeof en = {
     continue: "Continuer",
     empty: "Rien de neuf pour le moment.",
   },
+  notInterested: {
+    dismiss: "Pas intéressé",
+    undismiss: "Intéressé à nouveau",
+  },
 };

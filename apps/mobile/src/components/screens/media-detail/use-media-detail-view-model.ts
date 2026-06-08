@@ -7,6 +7,7 @@ import { useMediaDetail } from "@/hooks/tmdb/use-media-detail";
 import { useMediaReviewPreview } from "@/hooks/reviews/use-media-reviews";
 import { useMediaStats } from "@/hooks/reviews/use-media-stats";
 import { useMyReview } from "@/hooks/reviews/use-my-review";
+import { useNotInterestedMembership } from "@/hooks/not-interested/use-not-interested-membership";
 import { useWatchlistMembership } from "@/hooks/watchlist/use-watchlist-membership";
 import { hapticTap } from "@/lib/haptics";
 import { reviewSheetHref, reviewsSheetHref } from "@/lib/navigation";
@@ -37,7 +38,9 @@ export function useMediaDetailViewModel() {
   const { detail, isLoading, error } = useMediaDetail(tmdbId, mediaType);
   const { review, refetch } = useMyReview(tmdbId, mediaType);
   const watchlist = useWatchlistMembership(tmdbId, mediaType);
+  const notInterested = useNotInterestedMembership(tmdbId, mediaType);
   const refetchWatchlist = watchlist.refetch;
+  const refetchNotInterested = notInterested.refetch;
   const toggleWatchlistMutation = watchlist.toggle;
   const {
     reviews,
@@ -50,9 +53,10 @@ export function useMediaDetailViewModel() {
     useCallback(() => {
       refetch();
       refetchWatchlist();
+      refetchNotInterested();
       refetchReviews();
       refetchStats();
-    }, [refetch, refetchReviews, refetchStats, refetchWatchlist]),
+    }, [refetch, refetchNotInterested, refetchReviews, refetchStats, refetchWatchlist]),
   );
 
   const title = detail?.title ?? params.title ?? "Untitled";
@@ -147,6 +151,10 @@ export function useMediaDetailViewModel() {
     toggleWatchlistMutation().catch(() => {});
   }, [toggleWatchlistMutation]);
 
+  const toggleNotInterested = useCallback(() => {
+    notInterested.toggle().catch(() => {});
+  }, [notInterested]);
+
   const shareTitle = useCallback(() => {
     Share.share({ message: title }).catch(() => {});
   }, [title]);
@@ -184,6 +192,9 @@ export function useMediaDetailViewModel() {
     isInWatchlist: watchlist.isInWatchlist,
     isWatchlistSaving: watchlist.isSaving,
     toggleWatchlist,
+    isDismissed: notInterested.isDismissed,
+    isNotInterestedSaving: notInterested.isSaving,
+    toggleNotInterested,
     openReview,
     openReviews,
     shareTitle,

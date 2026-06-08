@@ -8,9 +8,10 @@ import { StyleSheet, View } from "react-native";
 import { Text } from "@/components/ui/text";
 import { BORDER_RADIUS, SPACING } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
+import { useNotInterestedMembership } from "@/hooks/not-interested/use-not-interested-membership";
 import { useWatchlistMembership } from "@/hooks/watchlist/use-watchlist-membership";
 import { releaseYear, truncate } from "@/lib/format";
-import { hapticTap } from "@/lib/haptics";
+import { hapticDelete, hapticTap } from "@/lib/haptics";
 import { mediaDetailHref } from "@/lib/navigation";
 import { tmdbImageUrl, type TmdbMovieSummary } from "@/lib/tmdb";
 
@@ -24,6 +25,7 @@ export function PosterCard({ movie, width, showMeta = true }: PosterCardProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const watchlist = useWatchlistMembership(movie.id, movie.media_type);
+  const notInterested = useNotInterestedMembership(movie.id, movie.media_type);
   const uri = tmdbImageUrl(
     movie.poster_path ?? movie.backdrop_path,
     width >= 180 ? "w500" : "w342",
@@ -37,9 +39,14 @@ export function PosterCard({ movie, width, showMeta = true }: PosterCardProps) {
   }
 
   function handleMenuAction(event: { nativeEvent: { event: string } }) {
-    if (event.nativeEvent.event !== "toggle-watchlist") return;
-    hapticTap();
-    watchlist.toggle().catch(() => {});
+    const { event: id } = event.nativeEvent;
+    if (id === "toggle-watchlist") {
+      hapticTap();
+      watchlist.toggle().catch(() => {});
+    } else if (id === "not-interested") {
+      hapticDelete();
+      notInterested.toggle().catch(() => {});
+    }
   }
 
   return (
@@ -50,6 +57,14 @@ export function PosterCard({ movie, width, showMeta = true }: PosterCardProps) {
           id: "toggle-watchlist",
           title: watchlist.isInWatchlist ? t("watchlist.remove") : t("watchlist.add"),
           image: watchlist.isInWatchlist ? "bookmark.slash.fill" : "bookmark",
+        },
+        {
+          id: "not-interested",
+          title: notInterested.isDismissed
+            ? t("notInterested.undismiss")
+            : t("notInterested.dismiss"),
+          image: notInterested.isDismissed ? "eye" : "eye.slash",
+          attributes: notInterested.isDismissed ? undefined : { destructive: true },
         },
       ]}
       onPressAction={handleMenuAction}>
