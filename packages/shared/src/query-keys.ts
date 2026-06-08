@@ -40,6 +40,21 @@ export const recommendationKeys = {
     ["recommendations", "available", region, filter] as const,
 };
 
+export const socialKeys = {
+  all: () => ["social"] as const,
+  searches: () => ["social", "search"] as const,
+  search: (term: string) => ["social", "search", term] as const,
+  profiles: () => ["social", "profile"] as const,
+  profile: (profileId: string) => ["social", "profile", profileId] as const,
+  profileActivity: (profileId: string) => ["social", "profile", profileId, "activity"] as const,
+  profileWatchlist: (profileId: string) => ["social", "profile", profileId, "watchlist"] as const,
+  followers: (profileId: string) => ["social", "profile", profileId, "followers"] as const,
+  following: (profileId: string) => ["social", "profile", profileId, "following"] as const,
+  activity: () => ["social", "activity"] as const,
+  requests: () => ["social", "requests"] as const,
+  contactMatches: () => ["social", "contact-matches"] as const,
+};
+
 export const reviewKeys = {
   my: (mediaType: MediaType, tmdbId: number) => ["reviews", "my", mediaType, tmdbId] as const,
   list: (mediaType: MediaType, tmdbId: number) => ["reviews", "list", mediaType, tmdbId] as const,

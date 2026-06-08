@@ -8,6 +8,8 @@ export type WatchlistInput = {
   media_type: MediaType;
 };
 
+export type WatchlistVisibility = "private" | "followers" | "public";
+
 export function watchlistMediaWhere(userId: string, tmdbId: number, mediaType: MediaType) {
   return and(
     eq(watchlist.userId, userId),
@@ -41,7 +43,7 @@ export function toWatchlistItem(row: typeof watchlist.$inferSelect) {
     tmdb_id: row.tmdbId,
     media_type: row.mediaType as MediaType,
     added_at: row.addedAt.toISOString(),
-    visibility: "private" as const,
+    visibility: row.visibility as WatchlistVisibility,
   };
 }
 

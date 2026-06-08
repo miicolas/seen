@@ -5,8 +5,18 @@ import { Text } from "@/components/ui/text";
 import { useAccentColor } from "@/hooks/use-accent-color";
 import { useTheme } from "@/hooks/use-theme";
 
-import { initials } from "./utils";
+function initials(name: string | undefined) {
+  const parts = name?.trim().split(/\s+/).filter(Boolean) ?? [];
+  return (
+    parts
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("") || "S"
+  );
+}
 
+// A circular avatar that falls back to the user's initials on an accent tint.
+// Reusable across the profile screen and every social profile card.
 export function ProfileAvatar({
   uri,
   name,
@@ -32,7 +42,7 @@ export function ProfileAvatar({
         circle,
         { backgroundColor: theme.backgroundElement },
       ]}>
-      <Text size="2xl" weight="heavy" color={accentHex}>
+      <Text size={size > 80 ? "2xl" : "md"} weight="heavy" color={accentHex}>
         {initials(name)}
       </Text>
     </View>

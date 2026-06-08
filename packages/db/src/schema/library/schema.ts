@@ -20,7 +20,10 @@ export const watchlist = pgTable(
     index("watchlist_user_added_idx").on(table.userId, table.addedAt),
     index("watchlist_user_media_type_added_idx").on(table.userId, table.mediaType, table.addedAt),
     check("watchlist_media_type_check", sql`${table.mediaType} in ('movie', 'tv')`),
-    check("watchlist_visibility_check", sql`${table.visibility} in ('private')`),
+    check(
+      "watchlist_visibility_check",
+      sql`${table.visibility} in ('private', 'followers', 'public')`,
+    ),
   ],
 );
 

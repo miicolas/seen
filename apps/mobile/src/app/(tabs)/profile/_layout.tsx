@@ -42,6 +42,46 @@ export default function ProfileLayout() {
         }}
       />
       <Stack.Screen
+        name="privacy"
+        options={{
+          title: t("privacy.title"),
+          headerLargeTitle: false,
+          headerBackButtonDisplayMode: "minimal",
+        }}
+      />
+      <Stack.Screen
+        name="social/search"
+        options={{
+          title: t("social.searchTitle"),
+          headerLargeTitle: false,
+          headerBackButtonDisplayMode: "minimal",
+        }}
+      />
+      <Stack.Screen
+        name="social/requests"
+        options={{
+          title: t("social.requestsTitle"),
+          headerLargeTitle: false,
+          headerBackButtonDisplayMode: "minimal",
+        }}
+      />
+      <Stack.Screen
+        name="social/[profileId]"
+        options={{
+          title: "",
+          headerLargeTitle: false,
+          headerBackButtonDisplayMode: "minimal",
+        }}
+      />
+      <Stack.Screen
+        name="social/connections"
+        options={{
+          title: "",
+          headerLargeTitle: false,
+          headerBackButtonDisplayMode: "minimal",
+        }}
+      />
+      <Stack.Screen
         name="episode"
         options={{
           title: "",

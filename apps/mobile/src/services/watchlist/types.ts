@@ -10,13 +10,15 @@ export interface WatchlistInput {
   media_type: MediaType;
 }
 
+export type WatchlistVisibility = "private" | "followers" | "public";
+
 export interface WatchlistItem {
   id: string;
   user_id: string;
   tmdb_id: number;
   media_type: MediaType;
   added_at: string;
-  visibility: "private";
+  visibility: WatchlistVisibility;
 }
 
 export interface WatchlistItemWithMedia extends WatchlistItem {
