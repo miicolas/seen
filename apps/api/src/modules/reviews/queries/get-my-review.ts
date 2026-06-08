@@ -1,6 +1,6 @@
 import { db } from "@seen/db";
 import { reviews } from "@seen/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq } from "@seen/db/orm";
 
 import { toApiRow } from "../../../lib/rows";
 import type { MediaType } from "../../tmdb";

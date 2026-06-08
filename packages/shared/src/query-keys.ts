@@ -41,6 +41,11 @@ export const notInterestedKeys = {
   list: () => ["not-interested", "list"] as const,
 };
 
+export const likeKeys = {
+  my: (mediaType: MediaType, tmdbId: number) => ["likes", "my", mediaType, tmdbId] as const,
+  list: (kind: string = "favorite") => ["likes", "list", kind] as const,
+};
+
 export const episodeReviewKeys = {
   my: (seriesTmdbId: number, seasonNumber: number, episodeNumber: number) =>
     ["episode-reviews", "my", seriesTmdbId, seasonNumber, episodeNumber] as const,

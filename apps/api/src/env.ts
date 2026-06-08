@@ -21,7 +21,7 @@ export const env = {
     optionalEnv("TRUSTED_ORIGINS") ?? "seen://,seen://*,exp://,exp://**,https://appleid.apple.com"
   )
     .split(",")
-    .map((origin) => origin.trim())
+    .map((origin: string) => origin.trim())
     .filter(Boolean),
   appleClientId: optionalEnv("APPLE_CLIENT_ID"),
   appleTeamId: optionalEnv("APPLE_TEAM_ID"),

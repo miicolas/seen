@@ -1,5 +1,5 @@
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { Linking, Share, useWindowDimensions } from "react-native";
 
 import { useAccentColor } from "@/hooks/use-accent-color";
@@ -7,11 +7,13 @@ import { useMediaDetail } from "@/hooks/tmdb/use-media-detail";
 import { useMediaReviewPreview } from "@/hooks/reviews/use-media-reviews";
 import { useMediaStats } from "@/hooks/reviews/use-media-stats";
 import { useMyReview } from "@/hooks/reviews/use-my-review";
+import { useLikesMembership } from "@/hooks/likes/use-likes-membership";
 import { useNotInterestedMembership } from "@/hooks/not-interested/use-not-interested-membership";
 import { useWatchlistMembership } from "@/hooks/watchlist/use-watchlist-membership";
 import { hapticTap } from "@/lib/haptics";
 import { reviewSheetHref, reviewsSheetHref } from "@/lib/navigation";
 import { tmdbImageUrl, type MediaType } from "@/lib/tmdb";
+import { track } from "@/services/events";
 import { ratingToStars } from "@/services/reviews";
 
 import { formatDate, releaseYear } from "@/lib/format";
@@ -38,10 +40,15 @@ export function useMediaDetailViewModel() {
   const { detail, isLoading, error } = useMediaDetail(tmdbId, mediaType);
   const { review, refetch } = useMyReview(tmdbId, mediaType);
   const watchlist = useWatchlistMembership(tmdbId, mediaType);
-  const notInterested = useNotInterestedMembership(tmdbId, mediaType);
   const refetchWatchlist = watchlist.refetch;
-  const refetchNotInterested = notInterested.refetch;
   const toggleWatchlistMutation = watchlist.toggle;
+  const likes = useLikesMembership(tmdbId, mediaType);
+  const refetchLikes = likes.refetch;
+  const toggleLikeMutation = likes.toggleLike;
+  const toggleFavoriteMutation = likes.toggleFavorite;
+  const notInterested = useNotInterestedMembership(tmdbId, mediaType);
+  const refetchNotInterested = notInterested.refetch;
+  const toggleNotInterestedMutation = notInterested.toggle;
   const {
     reviews,
     count: reviewCount,
@@ -53,11 +60,25 @@ export function useMediaDetailViewModel() {
     useCallback(() => {
       refetch();
       refetchWatchlist();
+      refetchLikes();
       refetchNotInterested();
       refetchReviews();
       refetchStats();
-    }, [refetch, refetchNotInterested, refetchReviews, refetchStats, refetchWatchlist]),
+    }, [
+      refetch,
+      refetchLikes,
+      refetchNotInterested,
+      refetchReviews,
+      refetchStats,
+      refetchWatchlist,
+    ]),
   );
+
+  useEffect(() => {
+    if (Number.isFinite(tmdbId) && tmdbId > 0) {
+      track("opened_detail", { tmdbId, mediaType });
+    }
+  }, [tmdbId, mediaType]);
 
   const title = detail?.title ?? params.title ?? "Untitled";
   const posterPath =
@@ -151,9 +172,20 @@ export function useMediaDetailViewModel() {
     toggleWatchlistMutation().catch(() => {});
   }, [toggleWatchlistMutation]);
 
+  const toggleLike = useCallback(() => {
+    hapticTap();
+    toggleLikeMutation().catch(() => {});
+  }, [toggleLikeMutation]);
+
+  const toggleFavorite = useCallback(() => {
+    hapticTap();
+    toggleFavoriteMutation().catch(() => {});
+  }, [toggleFavoriteMutation]);
+
   const toggleNotInterested = useCallback(() => {
-    notInterested.toggle().catch(() => {});
-  }, [notInterested]);
+    hapticTap();
+    toggleNotInterestedMutation().catch(() => {});
+  }, [toggleNotInterestedMutation]);
 
   const shareTitle = useCallback(() => {
     Share.share({ message: title }).catch(() => {});
@@ -192,6 +224,12 @@ export function useMediaDetailViewModel() {
     isInWatchlist: watchlist.isInWatchlist,
     isWatchlistSaving: watchlist.isSaving,
     toggleWatchlist,
+    isLiked: likes.isLiked,
+    isFavorited: likes.isFavorited,
+    isLikeSaving: likes.isLikeSaving,
+    isFavoriteSaving: likes.isFavoriteSaving,
+    toggleLike,
+    toggleFavorite,
     isDismissed: notInterested.isDismissed,
     isNotInterestedSaving: notInterested.isSaving,
     toggleNotInterested,

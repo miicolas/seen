@@ -26,8 +26,22 @@
     {
       "idx": 4,
       "version": "7",
-      "when": 1780912523915,
-      "tag": "0004_woozy_blue_blade",
+      "when": 1780905786903,
+      "tag": "0004_odd_daimon_hellstrom",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1780912161837,
+      "tag": "0005_deep_lester",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1780914506261,
+      "tag": "0006_light_rumiko_fujikawa",
       "breakpoints": true
     }
   ]

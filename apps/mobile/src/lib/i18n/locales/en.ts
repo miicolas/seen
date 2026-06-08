@@ -11,6 +11,7 @@ export const en = {
     edit: "Edit",
     editTitle: "Edit Profile",
     activityTitle: "Recent Activity",
+    favoritesTitle: "Favorites",
     emptyActivity: "Your ratings and reviews will appear here.",
     emptyActivityHint: "Rate something to start building your history.",
     discover: "Discover",
@@ -138,6 +139,12 @@ export const en = {
     noReviewsYet: "No reviews yet.",
     noReviewsHint: "Be the first to share what you thought.",
     retry: "Retry",
+  },
+  likes: {
+    like: "Like",
+    unlike: "Unlike",
+    favorite: "Add to Favorites",
+    unfavorite: "Remove from Favorites",
   },
   watchlist: {
     title: "Watchlist",

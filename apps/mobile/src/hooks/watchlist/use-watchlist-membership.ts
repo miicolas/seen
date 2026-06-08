@@ -5,6 +5,7 @@ import { useCallback, useState } from "react";
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { errorMessage } from "@/lib/format";
 import type { MediaType } from "@/lib/tmdb";
+import { track } from "@/services/events";
 import {
   addToWatchlist,
   getMyWatchlistItem,
@@ -66,6 +67,7 @@ export function useWatchlistMembership(
     onSuccess: (saved) => {
       queryClient.setQueryData(key, saved);
       invalidateLists();
+      track("added_watchlist", { tmdbId, mediaType });
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: key });
@@ -85,6 +87,7 @@ export function useWatchlistMembership(
     },
     onSuccess: () => {
       invalidateLists();
+      track("removed_watchlist", { tmdbId, mediaType });
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: key });

@@ -19,6 +19,7 @@ import { hapticTap } from "@/lib/haptics";
 import { profileAvatarUrl } from "@/services/profiles";
 
 import { ActivityRow } from "./activity-row";
+import { FavoritesSection } from "./favorites-section";
 import { ProfileAvatar } from "./profile-avatar";
 
 export function ProfileScreen() {
@@ -112,6 +113,8 @@ export function ProfileScreen() {
                   {profile.error}
                 </Text>
               ) : null}
+
+              <FavoritesSection />
 
               <View style={styles.section}>
                 <Text size="2xl" weight="bold" color={theme.text} fillWidth>

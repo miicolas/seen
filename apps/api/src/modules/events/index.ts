@@ -1,0 +1,1 @@
+export { eventsController } from "./router";
