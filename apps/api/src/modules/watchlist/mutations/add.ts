@@ -2,7 +2,7 @@ import { db } from "@seen/db";
 import { profiles, watchlist } from "@seen/db/schema";
 import { eq } from "@seen/db/orm";
 
-import { HttpError } from "../../../lib/http-error";
+import { insertOrGet } from "../../../lib/insert-or-get";
 import { enqueueSimilarityRefresh } from "../../similarity";
 import { getMediaDetail } from "../../tmdb";
 import type { WatchlistInput } from "../shared";
@@ -22,35 +22,34 @@ export async function addToWatchlist(userId: string, input: WatchlistInput) {
 
   const visibility = await defaultWatchlistVisibility(userId);
 
-  const [inserted] = await db
-    .insert(watchlist)
-    .values({
-      userId,
-      tmdbId: input.tmdb_id,
-      mediaType: input.media_type,
-      visibility,
-    })
-    .onConflictDoNothing({
-      target: [watchlist.userId, watchlist.tmdbId, watchlist.mediaType],
-    })
-    .returning();
+  const { row, inserted } = await insertOrGet({
+    insert: () =>
+      db
+        .insert(watchlist)
+        .values({
+          userId,
+          tmdbId: input.tmdb_id,
+          mediaType: input.media_type,
+          visibility,
+        })
+        .onConflictDoNothing({
+          target: [watchlist.userId, watchlist.tmdbId, watchlist.mediaType],
+        })
+        .returning(),
+    find: () =>
+      db
+        .select()
+        .from(watchlist)
+        .where(watchlistMediaWhere(userId, input.tmdb_id, input.media_type))
+        .limit(1),
+    errorMessage: "Watchlist item could not be saved.",
+  });
 
   if (inserted) {
     enqueueSimilarityRefresh(userId, {
       media: { tmdbId: input.tmdb_id, mediaType: input.media_type },
     });
-    return toWatchlistItem(inserted);
   }
 
-  const [existing] = await db
-    .select()
-    .from(watchlist)
-    .where(watchlistMediaWhere(userId, input.tmdb_id, input.media_type))
-    .limit(1);
-
-  if (!existing) {
-    throw new HttpError(500, "Watchlist item could not be saved.");
-  }
-
-  return toWatchlistItem(existing);
+  return toWatchlistItem(row);
 }
