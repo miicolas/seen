@@ -1,3 +1,4 @@
+import { asMediaType } from "@seen/shared";
 import { db } from "@seen/db";
 import { likes, mediaFeatures, movies as moviesTable, reviews } from "@seen/db/schema";
 import { desc, eq, inArray } from "@seen/db/orm";
@@ -71,13 +72,13 @@ async function gatherAnchorCandidates(
     // Weight by kind like the taste builder does; a casual like must not outrank
     // a high rating. `consider` keeps the strongest weight per title.
     const base = row.kind === "favorite" ? SIGNAL_WEIGHT.favorite : SIGNAL_WEIGHT.like;
-    consider(row.tmdbId, row.mediaType as MediaType, base, row.createdAt);
+    consider(row.tmdbId, asMediaType(row.mediaType), base, row.createdAt);
   }
   for (const row of ratedRows) {
     if (row.rating == null || row.rating < POSITIVE_RATING_MIN) continue;
     consider(
       row.tmdbId,
-      row.mediaType as MediaType,
+      asMediaType(row.mediaType),
       row.rating / 10,
       row.watchedAt ?? row.createdAt,
     );
@@ -124,7 +125,7 @@ async function loadAnchors(
     if (!candidate) continue;
     anchors.push({
       tmdbId: row.tmdbId,
-      mediaType: row.mediaType as MediaType,
+      mediaType: asMediaType(row.mediaType),
       title: titles.get(key) ?? null,
       embedding: row.embedding,
       weight: candidate.weight,

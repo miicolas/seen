@@ -1,3 +1,4 @@
+import { asMediaType } from "@seen/shared";
 import { db } from "@seen/db";
 import {
   likes,
@@ -83,7 +84,7 @@ async function gatherSignals(userId: string): Promise<Signal[]> {
     if (row.rating == null) continue;
     signals.push({
       tmdbId: row.tmdbId,
-      mediaType: row.mediaType as MediaType,
+      mediaType: asMediaType(row.mediaType),
       weight: ratingWeight(row.rating),
       timestamp: row.watchedAt ?? row.createdAt,
     });
@@ -101,7 +102,7 @@ async function gatherSignals(userId: string): Promise<Signal[]> {
   for (const row of strongestLike.values()) {
     signals.push({
       tmdbId: row.tmdbId,
-      mediaType: row.mediaType as MediaType,
+      mediaType: asMediaType(row.mediaType),
       weight: row.kind === "favorite" ? SIGNAL_WEIGHT.favorite : SIGNAL_WEIGHT.like,
       timestamp: row.createdAt,
     });
@@ -109,7 +110,7 @@ async function gatherSignals(userId: string): Promise<Signal[]> {
   for (const row of watchlistRows) {
     signals.push({
       tmdbId: row.tmdbId,
-      mediaType: row.mediaType as MediaType,
+      mediaType: asMediaType(row.mediaType),
       weight: SIGNAL_WEIGHT.watchlist,
       timestamp: row.addedAt,
     });
@@ -117,7 +118,7 @@ async function gatherSignals(userId: string): Promise<Signal[]> {
   for (const row of notInterestedRows) {
     signals.push({
       tmdbId: row.tmdbId,
-      mediaType: row.mediaType as MediaType,
+      mediaType: asMediaType(row.mediaType),
       weight: SIGNAL_WEIGHT.notInterested,
       timestamp: row.createdAt,
     });

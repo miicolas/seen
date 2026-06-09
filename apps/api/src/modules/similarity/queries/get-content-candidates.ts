@@ -1,3 +1,4 @@
+import { asMediaType } from "@seen/shared";
 import { db } from "@seen/db";
 import { mediaFeatures, notInterested, reviews } from "@seen/db/schema";
 import { and, cosineDistance, eq, notExists, sql } from "@seen/db/orm";
@@ -81,14 +82,14 @@ export async function getContentCandidates(
     userId,
     rows.map((row) => ({
       tmdbId: row.tmdbId,
-      mediaType: row.mediaType as MediaType,
+      mediaType: asMediaType(row.mediaType),
       embedding: row.embedding,
     })),
   );
 
   return rows.map((row) => ({
     tmdbId: row.tmdbId,
-    mediaType: row.mediaType as MediaType,
+    mediaType: asMediaType(row.mediaType),
     distance: row.distance,
     score: 1 - row.distance,
     reason: reasons.get(mediaKey(row.tmdbId, row.mediaType)) ?? null,
