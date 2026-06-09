@@ -1,4 +1,7 @@
-import * as Contacts from "expo-contacts";
+// SDK 56 deprecated the functional API on the package root in favor of a new
+// class-based API; the legacy subpath keeps the functional calls we rely on
+// (getContactsAsync / permissions / Fields) without the deprecation error.
+import * as Contacts from "expo-contacts/legacy";
 import * as Crypto from "expo-crypto";
 
 import {
