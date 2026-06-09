@@ -1,6 +1,5 @@
-// TMDB types are derived from the backend DTO contract (single source of truth).
-// The API validates/serializes these shapes, so the client trusts them — no
-// runtime coercion. Names are kept for the existing `@/lib/tmdb` consumers.
+import type { MediaType } from "@seen/shared";
+
 export type {
   MovieDetailDto as TmdbMovieDetail,
   SeasonDetailDto as TmdbTvSeasonDetail,
@@ -16,7 +15,5 @@ export type {
   WatchProvidersDto as TmdbWatchProviders,
 } from "@seen/api/tmdb";
 
-export type { MediaType } from "@seen/shared";
-
-import type { MediaType } from "@seen/shared";
+export type { MediaType };
 export type MediaFilter = "all" | MediaType;
