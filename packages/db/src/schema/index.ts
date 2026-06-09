@@ -8,3 +8,5 @@ export * from "./events";
 export * from "./providers";
 export * from "./social";
 export * from "./preferences";
+export * from "./media-features";
+export * from "./user-taste-vectors";

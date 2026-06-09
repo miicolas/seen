@@ -1,6 +1,9 @@
 services:
   postgres:
-    image: postgres:17
+    # pgvector-enabled Postgres 17 (adds the `vector` extension used by media_features /
+    # user_taste_vectors). Run `docker compose down && docker compose up -d` to pick up the
+    # new image — the seen-postgres volume keeps existing data.
+    image: pgvector/pgvector:0.8.2-pg17-trixie
     environment:
       POSTGRES_USER: seen
       POSTGRES_PASSWORD: seen
