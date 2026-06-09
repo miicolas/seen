@@ -1,23 +1,8 @@
 import * as AppleAuthentication from "expo-apple-authentication";
-import { Button as SwiftUIButton, HStack, Host, Text as SwiftUIText } from "@expo/ui/swift-ui";
-import {
-  buttonStyle,
-  controlSize,
-  disabled as disabledModifier,
-  font,
-  foregroundColor,
-  frame,
-  tint,
-} from "@expo/ui/swift-ui/modifiers";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
-import Animated, {
-  SensorType,
-  useAnimatedSensor,
-  useAnimatedStyle,
-  withSpring,
-} from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { LinearGradientImageBlur } from "@/components/linear-gradient-image-blur";
@@ -27,7 +12,9 @@ import { signInWithApple } from "@/lib/apple-auth";
 import { isDevAuthBypassEnabled, signInWithDevSeedUser } from "@/lib/dev-auth";
 import { hapticError, hapticSuccess, hapticTap } from "@/lib/haptics";
 
-const DARK_GRADIENT = ["transparent", "#00000040", "#000000B0", "#000000"] as const;
+import { AuthButtons } from "./auth-buttons";
+import { DARK_GRADIENT, ONBOARDING_COLORS } from "./palette";
+import { useParallaxTilt } from "./use-parallax-tilt";
 
 export function Onboarding() {
   const { t } = useTranslation();
@@ -37,7 +24,7 @@ export function Onboarding() {
   const [error, setError] = useState<string | null>(null);
   const [authLoading, setAuthLoading] = useState<"apple" | "dev" | null>(null);
 
-  const rotation = useAnimatedSensor(SensorType.ROTATION, { interval: 20 });
+  const { foregroundStyle, backgroundStyle } = useParallaxTilt();
   const buttonWidth = Math.max(160, Math.min(width - 80, 360));
   const isLoading = authLoading !== null;
   const showDevAuthBypass = isDevAuthBypassEnabled();
@@ -61,26 +48,6 @@ export function Onboarding() {
       isMounted = false;
     };
   }, []);
-
-  const foregroundStyle = useAnimatedStyle(() => {
-    const { pitch, roll } = rotation.sensor.value;
-    return {
-      transform: [
-        { translateX: withSpring(-roll * 10, { damping: 500 }) },
-        { translateY: withSpring(-pitch * 10, { damping: 500 }) },
-      ],
-    };
-  });
-
-  const backgroundStyle = useAnimatedStyle(() => {
-    const { pitch, roll } = rotation.sensor.value;
-    return {
-      transform: [
-        { translateX: withSpring(-roll * 5, { damping: 500 }) },
-        { translateY: withSpring(-pitch * 5, { damping: 500 }) },
-      ],
-    };
-  });
 
   async function handleStart() {
     if (isLoading) {
@@ -150,65 +117,15 @@ export function Onboarding() {
         </View>
 
         <View style={styles.buttonArea}>
-          {isLoading ? (
-            <Host matchContents>
-              <SwiftUIButton
-                modifiers={[
-                  buttonStyle("glassProminent"),
-                  controlSize("mini"),
-                  tint("#ffffff"),
-                  disabledModifier(true),
-                ]}
-                onPress={() => {}}>
-                <HStack modifiers={[frame({ width: buttonWidth, height: 44 })]}>
-                  <SwiftUIText
-                    modifiers={[
-                      font({ weight: "semibold", size: 16 }),
-                      foregroundColor("#000000"),
-                    ]}>
-                    {t("onboarding.authenticating")}
-                  </SwiftUIText>
-                </HStack>
-              </SwiftUIButton>
-            </Host>
-          ) : appleAvailable === true ? (
-            <AppleAuthentication.AppleAuthenticationButton
-              buttonType={AppleAuthentication.AppleAuthenticationButtonType.CONTINUE}
-              buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE}
-              cornerRadius={22}
-              onPress={handleStart}
-              style={{ width: buttonWidth, height: 44 }}
-            />
-          ) : null}
-
-          {showDevAuthBypass && !isLoading ? (
-            <Host matchContents>
-              <SwiftUIButton
-                modifiers={[
-                  buttonStyle("glass"),
-                  controlSize("mini"),
-                  tint("#ffffff"),
-                  disabledModifier(false),
-                ]}
-                onPress={handleDevSignIn}>
-                <HStack modifiers={[frame({ width: buttonWidth, height: 40 })]}>
-                  <SwiftUIText
-                    modifiers={[
-                      font({ weight: "semibold", size: 15 }),
-                      foregroundColor("#ffffff"),
-                    ]}>
-                    {t("onboarding.devSignIn")}
-                  </SwiftUIText>
-                </HStack>
-              </SwiftUIButton>
-            </Host>
-          ) : null}
-
-          {appleAvailable === false && !showDevAuthBypass ? (
-            <ThemedText style={styles.statusText}>{t("onboarding.appleUnavailable")}</ThemedText>
-          ) : null}
-
-          {error ? <ThemedText style={styles.errorText}>{error}</ThemedText> : null}
+          <AuthButtons
+            buttonWidth={buttonWidth}
+            isLoading={isLoading}
+            appleAvailable={appleAvailable}
+            showDevAuthBypass={showDevAuthBypass}
+            error={error}
+            onApplePress={handleStart}
+            onDevPress={handleDevSignIn}
+          />
         </View>
       </Animated.View>
     </View>
@@ -218,7 +135,7 @@ export function Onboarding() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000000",
+    backgroundColor: ONBOARDING_COLORS.surface,
   },
   background: {
     position: "absolute",
@@ -246,7 +163,7 @@ const styles = StyleSheet.create({
     lineHeight: 40,
     fontWeight: "600",
     textAlign: "center",
-    color: "#ffffff",
+    color: ONBOARDING_COLORS.text,
   },
   subtitle: {
     fontSize: 18,
@@ -254,24 +171,12 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     textAlign: "center",
     marginTop: Spacing.two,
-    color: "#ffffffB3",
+    color: ONBOARDING_COLORS.textMuted,
   },
   buttonArea: {
     minHeight: 44,
     marginTop: Spacing.four,
     alignItems: "center",
     gap: Spacing.two,
-  },
-  statusText: {
-    fontSize: 14,
-    lineHeight: 20,
-    textAlign: "center",
-    color: "#ffffffB3",
-  },
-  errorText: {
-    fontSize: 14,
-    lineHeight: 20,
-    textAlign: "center",
-    color: "#ff453a",
   },
 });
