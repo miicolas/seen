@@ -24,7 +24,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "drizzle-orm": "^0.45.1",
+    "drizzle-orm": "^0.45.2",
     "drizzle-typebox": "^0.3.0",
     "pg": "^8.16.3",
     "ulid": "^3.0.2"
