@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
 
-import { DEFAULT_LANGUAGE, DEFAULT_REGION } from "./client";
+import { DEFAULT_LANGUAGE, DEFAULT_REGION } from "./constants";
 import { TmdbModel } from "./model";
 import {
   discoverFeed,

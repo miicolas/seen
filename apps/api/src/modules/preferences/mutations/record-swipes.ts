@@ -40,7 +40,8 @@ export async function recordOnboardingSwipes(userId: string, items: OnboardingSw
         }
         await dismiss(userId, { ...ref, reason: "onboarding" }, { skipTasteRefresh: true });
         return { type: "not_interested", ...ref, metadata: { source: "onboarding" } };
-      } catch {
+      } catch (error) {
+        console.error(`onboarding swipe skipped for ${item.media_type}:${item.tmdb_id}`, error);
         return null;
       }
     }),

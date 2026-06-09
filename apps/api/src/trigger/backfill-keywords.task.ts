@@ -1,3 +1,4 @@
+import { asMediaType } from "@seen/shared";
 import { schedules } from "@trigger.dev/sdk";
 import { db } from "@seen/db";
 import { movies as moviesTable } from "@seen/db/schema";
@@ -5,7 +6,7 @@ import { and, asc, isNotNull, sql } from "@seen/db/orm";
 
 import { mapWithConcurrency } from "../lib/concurrency";
 import { rebuildMediaFeature } from "../modules/similarity/mutations";
-import { getMediaDetail, type MediaType } from "../modules/tmdb";
+import { getMediaDetail } from "../modules/tmdb";
 
 // Titles cached before keywords were appended to DETAIL_APPEND keep their old
 // keyword-less detail until the 30-day TTL lapses. This nightly task force-
@@ -35,7 +36,7 @@ export const backfillKeywordsTask = schedules.task({
     let refreshed = 0;
     let built = 0;
     await mapWithConcurrency(rows, CONCURRENCY, async (row) => {
-      const mediaType = row.mediaType as MediaType;
+      const mediaType = asMediaType(row.mediaType);
       try {
         // Force a fresh TMDB pull so movies.detail gains keywords...
         await getMediaDetail(mediaType, row.tmdbId, row.language, { forceRefresh: true });

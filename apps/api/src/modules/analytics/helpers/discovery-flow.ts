@@ -131,7 +131,9 @@ export function attributeDiscovery(
     counted.add(`${mediaKey(interaction.tmdbId, chosen.mediaType)}|${outcome}`);
   }
 
-  const flagOrder = [...inRangeImpressions].sort((a, b) => a.shownAt.getTime() - b.shownAt.getTime());
+  const flagOrder = [...inRangeImpressions].sort(
+    (a, b) => a.shownAt.getTime() - b.shownAt.getTime(),
+  );
   for (const impression of flagOrder) {
     for (const { flag, outcome } of FLAG_OUTCOME) {
       if (!impression.flags[flag]) continue;

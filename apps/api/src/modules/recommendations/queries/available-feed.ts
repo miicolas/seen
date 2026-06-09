@@ -1,3 +1,4 @@
+import { asMediaType } from "@seen/shared";
 import { db } from "@seen/db";
 import {
   mediaProviders,
@@ -9,7 +10,8 @@ import {
 import { and, eq, inArray } from "@seen/db/orm";
 
 import { byDisplayPriority } from "../../../lib/sort";
-import { normalizeSummary, trending } from "../../tmdb/client";
+import { normalizeSummary } from "../../tmdb/normalize";
+import { trending } from "../../tmdb/summaries";
 import { getMediaDetail } from "../../tmdb/queries/media-detail";
 import type { MediaFilter, TmdbMovieSummary } from "../../tmdb";
 import type { AvailableEntryDto } from "../model";
@@ -53,7 +55,7 @@ async function getWatchlistCandidates(userId: string, filter: MediaFilter): Prom
   return rows.map(({ media }) => ({
     summary: {
       id: media.tmdbId,
-      media_type: media.mediaType as "movie" | "tv",
+      media_type: asMediaType(media.mediaType),
       title: media.title ?? undefined,
       original_title: media.originalTitle ?? undefined,
       overview: media.overview ?? undefined,

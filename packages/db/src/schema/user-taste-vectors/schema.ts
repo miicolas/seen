@@ -15,5 +15,8 @@ export const userTasteVectors = pgTable("user_taste_vectors", {
   encoderVersion: integer("encoder_version").notNull().default(1),
   signalCount: integer("signal_count").notNull().default(0),
   builtAt: timestamp("built_at", { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });

@@ -25,7 +25,10 @@ export const mediaFeatures = pgTable(
     features: jsonb("features"),
     encoderVersion: integer("encoder_version").notNull().default(1),
     builtAt: timestamp("built_at", { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   },
   (table) => [
     primaryKey({ columns: [table.tmdbId, table.mediaType] }),

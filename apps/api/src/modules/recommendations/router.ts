@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 
 import { authGuard } from "../../auth-plugin";
-import { DEFAULT_REGION } from "../tmdb/client";
+import { DEFAULT_REGION } from "../tmdb/constants";
 import { RecommendationsModel } from "./model";
 import { getAvailableFeed } from "./queries";
 

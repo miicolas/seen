@@ -45,7 +45,7 @@ export function HeroSection({ overview }: { overview: Overview }) {
       </View>
 
       {unknown > 0 ? (
-        <Text style={[styles.note, { color: theme.textSecondary }]}>
+        <Text style={[styles.caption, { color: theme.textSecondary }]}>
           {t("insights.untimed", { count: unknown })}
         </Text>
       ) : null}
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     gap: SPACING.SM,
     marginTop: SPACING.SM,
   },
-  note: {
+  caption: {
     fontSize: FONT_SIZE.XS,
     marginTop: 2,
   },

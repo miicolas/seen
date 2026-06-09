@@ -1,7 +1,7 @@
 import { db } from "@seen/db";
 import { likes } from "@seen/db/schema";
 
-import { HttpError } from "../../../lib/http-error";
+import { insertOrGet } from "../../../lib/insert-or-get";
 import { enqueueSimilarityRefresh } from "../../similarity";
 import { getMediaDetail } from "../../tmdb";
 import type { LikeInput } from "../shared";
@@ -16,36 +16,35 @@ export async function addLike(
 ) {
   await getMediaDetail(input.media_type, input.tmdb_id);
 
-  const [inserted] = await db
-    .insert(likes)
-    .values({
-      userId,
-      tmdbId: input.tmdb_id,
-      mediaType: input.media_type,
-      kind: input.kind,
-    })
-    .onConflictDoNothing({
-      target: [likes.userId, likes.tmdbId, likes.mediaType, likes.kind],
-    })
-    .returning();
+  const { row, inserted } = await insertOrGet({
+    insert: () =>
+      db
+        .insert(likes)
+        .values({
+          userId,
+          tmdbId: input.tmdb_id,
+          mediaType: input.media_type,
+          kind: input.kind,
+        })
+        .onConflictDoNothing({
+          target: [likes.userId, likes.tmdbId, likes.mediaType, likes.kind],
+        })
+        .returning(),
+    find: () =>
+      db
+        .select()
+        .from(likes)
+        .where(likeMediaWhere(userId, input.tmdb_id, input.media_type, input.kind))
+        .limit(1),
+    errorMessage: "Like could not be saved.",
+  });
 
   if (inserted) {
     enqueueSimilarityRefresh(userId, {
       media: { tmdbId: input.tmdb_id, mediaType: input.media_type },
       skipTaste: options.skipTasteRefresh,
     });
-    return toLikeItem(inserted);
   }
 
-  const [existing] = await db
-    .select()
-    .from(likes)
-    .where(likeMediaWhere(userId, input.tmdb_id, input.media_type, input.kind))
-    .limit(1);
-
-  if (!existing) {
-    throw new HttpError(500, "Like could not be saved.");
-  }
-
-  return toLikeItem(existing);
+  return toLikeItem(row);
 }

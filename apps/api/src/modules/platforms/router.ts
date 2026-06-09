@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 
 import { authGuard } from "../../auth-plugin";
-import { DEFAULT_REGION } from "../tmdb/client";
+import { DEFAULT_REGION } from "../tmdb/constants";
 import { PlatformsModel } from "./model";
 import { setUserPlatforms } from "./mutations";
 import { getUserPlatforms, listProviders } from "./queries";

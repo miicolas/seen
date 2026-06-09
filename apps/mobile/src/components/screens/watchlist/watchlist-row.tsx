@@ -1,36 +1,19 @@
-import {
-  Button,
-  ContentUnavailableView,
-  Host,
-  List,
-  ProgressView,
-  RNHostView,
-  SwipeActions,
-} from "@expo/ui/swift-ui";
-import {
-  listRowInsets,
-  listStyle,
-  onAppear as onAppearModifier,
-  scrollContentBackground,
-} from "@expo/ui/swift-ui/modifiers";
+import { Button, RNHostView, SwipeActions } from "@expo/ui/swift-ui";
+import { listRowInsets, onAppear as onAppearModifier } from "@expo/ui/swift-ui/modifiers";
 import { Image as ExpoImage } from "expo-image";
-import { Link, Stack, useFocusEffect } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { Link } from "expo-router";
 import { useTranslation } from "react-i18next";
-import type { NativeSyntheticEvent, TextInputFocusEventData } from "react-native";
 import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
-import type { SFSymbol } from "sf-symbols-typescript";
 
 import { MetricPill } from "@/components/ui/metric-pill";
 import { Text } from "@/components/ui/text";
 import { BORDER_RADIUS, SPACING } from "@/constants/design-tokens";
 import { useAccentColor } from "@/hooks/use-accent-color";
 import { useTheme } from "@/hooks/use-theme";
-import { useWatchlist } from "@/hooks/watchlist/use-watchlist";
 import { formatRuntime } from "@/lib/format";
-import { hapticDelete, hapticSelection, hapticTap } from "@/lib/haptics";
+import { hapticTap } from "@/lib/haptics";
 import { mediaDetailHref } from "@/lib/navigation";
-import { tmdbImageUrl, type MediaFilter } from "@/lib/tmdb";
+import { tmdbImageUrl } from "@/lib/tmdb";
 import type { WatchlistItemWithMedia } from "@/services/watchlist";
 
 const POSTER_WIDTH = 64;
@@ -40,121 +23,7 @@ const POSTER_HEIGHT = 96;
 // gap is invisible; an overflow would clip the row).
 const ROW_HORIZONTAL_INSET = 64;
 
-const FILTER_OPTIONS: {
-  value: MediaFilter;
-  labelKey: "filterAll" | "filterMovies" | "filterSeries";
-  icon: SFSymbol;
-}[] = [
-  { value: "all", labelKey: "filterAll", icon: "square.grid.2x2" },
-  { value: "movie", labelKey: "filterMovies", icon: "film" },
-  { value: "tv", labelKey: "filterSeries", icon: "tv" },
-];
-
-export function Watchlist() {
-  const { t } = useTranslation();
-  const theme = useTheme();
-  const [filter, setFilter] = useState<MediaFilter>("all");
-  const [query, setQuery] = useState("");
-  const { items, isLoading, error, remove, refetch, loadMore } = useWatchlist(filter, query);
-
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [refetch]),
-  );
-
-  const isSearching = query.trim().length > 0;
-
-  const options = useMemo(
-    () =>
-      FILTER_OPTIONS.map((option) => ({
-        ...option,
-        label: t(`watchlist.${option.labelKey}`),
-      })),
-    [t],
-  );
-
-  const activeOption = options.find((option) => option.value === filter) ?? options[0];
-
-  function handleFilter(value: MediaFilter) {
-    setFilter(value);
-    hapticSelection();
-  }
-
-  function handleSearchText(e: NativeSyntheticEvent<TextInputFocusEventData>) {
-    setQuery(e.nativeEvent.text ?? "");
-  }
-
-  async function handleRemove(item: WatchlistItemWithMedia) {
-    hapticDelete();
-    await remove(item).catch(() => {});
-  }
-
-  return (
-    <>
-      <Stack.Toolbar placement="right">
-        <Stack.Toolbar.Menu icon={activeOption.icon}>
-          <Stack.Toolbar.Label>{activeOption.label}</Stack.Toolbar.Label>
-          {options.map((option) => (
-            <Stack.Toolbar.MenuAction
-              key={option.value}
-              icon={option.icon}
-              isOn={filter === option.value}
-              onPress={() => handleFilter(option.value)}>
-              {option.label}
-            </Stack.Toolbar.MenuAction>
-          ))}
-        </Stack.Toolbar.Menu>
-      </Stack.Toolbar>
-
-      <Stack.SearchBar
-        placeholder={t("watchlist.searchPlaceholder")}
-        onChangeText={handleSearchText}
-        onCancelButtonPress={() => setQuery("")}
-        onClose={() => setQuery("")}
-      />
-
-      <Host style={{ flex: 1, backgroundColor: theme.background }}>
-        {isLoading ? (
-          <ProgressView />
-        ) : error ? (
-          <ContentUnavailableView
-            title={t("watchlist.title")}
-            systemImage="exclamationmark.triangle"
-            description={error}
-          />
-        ) : items.length === 0 ? (
-          isSearching ? (
-            <ContentUnavailableView
-              title={t("watchlist.noResults", { query: query.trim() })}
-              systemImage="magnifyingglass"
-              description={t("watchlist.noResultsHint")}
-            />
-          ) : (
-            <ContentUnavailableView
-              title={t("watchlist.emptyTitle")}
-              systemImage="bookmark"
-              description={t("watchlist.emptySubtitle")}
-            />
-          )
-        ) : (
-          <List modifiers={[listStyle("inset"), scrollContentBackground("hidden")]}>
-            {items.map((item, index) => (
-              <WatchlistRow
-                key={item.id}
-                item={item}
-                onRemove={handleRemove}
-                onReveal={index === items.length - 1 ? loadMore : undefined}
-              />
-            ))}
-          </List>
-        )}
-      </Host>
-    </>
-  );
-}
-
-function WatchlistRow({
+export function WatchlistRow({
   item,
   onRemove,
   onReveal,

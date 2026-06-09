@@ -18,7 +18,10 @@ export const providers = pgTable("providers", {
   name: text("name").notNull(),
   logoPath: text("logo_path"),
   displayPriority: integer("display_priority"),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });
 
 export const mediaProviders = pgTable(
@@ -29,7 +32,10 @@ export const mediaProviders = pgTable(
     region: text("region").notNull(),
     providerId: bigint("provider_id", { mode: "number" }).notNull(),
     offerType: text("offer_type").notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   },
   (table) => [
     primaryKey({

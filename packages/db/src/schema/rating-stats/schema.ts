@@ -22,7 +22,10 @@ export const mediaRatingStats = pgTable(
       .array()
       .notNull()
       .default(sql`'{0,0,0,0,0,0,0,0,0,0}'::integer[]`),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   },
   (table) => [primaryKey({ columns: [table.tmdbId, table.mediaType] })],
 );
@@ -39,7 +42,10 @@ export const episodeRatingStats = pgTable(
       .array()
       .notNull()
       .default(sql`'{0,0,0,0,0,0,0,0,0,0}'::integer[]`),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   },
   (table) => [
     primaryKey({ columns: [table.seriesTmdbId, table.seasonNumber, table.episodeNumber] }),
@@ -55,7 +61,10 @@ export const seriesRatingStats = pgTable("series_rating_stats", {
     .array()
     .notNull()
     .default(sql`'{0,0,0,0,0,0,0,0,0,0}'::integer[]`),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });
 
 export const movieReviewStats = pgView("movie_review_stats", {

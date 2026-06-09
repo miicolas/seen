@@ -1,4 +1,5 @@
-import { DEFAULT_LANGUAGE, tmdbFetch } from "../client";
+import { tmdbFetch } from "../client";
+import { DEFAULT_LANGUAGE } from "../constants";
 import type { EpisodeDetailDto } from "../model";
 import { toEpisodeDetail } from "../resources";
 

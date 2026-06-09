@@ -1,15 +1,7 @@
-import {
-  DEFAULT_LANGUAGE,
-  type DiscoverFeed,
-  MEDIA_GENRE_SHELVES,
-  type MediaFilter,
-  type TmdbMovieSummary,
-  combine,
-  discover,
-  hasRating,
-  today,
-  trending,
-} from "../client";
+import { DEFAULT_LANGUAGE, MEDIA_GENRE_SHELVES, today } from "../constants";
+import { combine, hasRating } from "../normalize";
+import { discover, trending } from "../summaries";
+import type { DiscoverFeed, MediaFilter, TmdbMovieSummary } from "../types";
 
 export async function discoverFeed(
   filter: MediaFilter,
