@@ -2,6 +2,7 @@ import { db } from "@seen/db";
 import { reviews, watchlist } from "@seen/db/schema";
 import { and, eq, inArray } from "@seen/db/orm";
 
+import { enqueueSimilarityRefresh } from "../../similarity";
 import {
   DEFAULT_LANGUAGE,
   getMediaDetail,
@@ -69,7 +70,7 @@ export async function writeImport(userId: string, items: MatchedItem[]): Promise
     items.filter((item) => item.target === "watchlist" && !reviewedIds.has(item.tmdbId)),
   );
 
-  return db.transaction(async (tx) => {
+  const imported = await db.transaction(async (tx) => {
     let imported = 0;
 
     if (reviewItems.length) {
@@ -119,4 +120,9 @@ export async function writeImport(userId: string, items: MatchedItem[]): Promise
 
     return imported;
   });
+
+  // An import is a bulk signal write; one refresh covers the whole batch.
+  if (imported > 0) enqueueSimilarityRefresh(userId);
+
+  return imported;
 }

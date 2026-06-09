@@ -5,6 +5,7 @@ import { and, eq } from "@seen/db/orm";
 import { HttpError } from "../../../lib/http-error";
 import { toApiRow } from "../../../lib/rows";
 import { parseWatchedAt } from "../../../lib/watched-at";
+import { enqueueSimilarityRefresh } from "../../similarity";
 import { getMediaDetail } from "../../tmdb";
 import type { ReviewInput } from "../shared";
 
@@ -66,6 +67,12 @@ export async function upsertReview(userId: string, input: ReviewInput) {
       );
 
     return saved;
+  });
+
+  // A rating change shifts both the title's relevance weighting and the user's
+  // taste vector, so refresh both.
+  enqueueSimilarityRefresh(userId, {
+    media: { tmdbId: input.tmdb_id, mediaType: input.media_type },
   });
 
   return toApiRow(review);

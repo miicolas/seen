@@ -2,6 +2,7 @@ import { recordInteractions } from "../../events/mutations";
 import type { InteractionEventInput } from "../../events/shared";
 import { addLike } from "../../likes/mutations";
 import { dismiss } from "../../not-interested/mutations";
+import { enqueueSimilarityRefresh } from "../../similarity";
 import type { MediaType } from "../../tmdb";
 
 export type OnboardingSwipe = {
@@ -32,10 +33,12 @@ export async function recordOnboardingSwipes(userId: string, items: OnboardingSw
       const ref = { tmdb_id: item.tmdb_id, media_type: item.media_type };
       try {
         if (item.choice === "like") {
-          await addLike(userId, { ...ref, kind: "like" });
+          // Per-item media-feature refresh still fires inside addLike; the taste
+          // rebuild is deferred to one call after the whole batch.
+          await addLike(userId, { ...ref, kind: "like" }, { skipTasteRefresh: true });
           return { type: "liked", ...ref, metadata: { source: "onboarding" } };
         }
-        await dismiss(userId, { ...ref, reason: "onboarding" });
+        await dismiss(userId, { ...ref, reason: "onboarding" }, { skipTasteRefresh: true });
         return { type: "not_interested", ...ref, metadata: { source: "onboarding" } };
       } catch {
         return null;
@@ -45,6 +48,9 @@ export async function recordOnboardingSwipes(userId: string, items: OnboardingSw
 
   const events = results.filter((event): event is InteractionEventInput => event !== null);
   await recordInteractions(userId, events);
+
+  // One taste rebuild for the whole onboarding batch rather than one per swipe.
+  if (events.length > 0) enqueueSimilarityRefresh(userId);
 
   return {
     liked: events.filter((event) => event.type === "liked").length,

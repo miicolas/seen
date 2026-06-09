@@ -3,6 +3,7 @@ import { profiles, watchlist } from "@seen/db/schema";
 import { eq } from "@seen/db/orm";
 
 import { HttpError } from "../../../lib/http-error";
+import { enqueueSimilarityRefresh } from "../../similarity";
 import { getMediaDetail } from "../../tmdb";
 import type { WatchlistInput } from "../shared";
 import { toWatchlistItem, watchlistMediaWhere } from "../shared";
@@ -34,7 +35,12 @@ export async function addToWatchlist(userId: string, input: WatchlistInput) {
     })
     .returning();
 
-  if (inserted) return toWatchlistItem(inserted);
+  if (inserted) {
+    enqueueSimilarityRefresh(userId, {
+      media: { tmdbId: input.tmdb_id, mediaType: input.media_type },
+    });
+    return toWatchlistItem(inserted);
+  }
 
   const [existing] = await db
     .select()

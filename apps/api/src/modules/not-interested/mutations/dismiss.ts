@@ -2,10 +2,17 @@ import { db } from "@seen/db";
 import { notInterested } from "@seen/db/schema";
 
 import { HttpError } from "../../../lib/http-error";
+import { enqueueSimilarityRefresh } from "../../similarity";
 import type { NotInterestedInput } from "../shared";
 import { notInterestedWhere, toNotInterestedItem } from "../shared";
 
-export async function dismiss(userId: string, input: NotInterestedInput) {
+// `skipTasteRefresh` lets a batch caller (onboarding swipes) enqueue a single
+// taste rebuild after the whole batch instead of one per dismissal.
+export async function dismiss(
+  userId: string,
+  input: NotInterestedInput,
+  options: { skipTasteRefresh?: boolean } = {},
+) {
   const [inserted] = await db
     .insert(notInterested)
     .values({
@@ -19,7 +26,13 @@ export async function dismiss(userId: string, input: NotInterestedInput) {
     })
     .returning();
 
-  if (inserted) return toNotInterestedItem(inserted);
+  if (inserted) {
+    enqueueSimilarityRefresh(userId, {
+      media: { tmdbId: input.tmdb_id, mediaType: input.media_type },
+      skipTaste: options.skipTasteRefresh,
+    });
+    return toNotInterestedItem(inserted);
+  }
 
   const [existing] = await db
     .select()

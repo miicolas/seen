@@ -2,11 +2,18 @@ import { db } from "@seen/db";
 import { likes } from "@seen/db/schema";
 
 import { HttpError } from "../../../lib/http-error";
+import { enqueueSimilarityRefresh } from "../../similarity";
 import { getMediaDetail } from "../../tmdb";
 import type { LikeInput } from "../shared";
 import { likeMediaWhere, toLikeItem } from "../shared";
 
-export async function addLike(userId: string, input: LikeInput) {
+// `skipTasteRefresh` lets a batch caller (onboarding swipes) enqueue a single
+// taste rebuild after the whole batch instead of one per like.
+export async function addLike(
+  userId: string,
+  input: LikeInput,
+  options: { skipTasteRefresh?: boolean } = {},
+) {
   await getMediaDetail(input.media_type, input.tmdb_id);
 
   const [inserted] = await db
@@ -22,7 +29,13 @@ export async function addLike(userId: string, input: LikeInput) {
     })
     .returning();
 
-  if (inserted) return toLikeItem(inserted);
+  if (inserted) {
+    enqueueSimilarityRefresh(userId, {
+      media: { tmdbId: input.tmdb_id, mediaType: input.media_type },
+      skipTaste: options.skipTasteRefresh,
+    });
+    return toLikeItem(inserted);
+  }
 
   const [existing] = await db
     .select()
