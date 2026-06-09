@@ -1,9 +1,9 @@
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, View } from "react-native";
 
-import { EmptyState } from "@/components/ui/empty-state";
+import { ContentUnavailable } from "@/components/ui/content-unavailable";
 import { ProfileAvatar } from "@/components/ui/profile-avatar";
 import { Text } from "@/components/ui/text";
 import { SPACING } from "@/constants/design-tokens";
@@ -63,95 +63,96 @@ export function SocialProfile() {
   );
 
   return (
-    <>
-      <Stack.Title>{data ? `@${data.username}` : ""}</Stack.Title>
-
-      <SocialScrollView
-        contentGap={SPACING.LG}
-        contentTopPadding={0}
-        onEndReached={activity.loadMore}>
-        {profile.isLoading && !data ? (
-          <SocialLoading minHeight={360} />
-        ) : !data ? (
-          <EmptyState
-            icon="person.crop.circle.badge.exclamationmark"
-            title={t("social.noResults")}
-          />
-        ) : (
-          <>
-            <View style={styles.header}>
-              <ProfileAvatar uri={profileAvatarUrl(data)} name={data.full_name} size={112} />
-              <View style={styles.identity}>
-                <Text size="3xl" weight="bold" color={theme.text} align="center" numberOfLines={2}>
-                  {data.full_name}
+    <SocialScrollView
+      contentGap={SPACING.LG}
+      contentTopPadding={SPACING.MD}
+      onEndReached={activity.loadMore}>
+      {profile.isLoading && !data ? (
+        <SocialLoading minHeight={360} />
+      ) : !data ? (
+        <ContentUnavailable
+          icon="person.crop.circle.badge.exclamationmark"
+          title={t("social.noResults")}
+        />
+      ) : (
+        <>
+          <View style={styles.header}>
+            <ProfileAvatar
+              uri={profileAvatarUrl(data)}
+              name={data.full_name}
+              size={112}
+              locked={data.profile_visibility === "followers"}
+            />
+            <View style={styles.identity}>
+              <Text size="3xl" weight="bold" color={theme.text} align="center" numberOfLines={2}>
+                {data.full_name}
+              </Text>
+              <Text size="lg" color={theme.textSecondary}>
+                {`@${data.username}`}
+              </Text>
+              {data.follows_me ? (
+                <Text size="sm" color={theme.textSecondary}>
+                  {t("social.followsYou")}
                 </Text>
-                <Text size="lg" color={theme.textSecondary}>
-                  {`@${data.username}`}
-                </Text>
-                {data.follows_me ? (
-                  <Text size="sm" color={theme.textSecondary}>
-                    {t("social.followsYou")}
-                  </Text>
-                ) : null}
-              </View>
-
-              <View style={styles.stats}>
-                <CountStat
-                  value={data.followers_count}
-                  label={t("social.followers")}
-                  onPress={() => openConnections("followers")}
-                />
-                <CountStat
-                  value={data.following_count}
-                  label={t("social.followingTitle")}
-                  onPress={() => openConnections("following")}
-                />
-              </View>
-
-              <FollowButton card={data} />
+              ) : null}
             </View>
 
-            {profile.error ? (
-              <Text size="sm" color={theme.error} fillWidth>
-                {profile.error}
-              </Text>
-            ) : null}
-
-            {data.locked ? (
-              <EmptyState
-                icon="lock"
-                title={t("social.privateProfile")}
-                subtitle={t("social.privateProfileHint")}
+            <View style={styles.stats}>
+              <CountStat
+                value={data.followers_count}
+                label={t("social.followers")}
+                onPress={() => openConnections("followers")}
               />
-            ) : (
-              <>
-                <WatchlistStrip profileId={data.id} />
+              <CountStat
+                value={data.following_count}
+                label={t("social.followingTitle")}
+                onPress={() => openConnections("following")}
+              />
+            </View>
 
-                <View style={styles.section}>
-                  <Text size="2xl" weight="bold" color={theme.text} fillWidth>
-                    {t("social.activityTitle")}
+            <FollowButton card={data} />
+          </View>
+
+          {profile.error ? (
+            <Text size="sm" color={theme.error} fillWidth>
+              {profile.error}
+            </Text>
+          ) : null}
+
+          {data.locked ? (
+            <ContentUnavailable
+              icon="lock"
+              title={t("social.privateProfile")}
+              description={t("social.privateProfileHint")}
+            />
+          ) : (
+            <>
+              <WatchlistStrip profileId={data.id} />
+
+              <View style={styles.section}>
+                <Text size="2xl" weight="bold" color={theme.text} fillWidth>
+                  {t("social.activityTitle")}
+                </Text>
+                {activity.isLoading && activity.data.length === 0 ? (
+                  <SocialLoading minHeight={120} />
+                ) : activity.data.length > 0 ? (
+                  <View style={styles.activityList}>
+                    {activity.data.map((item) => (
+                      <ActivityRow key={`${item.kind}:${item.id}`} item={item} />
+                    ))}
+                  </View>
+                ) : (
+                  <Text size="sm" color={theme.textSecondary} fillWidth>
+                    {t("social.noActivity")}
                   </Text>
-                  {activity.isLoading && activity.data.length === 0 ? (
-                    <SocialLoading minHeight={120} />
-                  ) : activity.data.length > 0 ? (
-                    <View style={styles.activityList}>
-                      {activity.data.map((item) => (
-                        <ActivityRow key={`${item.kind}:${item.id}`} item={item} />
-                      ))}
-                    </View>
-                  ) : (
-                    <Text size="sm" color={theme.textSecondary} fillWidth>
-                      {t("social.noActivity")}
-                    </Text>
-                  )}
-                  {activity.isFetchingNextPage ? <SocialLoading minHeight={120} /> : null}
-                </View>
-              </>
-            )}
-          </>
-        )}
-      </SocialScrollView>
-    </>
+                )}
+                {activity.isFetchingNextPage ? <SocialLoading minHeight={120} /> : null}
+              </View>
+            </>
+          )}
+        </>
+      )}
+    </SocialScrollView>
   );
 }
 

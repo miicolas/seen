@@ -32,7 +32,7 @@ export function FollowButton({ card }: { card: SocialProfileCard }) {
     <Button
       title={title}
       onPress={onPress}
-      variant={isActive ? "soft" : "solid"}
+      variant="glass"
       size="sm"
       width={BUTTON_WIDTH}
       loading={isPending}

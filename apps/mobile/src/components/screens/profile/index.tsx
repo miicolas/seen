@@ -7,30 +7,24 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from "reac
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button, GlassButton } from "@/components/ui/button";
-import { EmptyState } from "@/components/ui/empty-state";
+import { ContentUnavailable } from "@/components/ui/content-unavailable";
 import { ProfileAvatar } from "@/components/ui/profile-avatar";
 import { Text } from "@/components/ui/text";
 import { BottomTabInset } from "@/constants/theme";
-import { BORDER_RADIUS, LAYOUT, OPACITY, SPACING } from "@/constants/design-tokens";
+import { LAYOUT, OPACITY, SPACING } from "@/constants/design-tokens";
 import { useProfileActivity } from "@/hooks/profiles/use-profile-activity";
 import { useMyProfile } from "@/hooks/profiles/use-my-profile";
 import { useAccentColor } from "@/hooks/use-accent-color";
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { useFollowRequests } from "@/hooks/social/use-follow-requests";
-import { useSocialProfile } from "@/hooks/social/use-social-profile";
 import { useTheme } from "@/hooks/use-theme";
-import { hapticSelection, hapticTap } from "@/lib/haptics";
-import {
-  connectionsHref,
-  findFriendsHref,
-  followRequestsHref,
-  privacyHref,
-  type ConnectionsKind,
-} from "@/lib/navigation";
+import { hapticTap } from "@/lib/haptics";
+import { findFriendsHref, followRequestsHref } from "@/lib/navigation";
 import { profileAvatarUrl } from "@/services/profiles";
 
 import { ActivityRow } from "./activity-row";
 import { FavoritesSection } from "./favorites-section";
+import { ConnectionStrip } from "../social/connection-strip";
 
 export function ProfileScreen() {
   const { t } = useTranslation();
@@ -41,25 +35,23 @@ export function ProfileScreen() {
   const { user } = useAuthContext();
   const profile = useMyProfile();
   const activity = useProfileActivity();
-  const social = useSocialProfile(user?.id);
   const requests = useFollowRequests();
   const refetchProfile = profile.refetch;
   const refetchActivity = activity.refetch;
-  const refetchSocial = social.refetch;
   const refetchRequests = requests.refetch;
 
   useFocusEffect(
     useCallback(() => {
       refetchProfile();
       refetchActivity();
-      refetchSocial();
       refetchRequests();
-    }, [refetchActivity, refetchProfile, refetchSocial, refetchRequests]),
+    }, [refetchActivity, refetchProfile, refetchRequests]),
   );
 
   const avatarUri = profileAvatarUrl(profile.data);
   const fullName = profile.data?.full_name;
   const username = profile.data?.username;
+  const isPrivate = profile.data?.profile_visibility === "followers";
   const isLoading = profile.isLoading && !profile.data;
 
   const handleEdit = useCallback(() => {
@@ -81,21 +73,6 @@ export function ProfileScreen() {
     hapticTap();
     router.push(followRequestsHref());
   }, [router]);
-
-  const openPrivacy = useCallback(() => {
-    hapticTap();
-    router.push(privacyHref());
-  }, [router]);
-
-  const openConnections = useCallback(
-    (kind: ConnectionsKind) => {
-      if (!social.data) return;
-      hapticSelection();
-      const title = kind === "followers" ? t("social.followersTitle") : t("social.followingTitle");
-      router.push(connectionsHref(social.data.id, kind, title));
-    },
-    [router, social.data, t],
-  );
 
   const pendingRequests = requests.data.length;
 
@@ -138,7 +115,7 @@ export function ProfileScreen() {
             <>
               <View style={styles.header}>
                 <View style={[styles.avatarShadow, { shadowColor: theme.text }]}>
-                  <ProfileAvatar uri={avatarUri} name={fullName} size={136} />
+                  <ProfileAvatar uri={avatarUri} name={fullName} size={136} locked={isPrivate} />
                 </View>
 
                 <View style={styles.identity}>
@@ -152,53 +129,21 @@ export function ProfileScreen() {
                   ) : null}
                 </View>
 
-                {social.data ? (
-                  <View style={styles.stats}>
-                    <Pressable style={styles.stat} onPress={() => openConnections("followers")}>
-                      <Text size="xl" weight="bold" color={theme.text}>
-                        {String(social.data.followers_count)}
-                      </Text>
-                      <Text size="sm" color={theme.textSecondary}>
-                        {t("social.followers")}
-                      </Text>
-                    </Pressable>
-                    <Pressable style={styles.stat} onPress={() => openConnections("following")}>
-                      <Text size="xl" weight="bold" color={theme.text}>
-                        {String(social.data.following_count)}
-                      </Text>
-                      <Text size="sm" color={theme.textSecondary}>
-                        {t("social.followingTitle")}
-                      </Text>
-                    </Pressable>
-                  </View>
-                ) : null}
-
                 <View style={styles.actions}>
-                  <GlassButton title={t("profile.edit")} onPress={handleEdit} size="sm" />
-                  <View style={styles.actionsRow}>
-                    <View style={styles.action}>
-                      <Button
-                        title={
-                          pendingRequests > 0
-                            ? `${t("social.requestsEntry")} (${pendingRequests})`
-                            : t("social.requestsEntry")
-                        }
-                        onPress={openRequests}
-                        variant="soft"
-                        size="sm"
-                        width="fill"
-                      />
-                    </View>
-                    <View style={styles.action}>
-                      <Button
-                        title={t("privacy.entry")}
-                        onPress={openPrivacy}
-                        variant="soft"
-                        size="sm"
-                        width="fill"
-                      />
-                    </View>
-                  </View>
+                  <Button
+                    title={t("profile.edit")}
+                    onPress={handleEdit}
+                    variant="glass"
+                    size="md"
+                  />
+                  {pendingRequests > 0 ? (
+                    <Button
+                      title={`${t("social.requestsEntry")} (${pendingRequests})`}
+                      onPress={openRequests}
+                      variant="soft"
+                      size="sm"
+                    />
+                  ) : null}
                 </View>
               </View>
 
@@ -209,6 +154,9 @@ export function ProfileScreen() {
               ) : null}
 
               <FavoritesSection />
+
+              <ConnectionStrip profileId={user?.id} kind="followers" />
+              <ConnectionStrip profileId={user?.id} kind="following" />
 
               <View style={styles.section}>
                 <Text size="2xl" weight="bold" color={theme.text} fillWidth>
@@ -226,20 +174,19 @@ export function ProfileScreen() {
                     ))}
                   </View>
                 ) : (
-                  <View style={[styles.emptyState, { backgroundColor: theme.backgroundElement }]}>
-                    <EmptyState
-                      icon="star"
-                      title={t("profile.emptyActivity")}
-                      subtitle={t("profile.emptyActivityHint")}
-                      action={
-                        <GlassButton
-                          title={t("profile.discover")}
-                          onPress={() => router.push("/(tabs)/discover")}
-                          size="sm"
-                        />
-                      }
-                    />
-                  </View>
+                  <ContentUnavailable
+                    icon="star"
+                    title={t("profile.emptyActivity")}
+                    description={t("profile.emptyActivityHint")}
+                    minHeight={200}
+                    action={
+                      <GlassButton
+                        title={t("profile.discover")}
+                        onPress={() => router.push("/(tabs)/discover")}
+                        size="sm"
+                      />
+                    }
+                  />
                 )}
 
                 {activity.isFetchingNextPage ? (
@@ -279,6 +226,7 @@ const styles = StyleSheet.create({
     maxWidth: LAYOUT.CONTENT_MAX_WIDTH,
     alignSelf: "center",
     paddingHorizontal: LAYOUT.SCREEN_PADDING,
+    gap: SPACING.LG,
   },
   loading: {
     minHeight: 420,
@@ -288,7 +236,6 @@ const styles = StyleSheet.create({
   header: {
     alignItems: "center",
     paddingTop: 32,
-    paddingBottom: 40,
     gap: SPACING.MD,
   },
   avatarShadow: {
@@ -301,26 +248,10 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     gap: 2,
   },
-  stats: {
-    flexDirection: "row",
-    gap: SPACING.XL,
-  },
-  stat: {
-    alignItems: "center",
-    gap: SPACING.XXS,
-  },
   actions: {
     alignSelf: "stretch",
     alignItems: "center",
     gap: SPACING.SM,
-  },
-  actionsRow: {
-    flexDirection: "row",
-    alignSelf: "stretch",
-    gap: SPACING.SM,
-  },
-  action: {
-    flex: 1,
   },
   section: {
     gap: SPACING.MD,
@@ -332,15 +263,6 @@ const styles = StyleSheet.create({
     minHeight: 120,
     alignItems: "center",
     justifyContent: "center",
-  },
-  emptyState: {
-    minHeight: 150,
-    borderRadius: BORDER_RADIUS.MD,
-    borderCurve: "continuous",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: SPACING.SM,
-    padding: SPACING.LG,
   },
   retry: {
     alignSelf: "flex-start",

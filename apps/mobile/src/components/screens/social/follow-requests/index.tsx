@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 
-import { EmptyState } from "@/components/ui/empty-state";
+import { ContentUnavailable } from "@/components/ui/content-unavailable";
 import { Text } from "@/components/ui/text";
 import { SPACING } from "@/constants/design-tokens";
 import { useFollowRequests } from "@/hooks/social/use-follow-requests";
@@ -42,7 +42,10 @@ export function FollowRequests() {
         {requests.isLoading ? (
           <SocialLoading minHeight={300} />
         ) : requests.data.length === 0 ? (
-          <EmptyState icon="person.crop.circle.badge.checkmark" title={t("social.noRequests")} />
+          <ContentUnavailable
+            icon="person.crop.circle.badge.checkmark"
+            title={t("social.noRequests")}
+          />
         ) : (
           <View style={styles.list}>
             {requests.data.map((request) => (

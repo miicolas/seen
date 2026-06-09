@@ -345,6 +345,7 @@ export const fr: typeof en = {
     searchTitle: "Trouver des amis",
     searchPlaceholder: "Rechercher par nom ou identifiant",
     searchPrompt: "Recherche des personnes à suivre.",
+    searchHint: "Recherche quelqu'un par son nom ou son @identifiant dans la barre ci-dessus.",
     noResults: "Aucun profil trouvé.",
     follow: "Suivre",
     following: "Suivi",
@@ -354,6 +355,7 @@ export const fr: typeof en = {
     followers: "Abonnés",
     followingTitle: "Abonnements",
     followersTitle: "Abonnés",
+    seeAll: "Voir tout",
     requestsEntry: "Demandes",
     requestsTitle: "Demandes d'abonnement",
     approve: "Accepter",
@@ -373,7 +375,6 @@ export const fr: typeof en = {
     contactsDenied:
       "L'accès aux contacts est désactivé. Active-le dans Réglages pour trouver des personnes que tu connais.",
     addMoreContacts: "Ajouter des contacts",
-    noContactMatches: "Aucun de tes contacts n'est encore sur Seen.",
     retry: "Réessayer",
   },
   privacy: {

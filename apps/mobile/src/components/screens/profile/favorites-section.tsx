@@ -59,6 +59,7 @@ export function FavoritesSection() {
 const styles = StyleSheet.create({
   section: {
     gap: SPACING.MD,
+    marginBottom: SPACING.MD,
   },
   row: {
     gap: SPACING.SM,
