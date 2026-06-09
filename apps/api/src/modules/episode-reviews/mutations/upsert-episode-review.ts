@@ -54,8 +54,6 @@ export async function upsertEpisodeReview(userId: string, input: EpisodeReviewIn
         rating,
         title: input.title ?? null,
         comment: input.comment ?? null,
-        // Only refresh the runtime snapshot when we actually resolved one — a TMDB
-        // miss on a re-rate must not erase a previously stored exact/estimated value.
         ...(runtimeConfidence !== "unknown" ? { runtimeMinutes, runtimeConfidence } : {}),
         ...(watchedAt ? { watchedAt } : {}),
       },
