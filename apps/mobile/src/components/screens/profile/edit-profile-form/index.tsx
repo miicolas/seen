@@ -1,24 +1,15 @@
 import { useNativeState } from "@expo/ui/swift-ui";
 import { profileKeys } from "@seen/shared";
-import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
-import { SymbolView } from "expo-symbols";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Pressable, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
-import { Button } from "@/components/ui/button";
 import { FieldRow } from "@/components/ui/field-row";
 import { Text } from "@/components/ui/text";
-import { BORDER_RADIUS, BORDER_WIDTH, LAYOUT, OPACITY, SPACING } from "@/constants/design-tokens";
+import { BORDER_RADIUS, BORDER_WIDTH, LAYOUT, SPACING } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
-import {
-  hapticDelete,
-  hapticError,
-  hapticSelection,
-  hapticSuccess,
-  hapticTap,
-} from "@/lib/haptics";
+import { hapticDelete, hapticError, hapticSuccess, hapticTap } from "@/lib/haptics";
 import { queryClient } from "@/lib/query-client";
 import {
   deleteAccount,
@@ -33,9 +24,9 @@ import {
   type Profile,
 } from "@/services/profiles";
 
-import { ProfileAvatar } from "@/components/ui/profile-avatar";
-
-import { EditSheetScaffold } from "./edit-sheet-scaffold";
+import { EditSheetScaffold } from "../edit-sheet-scaffold";
+import { AvatarPicker } from "./avatar-picker";
+import { DeleteAccountSection } from "./delete-account-section";
 
 function profileErrorMessage(
   error: unknown,
@@ -82,37 +73,10 @@ export function EditProfileForm({ initialProfile }: { initialProfile: Profile })
     router.back();
   }, [router]);
 
-  const pickAvatar = useCallback(async () => {
+  const pickAvatar = useCallback((picked: AvatarUploadInput) => {
     setError(null);
-    hapticTap();
-
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted) {
-      hapticError();
-      setError(t("profile.photoPermissionError"));
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.7,
-    });
-
-    if (result.canceled) return;
-
-    const asset = result.assets[0];
-    if (!asset?.uri) return;
-
-    hapticSelection();
-    setAvatar({
-      uri: asset.uri,
-      mimeType: asset.mimeType,
-      fileName: asset.fileName,
-      fileSize: asset.fileSize,
-    });
-  }, [t]);
+    setAvatar(picked);
+  }, []);
 
   const save = useCallback(async () => {
     if (isSaving || isDeleting) return;
@@ -190,49 +154,18 @@ export function EditProfileForm({ initialProfile }: { initialProfile: Profile })
     }
   }, [isDeleting, t]);
 
-  const confirmDelete = useCallback(() => {
-    hapticDelete();
-    Alert.alert(t("profile.deleteAccountTitle"), t("profile.deleteAccountMessage"), [
-      { text: t("profile.cancel"), style: "cancel" },
-      {
-        text: t("profile.continueDelete"),
-        style: "destructive",
-        onPress: () => {
-          Alert.alert(
-            t("profile.deleteAccountFinalTitle"),
-            t("profile.deleteAccountFinalMessage"),
-            [
-              { text: t("profile.cancel"), style: "cancel" },
-              {
-                text: t("profile.deleteAccount"),
-                style: "destructive",
-                onPress: deleteConfirmed,
-              },
-            ],
-          );
-        },
-      },
-    ]);
-  }, [deleteConfirmed, t]);
-
   const isBusy = isSaving || isDeleting;
 
   return (
     <EditSheetScaffold onClose={close} onSave={save} closeDisabled={isBusy} saveDisabled={isBusy}>
       <View style={styles.content}>
-        <Pressable
-          accessibilityRole="button"
-          onPress={pickAvatar}
+        <AvatarPicker
+          uri={avatarUri}
+          name={displayName}
           disabled={isBusy}
-          style={({ pressed }) => [
-            styles.avatarButton,
-            { opacity: pressed ? OPACITY.DISABLED : 1 },
-          ]}>
-          <ProfileAvatar uri={avatarUri} name={displayName} size={150} />
-          <View style={styles.cameraBadge}>
-            <SymbolView name="camera.fill" size={28} tintColor="#000000" />
-          </View>
-        </Pressable>
+          onPick={pickAvatar}
+          onError={setError}
+        />
 
         <View style={[styles.fieldsPanel, { backgroundColor: theme.backgroundElement }]}>
           <FieldRow
@@ -268,17 +201,11 @@ export function EditProfileForm({ initialProfile }: { initialProfile: Profile })
           </View>
         ) : null}
 
-        <View style={styles.destructive}>
-          <Button
-            title={isDeleting ? t("profile.deletingAccount") : t("profile.deleteAccount")}
-            onPress={confirmDelete}
-            variant="glass"
-            color="red"
-            size="lg"
-            width="fill"
-            disabled={isBusy}
-          />
-        </View>
+        <DeleteAccountSection
+          isDeleting={isDeleting}
+          disabled={isBusy}
+          onDelete={deleteConfirmed}
+        />
       </View>
     </EditSheetScaffold>
   );
@@ -293,26 +220,6 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.MD,
     gap: SPACING.MD,
   },
-  avatarButton: {
-    alignSelf: "center",
-    marginTop: SPACING.MD,
-    marginBottom: SPACING.MD,
-  },
-  cameraBadge: {
-    position: "absolute",
-    right: 8,
-    bottom: 4,
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: "#ffffff",
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000000",
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 8 },
-  },
   fieldsPanel: {
     borderRadius: BORDER_RADIUS.MD,
     borderCurve: "continuous",
@@ -324,10 +231,5 @@ const styles = StyleSheet.create({
   },
   fieldHint: {
     paddingHorizontal: LAYOUT.FIELD_ROW_PADDING,
-  },
-  destructive: {
-    paddingTop: SPACING.XL,
-    paddingHorizontal: SPACING.MD,
-    alignItems: "center",
   },
 });
