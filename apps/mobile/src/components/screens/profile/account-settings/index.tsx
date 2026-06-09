@@ -9,6 +9,7 @@ import { useDeleteAccount } from "@/hooks/account/use-delete-account";
 import { useLinkedAccounts } from "@/hooks/account/use-linked-accounts";
 import { useSessions } from "@/hooks/account/use-sessions";
 import { hapticError, hapticSuccess, hapticTap } from "@/lib/haptics";
+import { privacyHref } from "@/lib/navigation";
 import { signOut } from "@/services/account";
 
 import { SettingsRow } from "../settings-row";
@@ -46,6 +47,11 @@ export function AccountSettingsSheet() {
   const openTastePreferences = useCallback(() => {
     hapticTap();
     router.push("/profile/taste-preferences");
+  }, [router]);
+
+  const openPrivacy = useCallback(() => {
+    hapticTap();
+    router.push(privacyHref());
   }, [router]);
 
   const openWhatsNew = useCallback(() => {
@@ -97,6 +103,11 @@ export function AccountSettingsSheet() {
               icon="heart.text.square"
               label={t("taste.menuAction")}
               onPress={openTastePreferences}
+            />
+            <SettingsRow
+              icon="lock.shield"
+              label={t("privacy.entry")}
+              onPress={openPrivacy}
             />
             <SettingsRow icon="sparkles" label={t("whatsNew.title")} onPress={openWhatsNew} />
           </Section>
