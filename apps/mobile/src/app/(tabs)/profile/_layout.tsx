@@ -53,15 +53,16 @@ export default function ProfileLayout() {
         name="privacy"
         options={{
           title: t("privacy.title"),
+          presentation: "formSheet",
           headerLargeTitle: false,
-          headerBackButtonDisplayMode: "minimal",
+          contentStyle: { backgroundColor: theme.backgroundElement },
         }}
       />
       <Stack.Screen
         name="social/search"
         options={{
           title: t("social.searchTitle"),
-          headerLargeTitle: false,
+          headerLargeTitle: true,
           headerBackButtonDisplayMode: "minimal",
         }}
       />
@@ -69,7 +70,7 @@ export default function ProfileLayout() {
         name="social/requests"
         options={{
           title: t("social.requestsTitle"),
-          headerLargeTitle: false,
+          headerLargeTitle: true,
           headerBackButtonDisplayMode: "minimal",
         }}
       />
@@ -77,7 +78,10 @@ export default function ProfileLayout() {
         name="social/[profileId]"
         options={{
           title: "",
+          headerShown: true,
           headerLargeTitle: false,
+          headerTransparent: true,
+          headerShadowVisible: false,
           headerBackButtonDisplayMode: "minimal",
         }}
       />
@@ -85,7 +89,7 @@ export default function ProfileLayout() {
         name="social/connections"
         options={{
           title: "",
-          headerLargeTitle: false,
+          headerLargeTitle: true,
           headerBackButtonDisplayMode: "minimal",
         }}
       />
