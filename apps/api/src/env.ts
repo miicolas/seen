@@ -32,6 +32,11 @@ export const env = {
   appleBundleIdentifier: optionalEnv("APPLE_APP_BUNDLE_IDENTIFIER"),
   tmdbToken: optionalEnv("TMDB_TOKEN"),
   tmdbApiKey: optionalEnv("TMDB_API_KEY"),
+  // Trigger.dev (background vector-refresh jobs). When unset, the similarity
+  // module runs its builders inline (fire-and-forget) instead of enqueuing, so
+  // local dev stays fresh without Trigger configured. Secrets are never committed.
+  triggerSecretKey: optionalEnv("TRIGGER_SECRET_KEY"),
+  triggerProjectRef: optionalEnv("TRIGGER_PROJECT_REF"),
   s3Endpoint: requiredEnv("S3_ENDPOINT", "http://localhost:9000"),
   s3Region: requiredEnv("S3_REGION", "us-east-1"),
   s3AccessKeyId: requiredEnv("S3_ACCESS_KEY_ID", "minio"),
