@@ -2,14 +2,10 @@ import { db } from "@seen/db";
 import { movies as moviesTable } from "@seen/db/schema";
 import { and, eq } from "@seen/db/orm";
 
-import {
-  DEFAULT_LANGUAGE,
-  DETAIL_APPEND,
-  DETAIL_TTL_MS,
-  type MediaType,
-  tmdbFetch,
-  upsertMovieDetail,
-} from "../client";
+import { tmdbFetch } from "../client";
+import { DEFAULT_LANGUAGE, DETAIL_APPEND, DETAIL_TTL_MS } from "../constants";
+import { upsertMovieDetail } from "../persist";
+import type { MediaType } from "../types";
 import type { MovieDetailDto } from "../model";
 import { toMovieDetail } from "../resources";
 

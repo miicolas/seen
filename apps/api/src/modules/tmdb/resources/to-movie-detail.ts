@@ -1,5 +1,6 @@
 import { asNumber, asNumberArray, asString } from "../../../lib/coerce";
-import { normalizeSummary, type MediaType, type RawTmdbItem } from "../client";
+import { normalizeSummary } from "../normalize";
+import type { MediaType, RawTmdbItem } from "../types";
 import type { MovieDetailDto } from "../model";
 import { toCredits } from "./to-credit";
 import { toGenres } from "./to-genre";
