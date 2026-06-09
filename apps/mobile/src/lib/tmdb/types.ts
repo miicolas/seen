@@ -16,5 +16,7 @@ export type {
   WatchProvidersDto as TmdbWatchProviders,
 } from "@seen/api/tmdb";
 
-export type MediaType = "movie" | "tv";
+export type { MediaType } from "@seen/shared";
+
+import type { MediaType } from "@seen/shared";
 export type MediaFilter = "all" | MediaType;
