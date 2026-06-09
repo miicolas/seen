@@ -1,3 +1,5 @@
+import { round } from "../shared";
+
 export type WatchlistBacklog = {
   count: number;
   movie_count: number;
@@ -11,14 +13,6 @@ export type WatchlistBacklog = {
 
 export type Clearance = { per_week: number; weeks_to_clear: number | null };
 
-const round = (value: number, places = 2) => {
-  const factor = 10 ** places;
-  return Math.round(value * factor) / factor;
-};
-
-// How long until the backlog is gone at the current watch pace. `per_week` is the
-// observed watch velocity over the window; `weeks_to_clear` is null when the user
-// isn't watching anything (dividing by a zero pace is "never", not Infinity).
 export function computeClearance(
   backlog: number,
   watchedInRange: number,
@@ -40,9 +34,6 @@ export type WatchlistCounts = {
   oldest_added_at: string | null;
 };
 
-// Assemble the full backlog view from a watchlist summary and the watch velocity
-// over a window. Shared by the overview and the share recap so the clearance math
-// lives in exactly one place.
 export function buildWatchlistBacklog(
   summary: WatchlistCounts,
   watchedInRange: number,

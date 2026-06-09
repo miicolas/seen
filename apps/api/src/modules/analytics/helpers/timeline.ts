@@ -1,6 +1,6 @@
 import { type Granularity, enumerateBuckets, granularityFor } from "../range";
 import type { Period, WatchedTime, WatchEntry } from "../shared";
-import { tzDayKey, tzMonthKey } from "../tz";
+import { tzDayKey, tzMonthKey, WEEKDAYS } from "../tz";
 import { accumulateWatchedTime, emptyWatchedTime, totalMinutes } from "./watched-time";
 
 export type TimelineBucket = {
@@ -18,11 +18,8 @@ export type Timeline = {
   buckets: TimelineBucket[];
 };
 
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-// Short axis labels, chosen by what reads well at each range's bucket count: weekday
-// for a 7-day week, day-of-month for a ~30-day month, month name for a year/all view.
 function labelFor(key: string, range: Period["range"], granularity: Granularity): string {
   if (granularity === "month") {
     const [, month] = key.split("-").map(Number);
@@ -56,13 +53,19 @@ export function buildTimeline(entries: WatchEntry[], period: Period, timeZone: s
     const watchedTime = bucketEntries.length
       ? accumulateWatchedTime(bucketEntries)
       : emptyWatchedTime();
+    let media_count = 0;
+    let episode_count = 0;
+    for (const e of bucketEntries) {
+      if (e.kind === "media") media_count += 1;
+      else episode_count += 1;
+    }
     return {
       key,
       label: labelFor(key, period.range, granularity),
       watched_time: watchedTime,
       total_minutes: totalMinutes(watchedTime),
-      media_count: bucketEntries.filter((entry) => entry.kind === "media").length,
-      episode_count: bucketEntries.filter((entry) => entry.kind === "episode").length,
+      media_count,
+      episode_count,
     };
   });
 

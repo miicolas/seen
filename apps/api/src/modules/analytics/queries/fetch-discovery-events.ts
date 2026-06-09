@@ -7,9 +7,6 @@ import type { DiscoveryImpression, DiscoveryInteraction, Period } from "../share
 
 const ATTRIBUTION_LOOKBACK_MS = 14 * 24 * 60 * 60 * 1000;
 
-// Impressions are pulled back an extra 14 days before the window so an outcome on
-// the first day of the range can still be credited to the impression that earned
-// it; `inRange` marks which impressions actually count toward the impression tally.
 export async function fetchDiscoveryEvents(
   userId: string,
   period: Period,

@@ -1,9 +1,6 @@
 import { RECOMMENDATION_SOURCES, type RecommendationSource } from "../../events/shared";
 import type { DiscoveryImpression, DiscoveryInteraction, Period } from "../shared";
 
-// The funnel outcomes, in one place — emptyFlow, the non-empty filter and the
-// totals are all derived from this list so a new outcome can't silently be left
-// out of one of them.
 const OUTCOME_KEYS = [
   "detail_opens",
   "watchlist_adds",
@@ -59,10 +56,6 @@ function emptyFlow(source: RecommendationSource): DiscoverySourceFlow {
   return { source, ...emptyTotals() };
 }
 
-// Credit a discovery outcome to the shelf that surfaced it. An interaction is
-// attributed to the most recent impression of the same title shown no more than 14
-// days earlier; the recommendation row's own flags fill gaps but never double-count
-// (an outcome already attributed via an interaction wins for that title).
 export function attributeDiscovery(
   impressions: DiscoveryImpression[],
   interactions: DiscoveryInteraction[],
@@ -81,8 +74,6 @@ export function attributeDiscovery(
   for (const list of byMedia.values())
     list.sort((a, b) => a.shownAt.getTime() - b.shownAt.getTime());
 
-  // Impressions always carry a concrete media type; an interaction logged without
-  // one matches a title across both, oldest-first.
   const candidatesFor = (tmdbId: number, mediaType: "movie" | "tv" | null) => {
     if (mediaType) return byMedia.get(mediaKey(tmdbId, mediaType)) ?? [];
     const merged = [
@@ -104,10 +95,12 @@ export function attributeDiscovery(
   };
 
   const countedImpressions = new Set<DiscoveryImpression>();
+  const inRangeImpressions: DiscoveryImpression[] = [];
   for (const impression of impressions) {
     if (impression.inRange) {
       ensure(impression.source).impressions += 1;
       countedImpressions.add(impression);
+      inRangeImpressions.push(impression);
     }
   }
 
@@ -130,9 +123,6 @@ export function attributeDiscovery(
       }
     }
     if (!chosen) continue;
-    // A lookback impression (shown before the window) that earns an in-range
-    // outcome still counts toward its source's impressions, so the funnel never
-    // reports more outcomes than impressions.
     if (!countedImpressions.has(chosen)) {
       ensure(chosen.source).impressions += 1;
       countedImpressions.add(chosen);
@@ -141,9 +131,7 @@ export function attributeDiscovery(
     counted.add(`${mediaKey(interaction.tmdbId, chosen.mediaType)}|${outcome}`);
   }
 
-  const flagOrder = [...impressions]
-    .filter((impression) => impression.inRange)
-    .sort((a, b) => a.shownAt.getTime() - b.shownAt.getTime());
+  const flagOrder = [...inRangeImpressions].sort((a, b) => a.shownAt.getTime() - b.shownAt.getTime());
   for (const impression of flagOrder) {
     for (const { flag, outcome } of FLAG_OUTCOME) {
       if (!impression.flags[flag]) continue;

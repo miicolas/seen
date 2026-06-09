@@ -1,7 +1,3 @@
-// Timezone-aware calendar math without a date library. Everything here is pure so
-// the analytics helpers (and their tests) can compute "this week in Tokyo" from a
-// fixed `now` and a tz string, exactly the way Postgres' `AT TIME ZONE` would.
-
 export function isValidTimeZone(timeZone: string): boolean {
   try {
     new Intl.DateTimeFormat("en-US", { timeZone });
@@ -15,7 +11,7 @@ export function resolveTimeZone(timeZone: string | undefined | null): string {
   return timeZone && isValidTimeZone(timeZone) ? timeZone : "UTC";
 }
 
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+export const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export type ZonedParts = {
   year: number;
@@ -27,7 +23,6 @@ export type ZonedParts = {
   weekday: number; // 0=Sun..6=Sat
 };
 
-// Wall-clock parts of an instant as seen in `timeZone`.
 export function tzParts(instant: Date, timeZone: string): ZonedParts {
   const dtf = new Intl.DateTimeFormat("en-US", {
     timeZone,
@@ -55,15 +50,12 @@ export function tzParts(instant: Date, timeZone: string): ZonedParts {
   };
 }
 
-// Offset (localWallClock − UTC) in ms at a given instant.
 function tzOffsetMs(instant: Date, timeZone: string): number {
   const p = tzParts(instant, timeZone);
   const asUtc = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second);
   return asUtc - instant.getTime();
 }
 
-// The UTC instant for wall-clock midnight of a calendar day in the tz. Resolved in
-// two passes so DST transition days still land on the correct midnight.
 export function zonedMidnight(year: number, month: number, day: number, timeZone: string): Date {
   const guess = Date.UTC(year, month - 1, day, 0, 0, 0);
   const offset = tzOffsetMs(new Date(guess), timeZone);
@@ -75,7 +67,6 @@ export function zonedMidnight(year: number, month: number, day: number, timeZone
 
 export type CalendarDay = { year: number; month: number; day: number };
 
-// Calendar arithmetic (DST-independent): add `delta` days to a Y/M/D.
 export function addCalendarDays(day: CalendarDay, delta: number): CalendarDay {
   const d = new Date(Date.UTC(day.year, day.month - 1, day.day));
   d.setUTCDate(d.getUTCDate() + delta);
@@ -84,9 +75,6 @@ export function addCalendarDays(day: CalendarDay, delta: number): CalendarDay {
 
 const pad = (value: number) => String(value).padStart(2, "0");
 
-// "YYYY-MM-DD" / "YYYY-MM" bucket keys built from calendar parts. Shared so the
-// timeline bucketer (tzDayKey/tzMonthKey) and the bucket enumerator can never
-// drift on padding or separator.
 export function dayKeyOf(day: CalendarDay): string {
   return `${day.year}-${pad(day.month)}-${pad(day.day)}`;
 }
@@ -95,12 +83,10 @@ export function monthKeyOf(year: number, month: number): string {
   return `${year}-${pad(month)}`;
 }
 
-// "YYYY-MM-DD" of an instant as seen in the tz (a stable, sortable bucket key).
 export function tzDayKey(instant: Date, timeZone: string): string {
   return dayKeyOf(tzParts(instant, timeZone));
 }
 
-// "YYYY-MM" of an instant as seen in the tz.
 export function tzMonthKey(instant: Date, timeZone: string): string {
   const p = tzParts(instant, timeZone);
   return monthKeyOf(p.year, p.month);

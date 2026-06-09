@@ -4,9 +4,6 @@ export function emptyWatchedTime(): WatchedTime {
   return { exact_minutes: 0, estimated_minutes: 0, unknown_count: 0 };
 }
 
-// Fold a set of entries into the exact/estimated/unknown split. Entries that don't
-// count toward time (series-level tv reviews) are skipped entirely — they're a log,
-// not minutes, and must not inflate `unknown_count`.
 export function accumulateWatchedTime(entries: WatchEntry[]): WatchedTime {
   const total = emptyWatchedTime();
   for (const entry of entries) {

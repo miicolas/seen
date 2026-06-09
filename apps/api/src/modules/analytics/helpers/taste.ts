@@ -1,4 +1,4 @@
-import { genreName, storedToStars, type WatchEntry } from "../shared";
+import { genreName, round, storedToStars, type WatchEntry } from "../shared";
 
 export type GenreCount = { genre: string; count: number; share: number };
 export type GenreRating = { genre: string; avg_rating: number; count: number };
@@ -21,15 +21,8 @@ export type Taste = {
   contradictions: Contradiction[];
 };
 
-const round = (value: number, places = 3) => {
-  const factor = 10 ** places;
-  return Math.round(value * factor) / factor;
-};
-
 const decadeOf = (year: number) => Math.floor(year / 10) * 10;
 
-// Highest count wins; ties break toward the more recent decade so "your era" feels
-// current rather than nostalgic when two decades are neck and neck.
 export function computeCurrentEra(entries: WatchEntry[]): CurrentEra {
   const counts = new Map<number, number>();
   let withYear = 0;
@@ -90,7 +83,6 @@ function contradictions(
     });
   }
 
-  // Older vs newer: do they reward the past more than the present?
   let oldSum = 0;
   let oldCount = 0;
   let newSum = 0;
@@ -119,8 +111,6 @@ function contradictions(
   return out.slice(0, 2);
 }
 
-// Taste is read off the logged catalog (movie + tv reviews); episodes feed watched
-// time, not genre identity. Everything here is deterministic — no model, no LLM.
 export function buildTaste(allEntries: WatchEntry[]): Taste {
   const media = allEntries.filter((entry) => entry.kind === "media");
 

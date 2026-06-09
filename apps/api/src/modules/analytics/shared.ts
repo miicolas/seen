@@ -2,13 +2,15 @@ import type { RecommendationSource } from "../events/shared";
 
 export type AnalyticsRange = "week" | "month" | "year" | "all";
 
+export const round = (value: number, places = 2) => {
+  const factor = 10 ** places;
+  return Math.round(value * factor) / factor;
+};
+
 export const ANALYTICS_RANGES: AnalyticsRange[] = ["week", "month", "year", "all"];
 
 export type RuntimeConfidence = "exact" | "estimated" | "unknown";
 
-// Splitting watched time three ways is the spine of the whole feature: minutes we
-// trust (`exact`), minutes we inferred from a series average (`estimated`), and
-// items we counted but couldn't time (`unknown_count`) — never silently dropped.
 export type WatchedTime = {
   exact_minutes: number;
   estimated_minutes: number;
@@ -24,9 +26,6 @@ export type Period = {
   previous_to: string | null;
 };
 
-// A single watched thing, normalized across movie/tv reviews and episode reviews.
-// `countsTowardTime` is false for series-level tv reviews: they're a log, not time
-// watched (you didn't watch "the whole series" in one sitting).
 export type WatchEntry = {
   watchedAt: Date;
   mediaType: "movie" | "tv";
@@ -63,9 +62,6 @@ export type DiscoveryInteraction = {
   createdAt: Date;
 };
 
-// TMDB genre ids → display names (movie + tv catalogs merged; ids are stable and
-// non-overlapping except where the name is identical). `movies.genres` stores ids
-// only, so taste analytics resolve names through this map.
 export const GENRE_NAMES: Record<number, string> = {
   28: "Action",
   12: "Adventure",
@@ -102,7 +98,6 @@ export function genreName(id: number): string {
 
 const EPSILON = 1e-9;
 
-// Stars (0.5..5) from the stored 1..10 scale, rounded to one decimal.
 export function storedToStars(stored: number): number {
   return Math.round((stored / 2) * 10 + EPSILON) / 10;
 }

@@ -17,10 +17,6 @@ function yearOf(releaseDate: unknown): number | null {
   return null;
 }
 
-// All of a user's watched things in [from, to), normalized to WatchEntry. Movie
-// reviews carry TMDB runtime (exact); tv reviews are a log only (no minutes);
-// episode reviews carry their recorded runtime snapshot. Genres/year come from the
-// joined `movies` row (the series row for episodes).
 export async function fetchWatchEntries(
   userId: string,
   fromISO: string,

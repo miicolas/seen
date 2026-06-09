@@ -13,8 +13,6 @@ import { getAnalyticsPeriod } from "./period";
 
 export type ShareTemplate = "weekly" | "taste" | "watchlist";
 
-// Everything here is aggregate and public-safe by construction: counts, minutes,
-// genres and an era label — never a raw search, a provider click, or an event row.
 export type ShareRecap = {
   template: ShareTemplate;
   period: Period;
@@ -48,13 +46,19 @@ export async function getShareRecap(
     const entries = await fetchWatchEntries(userId, period.from, period.to);
     const watchedTime = accumulateWatchedTime(entries);
     const taste = buildTaste(entries);
+    let media_count = 0;
+    let episode_count = 0;
+    for (const e of entries) {
+      if (e.kind === "media") media_count += 1;
+      else episode_count += 1;
+    }
     return {
       template,
       period,
       watched_time: watchedTime,
       total_minutes: totalMinutes(watchedTime),
-      media_count: entries.filter((entry) => entry.kind === "media").length,
-      episode_count: entries.filter((entry) => entry.kind === "episode").length,
+      media_count,
+      episode_count,
       top_genres: taste.genre_mix.slice(0, 3),
     };
   }
@@ -74,9 +78,6 @@ export async function getShareRecap(
     };
   }
 
-  // watchlist backlog — velocity measured over a true trailing 30-day window, not
-  // the partial month-to-date (which would wildly over-extrapolate per_week early
-  // in the month, e.g. "87 titles/week" from one day of data).
   const { period } = getAnalyticsPeriod("month", timezone);
   const WINDOW_DAYS = 30;
   const velocityFrom = new Date(new Date(period.to).getTime() - WINDOW_DAYS * DAY_MS).toISOString();
@@ -84,17 +85,14 @@ export async function getShareRecap(
     fetchWatchEntries(userId, velocityFrom, period.to),
     fetchWatchlistSummary(userId, period.from, period.to),
   ]);
-  const watchedInRange = entries.filter((entry) => entry.kind === "media").length;
-  const backlog = buildWatchlistBacklog(watchlist, watchedInRange, WINDOW_DAYS);
-  return {
-    template,
-    period,
-    backlog: {
-      count: backlog.count,
-      movie_count: backlog.movie_count,
-      tv_count: backlog.tv_count,
-      per_week: backlog.per_week,
-      weeks_to_clear: backlog.weeks_to_clear,
-    },
-  };
+  let watchedInRange = 0;
+  for (const e of entries) {
+    if (e.kind === "media") watchedInRange += 1;
+  }
+  const { count, movie_count, tv_count, per_week, weeks_to_clear } = buildWatchlistBacklog(
+    watchlist,
+    watchedInRange,
+    WINDOW_DAYS,
+  );
+  return { template, period, backlog: { count, movie_count, tv_count, per_week, weeks_to_clear } };
 }

@@ -8,10 +8,6 @@ import {
   zonedMidnight,
 } from "./tz";
 
-// Resolve a range keyword into concrete calendar windows in the user's timezone.
-// `to` is always "now"; `from` is the start of the current week (Monday) / month /
-// year in the tz; the previous window is the equivalent full prior period so the
-// overview can show an honest "vs last week/month/year" delta. "all" has no bounds.
 export function computeRange(
   range: AnalyticsRange,
   timeZone: string,
@@ -62,18 +58,10 @@ export function computeRange(
 
 export type Granularity = "day" | "month";
 
-// Day buckets for short ranges keep the chart readable; month buckets keep long
-// ranges from exploding into hundreds of columns.
 export function granularityFor(range: AnalyticsRange): Granularity {
   return range === "week" || range === "month" ? "day" : "month";
 }
 
-// Every bucket key between `from` and `to` (inclusive of the bucket containing
-// `to`), so empty days/months still render as gaps instead of vanishing. Capped to
-// keep an unbounded "all" range from generating a runaway list — the cap keeps the
-// most recent MAX buckets (those adjacent to `to`), since walking forward from a
-// 1970 "all" start would otherwise fill the cap with ancient empty buckets and drop
-// every bucket the user actually has data in.
 export function enumerateBuckets(
   fromISO: string,
   toISO: string,
