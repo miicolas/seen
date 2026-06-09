@@ -59,53 +59,55 @@ export function PrivacySettings() {
         ignoreSafeArea="keyboard"
         useViewportSizeMeasurement
         style={styles.host}>
-      <Form modifiers={[tint(accentHex)]}>
-        <Section
-          title={t("privacy.followsSection")}
-          footer={<SwiftUIText>{t("privacy.requireApprovalHint")}</SwiftUIText>}>
-          <Toggle
-            isOn={data.follow_policy === "approval_required"}
-            onIsOnChange={(on) => save({ followPolicy: on ? "approval_required" : "open" })}
-            label={t("privacy.requireApproval")}
-          />
-        </Section>
+        <Form modifiers={[tint(accentHex)]}>
+          <Section
+            title={t("privacy.followsSection")}
+            footer={<SwiftUIText>{t("privacy.requireApprovalHint")}</SwiftUIText>}>
+            <Toggle
+              isOn={data.follow_policy === "approval_required"}
+              onIsOnChange={(on) => save({ followPolicy: on ? "approval_required" : "open" })}
+              label={t("privacy.requireApproval")}
+            />
+          </Section>
 
-        <Section
-          title={t("privacy.profileSection")}
-          footer={<SwiftUIText>{t("privacy.privateProfileHint")}</SwiftUIText>}>
-          <Toggle
-            isOn={data.profile_visibility === "followers"}
-            onIsOnChange={(on) => save({ profileVisibility: on ? "followers" : "public" })}
-            label={t("privacy.privateProfile")}
-          />
-        </Section>
+          <Section
+            title={t("privacy.profileSection")}
+            footer={<SwiftUIText>{t("privacy.privateProfileHint")}</SwiftUIText>}>
+            <Toggle
+              isOn={data.profile_visibility === "followers"}
+              onIsOnChange={(on) => save({ profileVisibility: on ? "followers" : "public" })}
+              label={t("privacy.privateProfile")}
+            />
+          </Section>
 
-        <Section
-          title={t("privacy.watchlistSection")}
-          footer={<SwiftUIText>{t("privacy.watchlistHint")}</SwiftUIText>}>
-          <Picker
-            selection={data.default_watchlist_visibility}
-            onSelectionChange={(value: WatchlistVisibility) =>
-              save({ defaultWatchlistVisibility: value })
-            }
-            modifiers={[pickerStyle("menu"), tint(accentHex)]}>
-            <SwiftUIText modifiers={[tag("private")]}>{t("privacy.visibilityPrivate")}</SwiftUIText>
-            <SwiftUIText modifiers={[tag("followers")]}>
-              {t("privacy.visibilityFollowers")}
-            </SwiftUIText>
-            <SwiftUIText modifiers={[tag("public")]}>{t("privacy.visibilityPublic")}</SwiftUIText>
-          </Picker>
-        </Section>
+          <Section
+            title={t("privacy.watchlistSection")}
+            footer={<SwiftUIText>{t("privacy.watchlistHint")}</SwiftUIText>}>
+            <Picker
+              selection={data.default_watchlist_visibility}
+              onSelectionChange={(value: WatchlistVisibility) =>
+                save({ defaultWatchlistVisibility: value })
+              }
+              modifiers={[pickerStyle("menu"), tint(accentHex)]}>
+              <SwiftUIText modifiers={[tag("private")]}>
+                {t("privacy.visibilityPrivate")}
+              </SwiftUIText>
+              <SwiftUIText modifiers={[tag("followers")]}>
+                {t("privacy.visibilityFollowers")}
+              </SwiftUIText>
+              <SwiftUIText modifiers={[tag("public")]}>{t("privacy.visibilityPublic")}</SwiftUIText>
+            </Picker>
+          </Section>
 
-        <Section
-          title={t("privacy.discoverySection")}
-          footer={<SwiftUIText>{t("privacy.contactDiscoveryHint")}</SwiftUIText>}>
-          <Toggle
-            isOn={data.contact_discovery_enabled}
-            onIsOnChange={(on) => save({ contactDiscoveryEnabled: on })}
-            label={t("privacy.contactDiscovery")}
-          />
-        </Section>
+          <Section
+            title={t("privacy.discoverySection")}
+            footer={<SwiftUIText>{t("privacy.contactDiscoveryHint")}</SwiftUIText>}>
+            <Toggle
+              isOn={data.contact_discovery_enabled}
+              onIsOnChange={(on) => save({ contactDiscoveryEnabled: on })}
+              label={t("privacy.contactDiscovery")}
+            />
+          </Section>
         </Form>
       </Host>
     </>

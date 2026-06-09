@@ -104,11 +104,7 @@ export function AccountSettingsSheet() {
               label={t("taste.menuAction")}
               onPress={openTastePreferences}
             />
-            <SettingsRow
-              icon="lock.shield"
-              label={t("privacy.entry")}
-              onPress={openPrivacy}
-            />
+            <SettingsRow icon="lock.shield" label={t("privacy.entry")} onPress={openPrivacy} />
             <SettingsRow icon="sparkles" label={t("whatsNew.title")} onPress={openWhatsNew} />
           </Section>
 

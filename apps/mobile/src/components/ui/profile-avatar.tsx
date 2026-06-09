@@ -38,7 +38,12 @@ export function ProfileAvatar({
     <Image source={{ uri }} contentFit="cover" style={[styles.circle, circle]} />
   ) : (
     <View
-      style={[styles.circle, styles.fallback, circle, { backgroundColor: theme.backgroundElement }]}>
+      style={[
+        styles.circle,
+        styles.fallback,
+        circle,
+        { backgroundColor: theme.backgroundElement },
+      ]}>
       <Text size={size > 80 ? "2xl" : "md"} weight="heavy" color={accentHex}>
         {initials(name)}
       </Text>
