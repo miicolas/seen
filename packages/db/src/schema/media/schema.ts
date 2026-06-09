@@ -32,7 +32,10 @@ export const movies = pgTable(
     detail: jsonb("detail"),
     detailFetchedAt: timestamp("detail_fetched_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   },
   (table) => [
     primaryKey({ columns: [table.tmdbId, table.mediaType] }),

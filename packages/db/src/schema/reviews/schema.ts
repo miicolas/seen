@@ -28,7 +28,10 @@ export const reviews = pgTable(
     comment: text("comment"),
     watchedAt: timestamp("watched_at", { withTimezone: true }).notNull().defaultNow(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   },
   (table) => [
     unique("reviews_user_movie_unique").on(table.userId, table.tmdbId, table.mediaType),
@@ -61,7 +64,10 @@ export const episodeReviews = pgTable(
     runtimeConfidence: text("runtime_confidence").notNull().default("unknown"),
     watchedAt: timestamp("watched_at", { withTimezone: true }).notNull().defaultNow(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   },
   (table) => [
     unique("episode_reviews_user_episode_unique").on(

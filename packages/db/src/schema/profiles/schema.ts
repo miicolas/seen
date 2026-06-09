@@ -24,7 +24,10 @@ export const profiles = pgTable(
     // they can be surfaced by contact matching.
     contactDiscoveryEnabled: boolean("contact_discovery_enabled").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   },
   (table) => [
     check("profiles_full_name_not_blank", sql`length(btrim(${table.fullName})) > 0`),
