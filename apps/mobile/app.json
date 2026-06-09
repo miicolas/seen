@@ -14,7 +14,8 @@
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
         "CFBundleLocalizations": ["en", "fr", "en", "fr"],
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSContactsUsageDescription": "Seen uses your contacts to help you find friends who are already on Seen. Your contacts are matched privately and never stored in plain text."
       }
     },
     "android": {
