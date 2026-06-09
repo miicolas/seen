@@ -17,6 +17,7 @@ export async function getMediaDetail(
   mediaType: MediaType,
   tmdbId: number,
   language = DEFAULT_LANGUAGE,
+  options: { forceRefresh?: boolean } = {},
 ): Promise<MovieDetailDto> {
   const [row] = await db
     .select({
@@ -29,6 +30,7 @@ export async function getMediaDetail(
     .limit(1);
 
   if (
+    !options.forceRefresh &&
     row?.detail &&
     row.detailFetchedAt &&
     (!row.language || row.language === language) &&

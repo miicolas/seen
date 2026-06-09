@@ -12,6 +12,25 @@ function namedList(value: unknown): { name?: string }[] | undefined {
   }));
 }
 
+// TMDB nests keywords differently per media type: movies under `keywords.keywords`,
+// TV under `keywords.results`. Normalize both to a flat {id, name}[] for the cached
+// detail so the similarity encoder has a stable shape to read. Must also accept an
+// already-flat array: cache hits re-run toMovieDetail over the stored DTO.
+function keywordList(value: unknown): { id: number; name: string }[] | undefined {
+  const container = value as Record<string, unknown> | undefined;
+  const raw = Array.isArray(value) ? value : (container?.keywords ?? container?.results);
+  if (!Array.isArray(raw)) return undefined;
+  const keywords = raw
+    .map((entry) => {
+      const record = entry as Record<string, unknown> | null;
+      const id = asNumber(record?.id);
+      const name = asString(record?.name);
+      return id != null && name != null ? { id, name } : null;
+    })
+    .filter((entry): entry is { id: number; name: string } => entry != null);
+  return keywords.length > 0 ? keywords : undefined;
+}
+
 export function toMovieDetail(
   raw: Record<string, unknown>,
   mediaType: MediaType,
@@ -30,6 +49,7 @@ export function toMovieDetail(
     genres: toGenres(raw.genres),
     number_of_seasons: asNumber(raw.number_of_seasons),
     seasons: Array.isArray(raw.seasons) ? raw.seasons.map(toSeasonSummary) : undefined,
+    keywords: keywordList(raw.keywords),
     tagline: asString(raw.tagline) ?? null,
     status: asString(raw.status),
     original_language: asString(raw.original_language),

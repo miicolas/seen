@@ -25,6 +25,11 @@ const genre = t.Object({
   name: t.String(),
 });
 
+const keyword = t.Object({
+  id: t.Number(),
+  name: t.String(),
+});
+
 const credit = t.Object({
   id: t.Number(),
   name: t.Optional(t.String()),
@@ -71,6 +76,7 @@ const movieDetail = t.Composite([
     genres: t.Optional(t.Array(genre)),
     number_of_seasons: t.Optional(t.Number()),
     seasons: t.Optional(t.Array(seasonSummary)),
+    keywords: t.Optional(t.Array(keyword)),
     tagline: t.Optional(t.Nullable(t.String())),
     status: t.Optional(t.String()),
     original_language: t.Optional(t.String()),
