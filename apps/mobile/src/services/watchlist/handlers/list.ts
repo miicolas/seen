@@ -1,4 +1,4 @@
-import { eden, unwrapEden } from "@/lib/eden";
+import { api, unwrapEden } from "@/lib/eden";
 
 import type { WatchlistListInput, WatchlistPage } from "../types";
 
@@ -12,7 +12,7 @@ export async function getMyWatchlistPage({
   const term = search?.trim();
 
   return unwrapEden<WatchlistPage>(
-    eden.watchlist.get({
+    api.watchlist.get({
       query: { mediaType, search: term || undefined, limit, offset },
     }),
   );

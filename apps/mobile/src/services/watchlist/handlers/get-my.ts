@@ -1,4 +1,4 @@
-import { eden, unwrapEden } from "@/lib/eden";
+import { api, unwrapEden } from "@/lib/eden";
 
 import type { MediaRef, WatchlistItem } from "../types";
 
@@ -7,7 +7,7 @@ export async function getMyWatchlistItem({
   mediaType,
 }: MediaRef): Promise<WatchlistItem | null> {
   return unwrapEden<WatchlistItem | null>(
-    eden.watchlist.my.get({
+    api.watchlist.my.get({
       query: { tmdbId, mediaType },
     }),
   );

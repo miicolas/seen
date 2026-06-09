@@ -1,4 +1,4 @@
-import { eden, unwrapEden } from "@/lib/eden";
+import { api, unwrapEden } from "@/lib/eden";
 
 import type { LikeKind, MediaRef } from "../types";
 
@@ -8,8 +8,11 @@ export async function removeLike({
   kind,
 }: MediaRef & { kind: LikeKind }): Promise<void> {
   await unwrapEden<{ ok: boolean }>(
-    eden.likes.my.delete(undefined, {
-      query: { tmdbId, mediaType, kind },
-    }),
+    api.likes.my.delete(
+      {},
+      {
+        query: { tmdbId, mediaType, kind },
+      },
+    ),
   );
 }
