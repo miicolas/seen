@@ -339,6 +339,7 @@ export const en = {
     searchTitle: "Find Friends",
     searchPlaceholder: "Search by name or username",
     searchPrompt: "Search for people to follow.",
+    searchHint: "Search for someone by name or @username in the bar above.",
     noResults: "No profiles found.",
     follow: "Follow",
     following: "Following",
@@ -348,6 +349,7 @@ export const en = {
     followers: "Followers",
     followingTitle: "Following",
     followersTitle: "Followers",
+    seeAll: "See all",
     requestsEntry: "Requests",
     requestsTitle: "Follow Requests",
     approve: "Approve",
@@ -366,7 +368,6 @@ export const en = {
     enableContacts: "Find friends from contacts",
     contactsDenied: "Contacts access is off. Enable it in Settings to find people you know.",
     addMoreContacts: "Add more contacts",
-    noContactMatches: "None of your contacts are on Seen yet.",
     retry: "Retry",
   },
   privacy: {

@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 
-import { EmptyState } from "@/components/ui/empty-state";
+import { ContentUnavailable } from "@/components/ui/content-unavailable";
 import { Text } from "@/components/ui/text";
 import { SPACING } from "@/constants/design-tokens";
 import { useFollowList } from "@/hooks/social/use-follow-list";
@@ -36,7 +36,7 @@ export function Connections() {
         {list.isLoading && list.data.length === 0 ? (
           <SocialLoading />
         ) : list.data.length === 0 ? (
-          <EmptyState icon="person.2" title={t("social.noResults")} />
+          <ContentUnavailable icon="person.2" title={t("social.noResults")} />
         ) : (
           <View style={styles.list}>
             {list.data.map((card) => (

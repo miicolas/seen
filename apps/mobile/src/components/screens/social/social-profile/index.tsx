@@ -1,9 +1,9 @@
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, View } from "react-native";
 
-import { EmptyState } from "@/components/ui/empty-state";
+import { ContentUnavailable } from "@/components/ui/content-unavailable";
 import { ProfileAvatar } from "@/components/ui/profile-avatar";
 import { Text } from "@/components/ui/text";
 import { SPACING } from "@/constants/design-tokens";
@@ -63,24 +63,26 @@ export function SocialProfile() {
   );
 
   return (
-    <>
-      <Stack.Title>{data ? `@${data.username}` : ""}</Stack.Title>
-
-      <SocialScrollView
-        contentGap={SPACING.LG}
-        contentTopPadding={0}
-        onEndReached={activity.loadMore}>
+    <SocialScrollView
+      contentGap={SPACING.LG}
+      contentTopPadding={SPACING.MD}
+      onEndReached={activity.loadMore}>
         {profile.isLoading && !data ? (
           <SocialLoading minHeight={360} />
         ) : !data ? (
-          <EmptyState
+          <ContentUnavailable
             icon="person.crop.circle.badge.exclamationmark"
             title={t("social.noResults")}
           />
         ) : (
           <>
             <View style={styles.header}>
-              <ProfileAvatar uri={profileAvatarUrl(data)} name={data.full_name} size={112} />
+              <ProfileAvatar
+                uri={profileAvatarUrl(data)}
+                name={data.full_name}
+                size={112}
+                locked={data.profile_visibility === "followers"}
+              />
               <View style={styles.identity}>
                 <Text size="3xl" weight="bold" color={theme.text} align="center" numberOfLines={2}>
                   {data.full_name}
@@ -118,10 +120,10 @@ export function SocialProfile() {
             ) : null}
 
             {data.locked ? (
-              <EmptyState
+              <ContentUnavailable
                 icon="lock"
                 title={t("social.privateProfile")}
-                subtitle={t("social.privateProfileHint")}
+                description={t("social.privateProfileHint")}
               />
             ) : (
               <>
@@ -150,8 +152,7 @@ export function SocialProfile() {
             )}
           </>
         )}
-      </SocialScrollView>
-    </>
+    </SocialScrollView>
   );
 }
 

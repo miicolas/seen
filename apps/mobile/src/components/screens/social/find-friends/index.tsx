@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import type { NativeSyntheticEvent, TextInputFocusEventData } from "react-native";
 import { StyleSheet, View } from "react-native";
 
-import { EmptyState } from "@/components/ui/empty-state";
+import { ContentUnavailable } from "@/components/ui/content-unavailable";
 import { Text } from "@/components/ui/text";
 import { SPACING } from "@/constants/design-tokens";
 import { useProfileSearch } from "@/hooks/social/use-profile-search";
@@ -55,7 +55,7 @@ export function FindFriends() {
               ))}
             </View>
           ) : (
-            <EmptyState icon="magnifyingglass" title={t("social.noResults")} />
+            <ContentUnavailable icon="magnifyingglass" title={t("social.noResults")} />
           )
         ) : (
           <ContactSuggestions onOpenProfile={openProfile} />
