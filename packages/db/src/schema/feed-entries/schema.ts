@@ -4,6 +4,7 @@ import {
   check,
   index,
   integer,
+  jsonb,
   pgTable,
   real,
   text,
@@ -15,9 +16,12 @@ import {
 import { user } from "../auth";
 
 // One precomputed "For You" feed entry. A user's feed is the batch of rows
-// sharing their latest computed_at; recompute replaces the whole batch. The
-// serving layer hydrates display fields from the `movies` cache, so only
-// ranking data lives here.
+// sharing their latest computed_at; recompute replaces the whole batch. Since
+// the pool model, a batch is one ranked candidate pool (section = 'pool') that
+// the serving layer slices into display sections per request with a refresh
+// salt; legacy sectionized batches are recomputed on first read. The serving
+// layer hydrates display fields from the `movies` cache, so only ranking data
+// lives here.
 export const feedEntries = pgTable(
   "feed_entries",
   {
@@ -31,8 +35,19 @@ export const feedEntries = pgTable(
     source: text("source").notNull(),
     score: real("score").notNull(),
     rank: integer("rank").notNull(),
-    // "Because you rated X" anchor; null for non-content sections.
+    // Raw score components (content/quality/fatigue/...) for sectionizing and
+    // observability.
+    components: jsonb("components"),
+    // "Because you rated X" anchor backing this candidate; null when none.
+    anchorTmdbId: bigint("anchor_tmdb_id", { mode: "number" }),
+    anchorMediaType: text("anchor_media_type"),
     anchorTitle: text("anchor_title"),
+    // Denormalized ranking facets so serving can sectionize without re-joining.
+    primaryGenreId: integer("primary_genre_id"),
+    directorKey: text("director_key"),
+    popularity: real("popularity"),
+    voteAverage: real("vote_average"),
+    voteCount: integer("vote_count"),
     region: text("region").notNull(),
     computedAt: timestamp("computed_at", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -46,12 +61,16 @@ export const feedEntries = pgTable(
     ),
     check(
       "feed_entries_section_check",
-      sql`${table.section} in ('today', 'because_you_rated', 'trending', 'available_tonight', 'discovery')`,
+      sql`${table.section} in ('pool', 'today', 'because_you_rated', 'trending', 'available_tonight', 'discovery', 'acclaimed', 'hidden_gems')`,
     ),
     check("feed_entries_media_type_check", sql`${table.mediaType} in ('movie', 'tv')`),
     check(
       "feed_entries_source_check",
       sql`${table.source} in ('content', 'collaborative', 'trending', 'availability', 'social')`,
+    ),
+    check(
+      "feed_entries_anchor_media_type_check",
+      sql`${table.anchorMediaType} is null or ${table.anchorMediaType} in ('movie', 'tv')`,
     ),
   ],
 );
