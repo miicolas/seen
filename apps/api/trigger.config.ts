@@ -7,4 +7,7 @@ export default defineConfig({
   project: process.env.TRIGGER_PROJECT_REF ?? "proj_seen_placeholder",
   runtime: "node",
   dirs: ["./src/trigger"],
+  // Ceiling per run; the heaviest task (refresh-feeds over all users) stays far
+  // below this at current scale.
+  maxDuration: 600,
 });
