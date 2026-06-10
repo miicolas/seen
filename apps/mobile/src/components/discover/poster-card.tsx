@@ -1,7 +1,5 @@
-import { MenuView } from "@expo/ui/community/menu";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
-import { PressableScale } from "pressto";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 
@@ -23,6 +21,8 @@ interface PosterCardProps {
   base?: MediaRouteBase;
 }
 
+// Tap + long-press context menu use expo-router's Link.Trigger/Link.Menu —
+// wrapping the Link in an external MenuView swallows simple taps.
 export function PosterCard({ movie, width, showMeta = true, base = "discover" }: PosterCardProps) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -37,65 +37,23 @@ export function PosterCard({ movie, width, showMeta = true, base = "discover" }:
   const title = truncate(movie.title ?? movie.original_title ?? "Untitled", 18);
   const meta = releaseYear(movie.release_date);
 
-  function handlePress() {
-    hapticTap();
-  }
-
-  function handleMenuAction(event: { nativeEvent: { event: string } }) {
-    const { event: id } = event.nativeEvent;
-    if (id === "toggle-watchlist") {
-      hapticTap();
-      watchlist.toggle().catch(() => {});
-    } else if (id === "toggle-like") {
-      hapticTap();
-      likes.toggleLike().catch(() => {});
-    } else if (id === "not-interested") {
-      hapticDelete();
-      notInterested.toggle().catch(() => {});
-    }
-  }
-
   return (
-    <MenuView
-      shouldOpenOnLongPress
-      actions={[
-        {
-          id: "toggle-watchlist",
-          title: watchlist.isInWatchlist ? t("watchlist.remove") : t("watchlist.add"),
-          image: watchlist.isInWatchlist ? "bookmark.slash.fill" : "bookmark",
-        },
-        {
-          id: "toggle-like",
-          title: likes.isLiked ? t("likes.unlike") : t("likes.like"),
-          image: likes.isLiked ? "heart.fill" : "heart",
-        },
-        {
-          id: "not-interested",
-          title: notInterested.isDismissed
-            ? t("notInterested.undismiss")
-            : t("notInterested.dismiss"),
-          image: notInterested.isDismissed ? "eye" : "eye.slash",
-          attributes: notInterested.isDismissed ? undefined : { destructive: true },
-        },
-      ]}
-      onPressAction={handleMenuAction}>
-      <Link href={mediaDetailHref(movie, base)} asChild>
-        <PressableScale onPress={handlePress} style={StyleSheet.flatten([styles.card, { width }])}>
-          <Link.AppleZoom>
-            <Image
-              source={uri ? { uri } : undefined}
-              style={StyleSheet.flatten([
-                styles.image,
-                {
-                  width,
-                  height: width * 1.5,
-                  backgroundColor: theme.backgroundElement,
-                },
-              ])}
-              contentFit="cover"
-              transition={200}
-            />
-          </Link.AppleZoom>
+    <Link href={mediaDetailHref(movie, base)} onPress={() => hapticTap()}>
+      <Link.Trigger withAppleZoom>
+        <View style={StyleSheet.flatten([styles.card, { width }])}>
+          <Image
+            source={uri ? { uri } : undefined}
+            style={StyleSheet.flatten([
+              styles.image,
+              {
+                width,
+                height: width * 1.5,
+                backgroundColor: theme.backgroundElement,
+              },
+            ])}
+            contentFit="cover"
+            transition={200}
+          />
           <View style={styles.caption}>
             <Text size="sm" weight="semibold">
               {title}
@@ -106,9 +64,36 @@ export function PosterCard({ movie, width, showMeta = true, base = "discover" }:
               </Text>
             ) : null}
           </View>
-        </PressableScale>
-      </Link>
-    </MenuView>
+        </View>
+      </Link.Trigger>
+      <Link.Menu>
+        <Link.MenuAction
+          icon={watchlist.isInWatchlist ? "bookmark.slash.fill" : "bookmark"}
+          onPress={() => {
+            hapticTap();
+            watchlist.toggle().catch(() => {});
+          }}>
+          {watchlist.isInWatchlist ? t("watchlist.remove") : t("watchlist.add")}
+        </Link.MenuAction>
+        <Link.MenuAction
+          icon={likes.isLiked ? "heart.fill" : "heart"}
+          onPress={() => {
+            hapticTap();
+            likes.toggleLike().catch(() => {});
+          }}>
+          {likes.isLiked ? t("likes.unlike") : t("likes.like")}
+        </Link.MenuAction>
+        <Link.MenuAction
+          icon={notInterested.isDismissed ? "eye" : "eye.slash"}
+          destructive={!notInterested.isDismissed}
+          onPress={() => {
+            hapticDelete();
+            notInterested.toggle().catch(() => {});
+          }}>
+          {notInterested.isDismissed ? t("notInterested.undismiss") : t("notInterested.dismiss")}
+        </Link.MenuAction>
+      </Link.Menu>
+    </Link>
   );
 }
 

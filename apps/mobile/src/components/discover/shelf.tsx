@@ -116,7 +116,7 @@ export function Shelf<T>({
         snapToInterval={snap ? cardWidth + SPACING.MD : undefined}
         snapToAlignment="start"
         onScroll={impressionSource ? onScroll : undefined}
-        scrollEventThrottle={200}
+        scrollEventThrottle={impressionSource ? 200 : undefined}
         contentContainerStyle={styles.content}>
         {data.map((item, index) => (
           <Fragment key={keyExtractor(item, index)}>{renderItem(item, index, cardWidth)}</Fragment>
