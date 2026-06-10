@@ -38,6 +38,7 @@ export const recommendationKeys = {
   all: () => ["recommendations"] as const,
   available: (region: string, filter: string) =>
     ["recommendations", "available", region, filter] as const,
+  feed: (region: string) => ["recommendations", "feed", region] as const,
 };
 
 export const socialKeys = {

@@ -1,8 +1,22 @@
 export const en = {
   home: {
-    welcome: "Welcome 👋",
-    signedInAs: "Signed in as",
+    title: "For You",
     signOut: "Sign out",
+    loadError: "Couldn't load your feed. Pull to refresh.",
+    sections: {
+      today: "Today for you",
+      todayEyebrow: "Picked for you",
+      becauseYouRated: "Because you rated {{title}}",
+      trending: "Trending",
+      availableTonight: "Available tonight",
+      discovery: "A discovery",
+    },
+    empty: {
+      title: "Your feed is warming up",
+      subtitle: "Tell us what you like and we'll fill this with titles picked for you.",
+      ctaTaste: "Pick my taste",
+      ctaImport: "Import from Letterboxd",
+    },
   },
   profile: {
     menuTitle: "Profile",
@@ -230,6 +244,7 @@ export const en = {
     deleteError: "Account deletion failed. You may need to sign in again.",
   },
   tabs: {
+    home: "For You",
     discover: "Discover",
     watchlist: "Watchlist",
     insights: "Insights",

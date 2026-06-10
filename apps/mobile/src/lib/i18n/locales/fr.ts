@@ -2,9 +2,23 @@ import type { en } from "./en";
 
 export const fr: typeof en = {
   home: {
-    welcome: "Bienvenue 👋",
-    signedInAs: "Connecté en tant que",
+    title: "Pour toi",
     signOut: "Se déconnecter",
+    loadError: "Impossible de charger ton feed. Tire pour rafraîchir.",
+    sections: {
+      today: "Aujourd'hui pour toi",
+      todayEyebrow: "Choisi pour toi",
+      becauseYouRated: "Parce que tu as noté {{title}}",
+      trending: "Tendances",
+      availableTonight: "Dispo ce soir",
+      discovery: "Une découverte",
+    },
+    empty: {
+      title: "Ton feed se prépare",
+      subtitle: "Dis-nous ce que tu aimes et on le remplira de titres choisis pour toi.",
+      ctaTaste: "Choisir mes goûts",
+      ctaImport: "Importer depuis Letterboxd",
+    },
   },
   profile: {
     menuTitle: "Profil",
@@ -234,6 +248,7 @@ export const fr: typeof en = {
     deleteError: "Échec de la suppression. Vous devrez peut-être vous reconnecter.",
   },
   tabs: {
+    home: "Pour toi",
     discover: "Découvrir",
     watchlist: "Watchlist",
     insights: "Stats",

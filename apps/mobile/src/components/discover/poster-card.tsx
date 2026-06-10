@@ -8,23 +8,26 @@ import { StyleSheet, View } from "react-native";
 import { Text } from "@/components/ui/text";
 import { BORDER_RADIUS, SPACING } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
+import { useLikesMembership } from "@/hooks/likes/use-likes-membership";
 import { useNotInterestedMembership } from "@/hooks/not-interested/use-not-interested-membership";
 import { useWatchlistMembership } from "@/hooks/watchlist/use-watchlist-membership";
 import { releaseYear, truncate } from "@/lib/format";
 import { hapticDelete, hapticTap } from "@/lib/haptics";
-import { mediaDetailHref } from "@/lib/navigation";
+import { mediaDetailHref, type MediaRouteBase } from "@/lib/navigation";
 import { tmdbImageUrl, type TmdbMovieSummary } from "@/lib/tmdb";
 
 interface PosterCardProps {
   movie: TmdbMovieSummary;
   width: number;
   showMeta?: boolean;
+  base?: MediaRouteBase;
 }
 
-export function PosterCard({ movie, width, showMeta = true }: PosterCardProps) {
+export function PosterCard({ movie, width, showMeta = true, base = "discover" }: PosterCardProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const watchlist = useWatchlistMembership(movie.id, movie.media_type);
+  const likes = useLikesMembership(movie.id, movie.media_type);
   const notInterested = useNotInterestedMembership(movie.id, movie.media_type);
   const uri = tmdbImageUrl(
     movie.poster_path ?? movie.backdrop_path,
@@ -43,6 +46,9 @@ export function PosterCard({ movie, width, showMeta = true }: PosterCardProps) {
     if (id === "toggle-watchlist") {
       hapticTap();
       watchlist.toggle().catch(() => {});
+    } else if (id === "toggle-like") {
+      hapticTap();
+      likes.toggleLike().catch(() => {});
     } else if (id === "not-interested") {
       hapticDelete();
       notInterested.toggle().catch(() => {});
@@ -59,6 +65,11 @@ export function PosterCard({ movie, width, showMeta = true }: PosterCardProps) {
           image: watchlist.isInWatchlist ? "bookmark.slash.fill" : "bookmark",
         },
         {
+          id: "toggle-like",
+          title: likes.isLiked ? t("likes.unlike") : t("likes.like"),
+          image: likes.isLiked ? "heart.fill" : "heart",
+        },
+        {
           id: "not-interested",
           title: notInterested.isDismissed
             ? t("notInterested.undismiss")
@@ -68,7 +79,7 @@ export function PosterCard({ movie, width, showMeta = true }: PosterCardProps) {
         },
       ]}
       onPressAction={handleMenuAction}>
-      <Link href={mediaDetailHref(movie)} asChild>
+      <Link href={mediaDetailHref(movie, base)} asChild>
         <PressableScale onPress={handlePress} style={StyleSheet.flatten([styles.card, { width }])}>
           <Link.AppleZoom>
             <Image

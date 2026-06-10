@@ -19,6 +19,11 @@ export default function AppTabs() {
       tintColor={accentHex}
       screenListeners={{ tabPress: () => hapticSelection() }}
       minimizeBehavior="automatic">
+      <NativeTabs.Trigger name="home">
+        <NativeTabs.Trigger.Label hidden>{t("tabs.home")}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf={{ default: "sparkles", selected: "sparkles" }} />
+      </NativeTabs.Trigger>
+
       <NativeTabs.Trigger name="discover">
         <NativeTabs.Trigger.Label hidden>{t("tabs.discover")}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon

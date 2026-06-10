@@ -1,5 +1,5 @@
 import { Redirect } from "expo-router";
 
 export default function TabsIndexRoute() {
-  return <Redirect href="/discover" />;
+  return <Redirect href="/home" />;
 }
