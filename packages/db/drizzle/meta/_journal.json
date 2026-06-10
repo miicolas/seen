@@ -78,6 +78,13 @@
       "when": 1781024349341,
       "tag": "0011_small_lilith",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1781109633873,
+      "tag": "0012_dark_hobgoblin",
+      "breakpoints": true
     }
   ]
 }
