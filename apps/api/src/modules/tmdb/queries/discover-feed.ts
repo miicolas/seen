@@ -40,6 +40,7 @@ export async function discoverFeed(
           with_genres: genre.movieGenreId,
           sort_by: "popularity.desc",
           "vote_count.gte": 100,
+          "vote_average.gte": 5.5,
         })
       : none,
     series: wantTv
@@ -48,6 +49,7 @@ export async function discoverFeed(
           with_genres: genre.tvGenreId,
           sort_by: "popularity.desc",
           "vote_count.gte": 100,
+          "vote_average.gte": 5.5,
         })
       : none,
   }));

@@ -1,27 +1,48 @@
-import { redisDel, redisGetJson, redisSetJson } from "../../lib/redis";
+import { redisGetJson, redisIncr, redisSetJson } from "../../lib/redis";
 import type { FeedResponseDto } from "./model";
 
-// Serving cache for the hydrated feed response. Invalidated whenever a fresh
-// batch is stored (storeFeed), so a pull-to-refresh after a signal change sees
-// the recomputed feed. v1 doubles as a payload-shape escape hatch.
+// Serving cache for the hydrated feed response, keyed by a per-user generation
+// counter so storing a fresh batch (storeFeed) invalidates every cached
+// (region, salt) variant in O(1) — no key scans. The default salt ("0", sent by
+// clients that don't pull-to-refresh) keeps a long TTL; explicit refresh salts
+// only need to absorb double-pulls.
 const FEED_TTL_SECONDS = 6 * 3600;
+const SALTED_FEED_TTL_SECONDS = 20 * 60;
 
-function feedCacheKey(userId: string, region: string): string {
-  return `rec:feed:v1:${userId}:${region}`;
+export const DEFAULT_FEED_SALT = "0";
+
+function generationKey(userId: string): string {
+  return `rec:feed:gen:${userId}`;
 }
 
-export function getCachedFeed(userId: string, region: string): Promise<FeedResponseDto | null> {
-  return redisGetJson<FeedResponseDto>(feedCacheKey(userId, region));
+async function feedGeneration(userId: string): Promise<number> {
+  return (await redisGetJson<number>(generationKey(userId))) ?? 0;
+}
+
+export async function bumpFeedGeneration(userId: string): Promise<void> {
+  await redisIncr(generationKey(userId));
+}
+
+function feedCacheKey(generation: number, userId: string, region: string, salt: string): string {
+  return `rec:feed:v2:${generation}:${userId}:${region}:${salt}`;
+}
+
+export async function getCachedFeed(
+  userId: string,
+  region: string,
+  salt: string,
+): Promise<FeedResponseDto | null> {
+  const generation = await feedGeneration(userId);
+  return redisGetJson<FeedResponseDto>(feedCacheKey(generation, userId, region, salt));
 }
 
 export async function setCachedFeed(
   userId: string,
   region: string,
+  salt: string,
   feed: FeedResponseDto,
 ): Promise<void> {
-  await redisSetJson(feedCacheKey(userId, region), feed, FEED_TTL_SECONDS);
-}
-
-export async function invalidateCachedFeed(userId: string, region: string): Promise<void> {
-  await redisDel(feedCacheKey(userId, region));
+  const generation = await feedGeneration(userId);
+  const ttl = salt === DEFAULT_FEED_SALT ? FEED_TTL_SECONDS : SALTED_FEED_TTL_SECONDS;
+  await redisSetJson(feedCacheKey(generation, userId, region, salt), feed, ttl);
 }

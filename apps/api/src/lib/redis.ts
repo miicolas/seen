@@ -38,6 +38,10 @@ export async function redisSetJson(key: string, value: unknown, ttlSeconds: numb
   );
 }
 
+export async function redisIncr(key: string): Promise<number | null> {
+  return safeRedis(() => redis!.incr(key), null);
+}
+
 export async function redisDel(key: string): Promise<void> {
   await safeRedis(() => redis!.del(key).then(() => undefined), undefined);
 }

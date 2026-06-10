@@ -25,7 +25,8 @@ export const recommendationsController = new Elysia({
   )
   .get(
     "/feed",
-    ({ user, query }) => getRecommendationFeed(user.id, query.region ?? DEFAULT_REGION),
+    ({ user, query }) =>
+      getRecommendationFeed(user.id, query.region ?? DEFAULT_REGION, query.refresh),
     {
       auth: true,
       query: "recommendations.FeedQuery",

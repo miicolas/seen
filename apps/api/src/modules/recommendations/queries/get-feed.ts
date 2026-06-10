@@ -7,51 +7,49 @@ import { mediaKey } from "../../similarity/shared";
 import { movieRowToSummary } from "./movie-row";
 import type { RecommendationSource } from "../../events/shared";
 import type { FeedResponseDto, FeedSectionDto } from "../model";
-import { getCachedFeed, setCachedFeed } from "../cache";
+import { DEFAULT_FEED_SALT, getCachedFeed, setCachedFeed } from "../cache";
+import { passesQualityGate } from "../quality-gate";
+import type { ScoreComponents } from "../scoring";
 import { storeFeed } from "../mutations/store-feed";
-import { computeUserFeed, type FeedSectionKey } from "./compute-feed";
+import { computeUserFeed } from "./compute-feed";
+import { sectionizePool } from "./sectionize-pool";
 import { getProvidersForCandidates, getUserPlatformIds } from "./candidate-providers";
-
-// Display order and the source the client credits for impressions per shelf.
-const SECTIONS: { key: FeedSectionKey; source: RecommendationSource }[] = [
-  { key: "today", source: "content" },
-  { key: "because_you_rated", source: "content" },
-  { key: "trending", source: "trending" },
-  { key: "available_tonight", source: "availability" },
-  { key: "discovery", source: "content" },
-];
 
 type StoredEntry = typeof feedEntries.$inferSelect;
 
-// Serve the precomputed feed: Redis response cache → stored feed_entries batch
-// → inline compute (brand-new user or region switch). The inline path stores
-// its result so only the first request pays for it.
+// Serve the precomputed feed: Redis response cache → stored candidate pool
+// sliced into sections with the request's refresh salt → inline compute
+// (brand-new user, region switch, or legacy sectionized batch). The inline path
+// stores its result so only the first request pays for it. A new salt (every
+// pull-to-refresh) resamples the same pool into a visibly different feed.
 export async function getRecommendationFeed(
   userId: string,
   region: string,
+  salt = DEFAULT_FEED_SALT,
 ): Promise<FeedResponseDto> {
-  const cached = await getCachedFeed(userId, region);
+  const cached = await getCachedFeed(userId, region, salt);
   if (cached) return cached;
 
-  let rows = await getStoredEntries(userId, region);
+  let rows = await getStoredPool(userId, region);
   let coldStart = false;
   if (rows === null) {
     const computed = await computeUserFeed(userId, region);
     await storeFeed(userId, region, computed);
     coldStart = computed.coldStart;
-    rows = await getStoredEntries(userId, region);
+    rows = await getStoredPool(userId, region);
   } else {
     coldStart = !rows.some((row) => row.source === "content" || row.source === "collaborative");
   }
 
-  const response = await hydrate(userId, region, rows ?? [], coldStart);
-  await setCachedFeed(userId, region, response);
+  const response = await hydrate(userId, region, salt, rows ?? [], coldStart);
+  await setCachedFeed(userId, region, salt, response);
   return response;
 }
 
-// The stored batch, or null when there is none for this user+region (a region
-// switch invalidates the previous batch — the feed is availability-aware).
-async function getStoredEntries(userId: string, region: string): Promise<StoredEntry[] | null> {
+// The stored pool, or null when there is none for this user+region (a region
+// switch invalidates the previous batch — the feed is availability-aware — and
+// a pre-pool sectionized batch is recomputed on first read).
+async function getStoredPool(userId: string, region: string): Promise<StoredEntry[] | null> {
   const rows = await db
     .select()
     .from(feedEntries)
@@ -59,12 +57,15 @@ async function getStoredEntries(userId: string, region: string): Promise<StoredE
     .orderBy(desc(feedEntries.computedAt), feedEntries.rank);
   if (rows.length === 0) return null;
   if (rows[0].region !== region) return null;
-  return rows;
+  const pool = rows.filter((row) => row.section === "pool");
+  if (pool.length === 0) return null;
+  return pool;
 }
 
 async function hydrate(
   userId: string,
   region: string,
+  salt: string,
   rows: StoredEntry[],
   coldStart: boolean,
 ): Promise<FeedResponseDto> {
@@ -79,13 +80,19 @@ async function hydrate(
   const moviesByKey = new Map(movieRows.map((row) => [mediaKey(row.tmdbId, row.mediaType), row]));
   const platformIds = new Set(userPlatformIds);
 
-  const sections: FeedSectionDto[] = [];
-  for (const { key, source } of SECTIONS) {
-    const sectionRows = rows.filter((row) => row.section === key).sort((a, b) => a.rank - b.rank);
-    if (sectionRows.length === 0) continue;
+  // Belt-and-braces: re-apply the quality gate at serve time so a stored batch
+  // can never surface unreleased/unrated titles.
+  const pool = rows
+    .filter((row) => {
+      const movie = moviesByKey.get(mediaKey(row.tmdbId, row.mediaType));
+      return movie !== undefined && passesQualityGate(movie);
+    })
+    .map((row) => ({ ...row, components: (row.components ?? null) as ScoreComponents | null }));
 
+  const sections: FeedSectionDto[] = [];
+  for (const section of sectionizePool(pool, `${userId}:${region}:${salt}`)) {
     const entries = [];
-    for (const row of sectionRows) {
+    for (const row of section.rows) {
       const movie = moviesByKey.get(mediaKey(row.tmdbId, row.mediaType));
       if (!movie) continue;
       const providers = (providersByKey.get(mediaKey(row.tmdbId, row.mediaType)) ?? []).filter(
@@ -101,9 +108,9 @@ async function hydrate(
     if (entries.length === 0) continue;
 
     sections.push({
-      key,
-      source,
-      anchorTitle: sectionRows[0].anchorTitle,
+      key: section.key,
+      source: section.source,
+      anchorTitle: section.anchorTitle,
       entries,
     });
   }

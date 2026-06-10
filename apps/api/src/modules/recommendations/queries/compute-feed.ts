@@ -9,42 +9,53 @@ import { getMediaDetail } from "../../tmdb/queries/media-detail";
 import type { MediaType } from "../../tmdb";
 import type { RecommendationSource } from "../../events/shared";
 import { hashSeed, rerank } from "../rerank";
+import { passesQualityGate } from "../quality-gate";
 import {
+  clamp01,
+  normalizeWeights,
   noveltyScore,
+  qualityScore,
   scoreCandidate,
   trendingRankScore,
   type ScoreComponents,
   type ScoredCandidate,
+  type SignalKey,
 } from "../scoring";
+import { getAnchorExpansionCandidates } from "./get-anchor-expansion-candidates";
 import { getCollaborativeCandidates } from "./get-collaborative-candidates";
+import { getImpressionFatigue } from "./get-impression-fatigue";
 import { getProvidersForCandidates, getUserPlatformIds } from "./candidate-providers";
+import { getQualityTopUp } from "./get-quality-top-up";
 import { computeFriendSignals, getFolloweeIds } from "./friend-signal";
 
 // Cap on how many vector-less titles we warm per compute; they join the pool on
 // the next recompute once their detail (and feature row) lands.
-const MAX_WARM_PER_COMPUTE = 16;
-const RERANK_LIMIT = 60;
+const MAX_WARM_PER_COMPUTE = 24;
+const CONTENT_CANDIDATE_LIMIT = 120;
+// The persisted pool the serving layer slices into sections per request.
+const POOL_LIMIT = 200;
+// Below this many merged candidates, fill from the TMDB quality catalog so a
+// sparse account (few ratings, no neighbors, no follows) still gets a full feed.
+const TOP_UP_THRESHOLD = 160;
 const FRIEND_SIGNAL_SATURATION = 3;
-const DISCOVERY_NOVELTY_MIN = 0.7;
-
-const SECTION_SIZES = {
-  today: 12,
-  because_you_rated: 10,
-  trending: 10,
-  available_tonight: 10,
-  discovery: 6,
-} as const;
-
-export type FeedSectionKey = keyof typeof SECTION_SIZES;
+// Multiplicative penalty for titles shown repeatedly without engagement.
+const FATIGUE_PENALTY = 0.45;
 
 export type FeedEntryDraft = {
-  section: FeedSectionKey;
   tmdbId: number;
   mediaType: MediaType;
   source: RecommendationSource;
   score: number;
   rank: number;
+  components: ScoreComponents;
+  anchorTmdbId: number | null;
+  anchorMediaType: MediaType | null;
   anchorTitle: string | null;
+  primaryGenreId: number | null;
+  directorKey: string | null;
+  popularity: number | null;
+  voteAverage: number | null;
+  voteCount: number | null;
 };
 
 export type ComputedFeed = {
@@ -60,22 +71,30 @@ type Accumulator = {
   reason: CandidateReason | null;
 };
 
-function clamp01(value: number): number {
-  return Math.min(1, Math.max(0, value));
-}
-
 // Gather candidates from every source, merge per title, score with the weighted
-// mix, re-rank for diversity, and slice into the five feed sections. Pure
-// orchestration — persistence is the caller's concern (store-feed / serving).
+// mix (renormalized over the signals this user actually has), apply impression
+// fatigue, and re-rank for diversity into one large pool. Sectionizing happens
+// at serving time (sectionize-pool) so each refresh can resample; persistence
+// is the caller's concern (store-feed / serving).
 export async function computeUserFeed(userId: string, region: string): Promise<ComputedFeed> {
-  const [contentCandidates, collaborativeCandidates, trendingList, userPlatformIds, followeeIds] =
-    await Promise.all([
-      getContentCandidates(userId, { limit: 50 }),
-      getCollaborativeCandidates(userId),
-      trending("all", "week"),
-      getUserPlatformIds(userId, region),
-      getFolloweeIds(userId),
-    ]);
+  const daySeed = hashSeed(`${userId}:${region}:${new Date().toISOString().slice(0, 10)}`);
+  const [
+    contentCandidates,
+    collaborativeCandidates,
+    expansionCandidates,
+    trendingList,
+    userPlatformIds,
+    followeeIds,
+    fatigueByKey,
+  ] = await Promise.all([
+    getContentCandidates(userId, { limit: CONTENT_CANDIDATE_LIMIT }),
+    getCollaborativeCandidates(userId),
+    getAnchorExpansionCandidates(userId),
+    trending("all", "week"),
+    getUserPlatformIds(userId, region),
+    getFolloweeIds(userId),
+    getImpressionFatigue(userId),
+  ]);
 
   const pool = new Map<string, Accumulator>();
   const accumulate = (
@@ -95,6 +114,17 @@ export async function computeUserFeed(userId: string, region: string): Promise<C
     if (!entry.reason && reason) entry.reason = reason;
   };
 
+  // Expansion first: its anchor reasons win the per-title slot, which keeps
+  // "Because you rated X" rows well-stocked.
+  for (const candidate of expansionCandidates) {
+    accumulate(
+      candidate.tmdbId,
+      candidate.mediaType,
+      "content",
+      { content: clamp01(candidate.score * 0.5) },
+      candidate.reason,
+    );
+  }
   for (const candidate of contentCandidates) {
     accumulate(
       candidate.tmdbId,
@@ -114,6 +144,14 @@ export async function computeUserFeed(userId: string, region: string): Promise<C
       trendingGlobal: trendingRankScore(index, trendingList.length),
     });
   });
+  if (pool.size < TOP_UP_THRESHOLD) {
+    // Sparse account: backfill with widely-seen, well-rated catalog titles so
+    // the pool (and every section sliced from it) stays full.
+    const topUp = await getQualityTopUp(daySeed);
+    for (const summary of topUp) {
+      accumulate(summary.id, summary.media_type, "trending", {});
+    }
+  }
 
   const refs = [...pool.values()];
   if (refs.length === 0) return { entries: [], coldStart: true };
@@ -142,6 +180,9 @@ export async function computeUserFeed(userId: string, region: string): Promise<C
           mediaType: moviesTable.mediaType,
           genres: moviesTable.genres,
           popularity: moviesTable.popularity,
+          voteAverage: moviesTable.voteAverage,
+          voteCount: moviesTable.voteCount,
+          releaseDate: moviesTable.releaseDate,
         })
         .from(moviesTable)
         .where(inArray(moviesTable.tmdbId, tmdbIds)),
@@ -169,6 +210,15 @@ export async function computeUserFeed(userId: string, region: string): Promise<C
     if (director?.token) directorByKey.set(mediaKey(row.tmdbId, row.mediaType), director.token);
   }
 
+  // Renormalize weights over the signals this user can produce, so a sparse
+  // account isn't penalized for having no neighbors or followed profiles.
+  const activeSignals: SignalKey[] = ["quality", "availability", "novelty", "trendingGlobal"];
+  if (contentCandidates.length > 0 || expansionCandidates.length > 0)
+    activeSignals.push("content");
+  if (collaborativeCandidates.length > 0) activeSignals.push("collaborative");
+  if (followeeIds.length > 0) activeSignals.push("trendingBubble");
+  const weights = normalizeWeights(activeSignals);
+
   const platformIds = new Set(userPlatformIds);
   const scored: ScoredCandidate[] = [];
   let warmed = 0;
@@ -185,6 +235,8 @@ export async function computeUserFeed(userId: string, region: string): Promise<C
       }
       continue;
     }
+    // Never recommend unreleased, unrated, or barely-rated titles.
+    if (!passesQualityGate(movie)) continue;
 
     const available = (providersByKey.get(key) ?? []).some((provider) =>
       platformIds.has(provider.providerId),
@@ -194,88 +246,49 @@ export async function computeUserFeed(userId: string, region: string): Promise<C
       ...ref.components,
       availability: available ? 1 : 0,
       novelty: noveltyScore(movie.popularity),
+      quality: qualityScore(movie.voteAverage, movie.voteCount),
     };
     if (friendSignal) {
       components.trendingBubble = clamp01(friendSignal.count / FRIEND_SIGNAL_SATURATION);
     }
+    const fatigue = fatigueByKey.get(key) ?? 0;
+    if (fatigue > 0) components.fatigue = fatigue;
 
     const genres = Array.isArray(movie.genres) ? (movie.genres as number[]) : [];
     scored.push({
       tmdbId: ref.tmdbId,
       mediaType: ref.mediaType,
-      finalScore: scoreCandidate(components),
+      finalScore: scoreCandidate(components, weights) * (1 - FATIGUE_PENALTY * fatigue),
       components,
       source: ref.source,
       reason: ref.reason,
       primaryGenreId: genres[0] ?? null,
       directorKey: directorByKey.get(key) ?? null,
       popularity: movie.popularity,
+      voteAverage: movie.voteAverage,
+      voteCount: movie.voteCount,
     });
   }
 
-  const ranked = rerank(scored, { seed: hashSeed(`${userId}:${region}`), limit: RERANK_LIMIT });
+  const ranked = rerank(scored, { seed: daySeed, limit: POOL_LIMIT });
   const coldStart = contentCandidates.length === 0 && collaborativeCandidates.length === 0;
-  return { entries: sectionize(ranked, scored), coldStart };
-}
-
-function toDrafts(
-  section: FeedSectionKey,
-  candidates: ScoredCandidate[],
-  anchorTitle: string | null = null,
-): FeedEntryDraft[] {
-  return candidates.slice(0, SECTION_SIZES[section]).map((candidate, index) => ({
-    section,
-    tmdbId: candidate.tmdbId,
-    mediaType: candidate.mediaType,
-    source: candidate.source,
-    score: candidate.finalScore,
-    rank: index,
-    anchorTitle,
-  }));
-}
-
-function sectionize(ranked: ScoredCandidate[], scored: ScoredCandidate[]): FeedEntryDraft[] {
-  const drafts = [...toDrafts("today", ranked)];
-
-  // "Because you rated X": the anchor backing the most content candidates.
-  const byAnchor = new Map<string, { title: string; candidates: ScoredCandidate[] }>();
-  for (const candidate of scored) {
-    const anchor = candidate.reason;
-    if (!anchor?.anchorTitle) continue;
-    const key = mediaKey(anchor.anchorTmdbId, anchor.anchorMediaType);
-    let group = byAnchor.get(key);
-    if (!group) {
-      group = { title: anchor.anchorTitle, candidates: [] };
-      byAnchor.set(key, group);
-    }
-    group.candidates.push(candidate);
-  }
-  const modalAnchor = [...byAnchor.values()].sort(
-    (a, b) => b.candidates.length - a.candidates.length,
-  )[0];
-  if (modalAnchor) {
-    drafts.push(
-      ...toDrafts(
-        "because_you_rated",
-        modalAnchor.candidates.sort((a, b) => b.finalScore - a.finalScore),
-        modalAnchor.title,
-      ),
-    );
-  }
-
-  drafts.push(
-    ...toDrafts(
-      "trending",
-      ranked.filter((candidate) => candidate.components.trendingGlobal !== undefined),
-    ),
-    ...toDrafts(
-      "available_tonight",
-      ranked.filter((candidate) => candidate.components.availability === 1),
-    ),
-    ...toDrafts(
-      "discovery",
-      ranked.filter((candidate) => noveltyScore(candidate.popularity) >= DISCOVERY_NOVELTY_MIN),
-    ),
-  );
-  return drafts;
+  return {
+    entries: ranked.map((candidate, index) => ({
+      tmdbId: candidate.tmdbId,
+      mediaType: candidate.mediaType,
+      source: candidate.source,
+      score: candidate.finalScore,
+      rank: index,
+      components: candidate.components,
+      anchorTmdbId: candidate.reason?.anchorTmdbId ?? null,
+      anchorMediaType: candidate.reason?.anchorMediaType ?? null,
+      anchorTitle: candidate.reason?.anchorTitle ?? null,
+      primaryGenreId: candidate.primaryGenreId,
+      directorKey: candidate.directorKey,
+      popularity: candidate.popularity,
+      voteAverage: candidate.voteAverage,
+      voteCount: candidate.voteCount,
+    })),
+    coldStart,
+  };
 }

@@ -42,7 +42,9 @@ const feedSectionKey = t.Union([
   t.Literal("today"),
   t.Literal("because_you_rated"),
   t.Literal("trending"),
+  t.Literal("acclaimed"),
   t.Literal("available_tonight"),
+  t.Literal("hidden_gems"),
   t.Literal("discovery"),
 ]);
 
@@ -85,6 +87,9 @@ export const RecommendationsModel = new Elysia({ name: "Recommendations.Model" }
   "recommendations.AvailableEntry": availableEntry,
   "recommendations.FeedQuery": t.Object({
     region: t.Optional(t.String({ minLength: 2, maxLength: 4 })),
+    // Refresh salt: a new value resamples the candidate pool into different
+    // sections (pull-to-refresh). Omitted → stable default feed.
+    refresh: t.Optional(t.String({ minLength: 1, maxLength: 32 })),
   }),
   "recommendations.FeedResponse": feedResponse,
 });

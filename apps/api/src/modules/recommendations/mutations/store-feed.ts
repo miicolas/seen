@@ -2,12 +2,13 @@ import { db } from "@seen/db";
 import { feedEntries } from "@seen/db/schema";
 import { eq } from "@seen/db/orm";
 
-import { invalidateCachedFeed } from "../cache";
+import { bumpFeedGeneration } from "../cache";
 import type { ComputedFeed } from "../queries/compute-feed";
 
-// Replace a user's precomputed feed with a fresh batch. The whole feed is one
-// batch (single computed_at), so serving never mixes two computes; the response
-// cache is invalidated so the next GET hydrates the new batch.
+// Replace a user's precomputed candidate pool with a fresh batch. The whole
+// pool is one batch (single computed_at), so serving never mixes two computes;
+// bumping the feed generation orphans every cached (region, salt) response so
+// the next GET hydrates the new batch.
 export async function storeFeed(
   userId: string,
   region: string,
@@ -20,17 +21,25 @@ export async function storeFeed(
     await tx.insert(feedEntries).values(
       computed.entries.map((entry) => ({
         userId,
-        section: entry.section,
+        section: "pool",
         tmdbId: entry.tmdbId,
         mediaType: entry.mediaType,
         source: entry.source,
         score: entry.score,
         rank: entry.rank,
+        components: entry.components,
+        anchorTmdbId: entry.anchorTmdbId,
+        anchorMediaType: entry.anchorMediaType,
         anchorTitle: entry.anchorTitle,
+        primaryGenreId: entry.primaryGenreId,
+        directorKey: entry.directorKey,
+        popularity: entry.popularity,
+        voteAverage: entry.voteAverage,
+        voteCount: entry.voteCount,
         region,
         computedAt,
       })),
     );
   });
-  await invalidateCachedFeed(userId, region);
+  await bumpFeedGeneration(userId);
 }
