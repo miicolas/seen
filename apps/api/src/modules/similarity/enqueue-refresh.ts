@@ -1,4 +1,5 @@
 import { maybeTrigger } from "../../lib/trigger";
+import { refreshUserFeed } from "../recommendations/refresh-user-feed";
 import { ENCODER_VERSION } from "./encoder";
 import { rebuildMediaFeature, rebuildUserTaste } from "./mutations";
 import type { MediaRef } from "./shared";
@@ -43,6 +44,23 @@ export function enqueueSimilarityRefresh(
         delay: "1m",
       },
     );
-    if (!enqueued) runInline("taste rebuild", rebuildUserTaste(userId));
+    if (enqueued) {
+      // The feed recompute trails the taste rebuild (2m vs 1m) so it ranks
+      // against the fresh vector; same bucketing collapses action bursts.
+      maybeTrigger(
+        "compute-user-feed",
+        { userId },
+        {
+          idempotencyKey: `feed:${userId}:${bucket}`,
+          idempotencyKeyTTL: "10m",
+          delay: "2m",
+        },
+      );
+    } else {
+      runInline(
+        "taste + feed rebuild",
+        rebuildUserTaste(userId).then(() => refreshUserFeed(userId)),
+      );
+    }
   }
 }

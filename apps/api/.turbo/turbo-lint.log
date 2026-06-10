@@ -1,2 +1,1 @@
-
-[0m[2m[35m$[0m [2m[1meslint src --max-warnings=0[0m
+$ eslint src --max-warnings=0

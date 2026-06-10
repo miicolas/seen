@@ -1,21 +1,15 @@
-import { asMediaType } from "@seen/shared";
 import { db } from "@seen/db";
-import {
-  mediaProviders,
-  movies as moviesTable,
-  providers as providersTable,
-  userPlatforms,
-  watchlist,
-} from "@seen/db/schema";
+import { movies as moviesTable, watchlist } from "@seen/db/schema";
 import { and, eq, inArray } from "@seen/db/orm";
 
-import { byDisplayPriority } from "../../../lib/sort";
 import { normalizeSummary } from "../../tmdb/normalize";
 import { trending } from "../../tmdb/summaries";
 import { getMediaDetail } from "../../tmdb/queries/media-detail";
 import type { MediaFilter, TmdbMovieSummary } from "../../tmdb";
 import type { AvailableEntryDto } from "../model";
+import { getProvidersForCandidates, getUserPlatformIds } from "./candidate-providers";
 import { computeFriendSignals, getFolloweeIds } from "./friend-signal";
+import { movieRowToSummary } from "./movie-row";
 
 // Cap on how many cache-cold titles we warm per request, so a fresh feed
 // populates itself over a few loads without fanning out to TMDB unbounded.
@@ -28,14 +22,6 @@ type Candidate = {
   summary: TmdbMovieSummary;
   runtime: number | null;
 };
-
-async function getUserPlatformIds(userId: string, region: string): Promise<number[]> {
-  const rows = await db
-    .select({ providerId: userPlatforms.providerId })
-    .from(userPlatforms)
-    .where(and(eq(userPlatforms.userId, userId), eq(userPlatforms.region, region)));
-  return rows.map((row) => row.providerId);
-}
 
 async function getWatchlistCandidates(userId: string, filter: MediaFilter): Promise<Candidate[]> {
   const where = and(
@@ -53,21 +39,7 @@ async function getWatchlistCandidates(userId: string, filter: MediaFilter): Prom
     .where(where);
 
   return rows.map(({ media }) => ({
-    summary: {
-      id: media.tmdbId,
-      media_type: asMediaType(media.mediaType),
-      title: media.title ?? undefined,
-      original_title: media.originalTitle ?? undefined,
-      overview: media.overview ?? undefined,
-      release_date: media.releaseDate ?? undefined,
-      runtime: media.runtime ?? null,
-      poster_path: media.posterPath ?? null,
-      backdrop_path: media.backdropPath ?? null,
-      vote_average: media.voteAverage ?? undefined,
-      vote_count: media.voteCount ?? undefined,
-      popularity: media.popularity ?? undefined,
-      genre_ids: Array.isArray(media.genres) ? (media.genres as number[]) : undefined,
-    },
+    summary: movieRowToSummary(media),
     runtime: media.runtime ?? null,
   }));
 }
@@ -131,62 +103,6 @@ function dedup(candidates: Candidate[]): Candidate[] {
   return out;
 }
 
-async function getProvidersForCandidates(
-  candidates: Candidate[],
-  region: string,
-): Promise<Map<string, { providerId: number; name: string; logoPath: string | null }[]>> {
-  if (candidates.length === 0) return new Map();
-  const ids = candidates.map((candidate) => candidate.summary.id);
-  const rows = await db
-    .select({
-      tmdbId: mediaProviders.tmdbId,
-      mediaType: mediaProviders.mediaType,
-      providerId: mediaProviders.providerId,
-      offerType: mediaProviders.offerType,
-      displayPriority: providersTable.displayPriority,
-      name: providersTable.name,
-      logoPath: providersTable.logoPath,
-    })
-    .from(mediaProviders)
-    .innerJoin(providersTable, eq(providersTable.providerId, mediaProviders.providerId))
-    .where(
-      and(
-        inArray(mediaProviders.tmdbId, ids),
-        eq(mediaProviders.region, region),
-        eq(mediaProviders.offerType, "flatrate"),
-      ),
-    );
-
-  const grouped = new Map<
-    string,
-    { providerId: number; name: string; logoPath: string | null; displayPriority: number | null }[]
-  >();
-
-  for (const row of rows) {
-    const key = `${row.mediaType}:${row.tmdbId}`;
-    const entry = {
-      providerId: row.providerId,
-      name: row.name,
-      logoPath: row.logoPath ?? null,
-      displayPriority: row.displayPriority,
-    };
-    const list = grouped.get(key);
-    if (list) list.push(entry);
-    else grouped.set(key, [entry]);
-  }
-
-  const byKey = new Map<string, { providerId: number; name: string; logoPath: string | null }[]>();
-  for (const [key, list] of grouped) {
-    byKey.set(
-      key,
-      list
-        .sort(byDisplayPriority)
-        .map(({ providerId, name, logoPath }) => ({ providerId, name, logoPath })),
-    );
-  }
-  return byKey;
-}
-
 function passesShortFilter(candidate: Candidate): boolean {
   if (candidate.summary.media_type === "movie") {
     return candidate.runtime !== null && candidate.runtime <= SHORT_MOVIE_RUNTIME_MAX;
@@ -215,7 +131,13 @@ export async function getAvailableFeed(
   // Runtime back-fill and the provider lookup are independent reads.
   const [, providersByKey] = await Promise.all([
     fillRuntimes(candidates),
-    getProvidersForCandidates(candidates, region),
+    getProvidersForCandidates(
+      candidates.map((candidate) => ({
+        tmdbId: candidate.summary.id,
+        mediaType: candidate.summary.media_type,
+      })),
+      region,
+    ),
   ]);
   warmMissingProviders(candidates, providersByKey);
 

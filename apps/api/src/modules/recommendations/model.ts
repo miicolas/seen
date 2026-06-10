@@ -38,6 +38,44 @@ const availableEntry = t.Composite([
   }),
 ]);
 
+const feedSectionKey = t.Union([
+  t.Literal("today"),
+  t.Literal("because_you_rated"),
+  t.Literal("trending"),
+  t.Literal("available_tonight"),
+  t.Literal("discovery"),
+]);
+
+const recommendationSource = t.Union([
+  t.Literal("content"),
+  t.Literal("collaborative"),
+  t.Literal("trending"),
+  t.Literal("availability"),
+  t.Literal("social"),
+]);
+
+const feedEntry = t.Composite([
+  summary,
+  t.Object({
+    source: recommendationSource,
+    providers: t.Array(providerRef),
+  }),
+]);
+
+const feedSection = t.Object({
+  key: feedSectionKey,
+  // Which source the client credits for impressions in this shelf.
+  source: recommendationSource,
+  anchorTitle: t.Nullable(t.String()),
+  entries: t.Array(feedEntry),
+});
+
+const feedResponse = t.Object({
+  sections: t.Array(feedSection),
+  coldStart: t.Boolean(),
+  computedAt: t.Nullable(t.String()),
+});
+
 export const RecommendationsModel = new Elysia({ name: "Recommendations.Model" }).model({
   "recommendations.AvailableQuery": t.Object({
     region: t.Optional(t.String({ minLength: 2, maxLength: 4 })),
@@ -45,6 +83,13 @@ export const RecommendationsModel = new Elysia({ name: "Recommendations.Model" }
   }),
   "recommendations.AvailableList": t.Array(availableEntry),
   "recommendations.AvailableEntry": availableEntry,
+  "recommendations.FeedQuery": t.Object({
+    region: t.Optional(t.String({ minLength: 2, maxLength: 4 })),
+  }),
+  "recommendations.FeedResponse": feedResponse,
 });
 
 export type AvailableEntryDto = Static<typeof availableEntry>;
+export type FeedEntryDto = Static<typeof feedEntry>;
+export type FeedSectionDto = Static<typeof feedSection>;
+export type FeedResponseDto = Static<typeof feedResponse>;
