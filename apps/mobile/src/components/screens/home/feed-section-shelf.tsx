@@ -24,7 +24,9 @@ export function FeedSectionShelf({ section }: { section: FeedSection }) {
       title: section.anchorTitle ?? "",
     }),
     trending: t("home.sections.trending"),
+    acclaimed: t("home.sections.acclaimed"),
     available_tonight: t("home.sections.availableTonight"),
+    hidden_gems: t("home.sections.hiddenGems"),
     discovery: t("home.sections.discovery"),
   };
 

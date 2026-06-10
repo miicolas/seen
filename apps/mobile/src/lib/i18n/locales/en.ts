@@ -8,7 +8,9 @@ export const en = {
       todayEyebrow: "Picked for you",
       becauseYouRated: "Because you rated {{title}}",
       trending: "Trending",
+      acclaimed: "Critically acclaimed",
       availableTonight: "Available tonight",
+      hiddenGems: "Hidden gems",
       discovery: "A discovery",
     },
     empty: {

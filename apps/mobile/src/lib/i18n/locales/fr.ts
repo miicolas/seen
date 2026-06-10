@@ -10,7 +10,9 @@ export const fr: typeof en = {
       todayEyebrow: "Choisi pour toi",
       becauseYouRated: "Parce que tu as noté {{title}}",
       trending: "Tendances",
+      acclaimed: "Acclamés par le public",
       availableTonight: "Dispo ce soir",
+      hiddenGems: "Pépites méconnues",
       discovery: "Une découverte",
     },
     empty: {

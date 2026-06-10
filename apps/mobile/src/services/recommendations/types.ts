@@ -14,4 +14,6 @@ export type AvailableFeedQuery = {
 
 export type FeedQuery = {
   region: string;
+  // Refresh salt: a new value makes the server resample the feed sections.
+  refresh?: string;
 };

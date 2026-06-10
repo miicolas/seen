@@ -85,12 +85,15 @@ export function Home() {
       refreshControl={
         <RefreshControl
           refreshing={feed.isRefetching}
-          onRefresh={feed.refetch}
+          onRefresh={feed.refresh}
           tintColor={accentHex}
         />
       }>
       {sections.map((section) => (
-        <FeedSectionShelf key={section.key} section={section} />
+        <FeedSectionShelf
+          key={`${section.key}-${section.anchorTitle ?? ""}`}
+          section={section}
+        />
       ))}
     </ScrollView>
   );
