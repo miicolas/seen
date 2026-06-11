@@ -7,6 +7,7 @@ import { FONT_SIZE, SPACING } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
 
 interface QuickConnectSectionProps {
+  mode: "onboarding" | "settings";
   username: ObservableText;
   isImporting: boolean;
   canImport: boolean;
@@ -14,9 +15,10 @@ interface QuickConnectSectionProps {
   onImport: () => void;
 }
 
-// First section — also carries the screen hero (title + subtitle) in its header so
-// it renders natively for both the onboarding (full-screen) and settings (formSheet) modes.
+// First section. In settings mode its header also carries the screen title + subtitle;
+// in onboarding mode the RN hero above the form owns them, so only the section label stays.
 export function QuickConnectSection({
+  mode,
   username,
   isImporting,
   canImport,
@@ -33,21 +35,26 @@ export function QuickConnectSection({
           alignment="leading"
           spacing={SPACING.XS}
           modifiers={[padding({ bottom: SPACING.SM })]}>
-          <Text
-            modifiers={[
-              font({ size: FONT_SIZE.TITLE, weight: "bold" }),
-              foregroundStyle(theme.text),
-            ]}>
-            {t("import.title")}
-          </Text>
-          <Text modifiers={[font({ size: FONT_SIZE.MD }), foregroundStyle(theme.textSecondary)]}>
-            {t("import.subtitle")}
-          </Text>
+          {mode === "settings" ? (
+            <>
+              <Text
+                modifiers={[
+                  font({ size: FONT_SIZE.TITLE, weight: "bold" }),
+                  foregroundStyle(theme.text),
+                ]}>
+                {t("import.title")}
+              </Text>
+              <Text
+                modifiers={[font({ size: FONT_SIZE.MD }), foregroundStyle(theme.textSecondary)]}>
+                {t("import.subtitle")}
+              </Text>
+            </>
+          ) : null}
           <Text
             modifiers={[
               font({ size: FONT_SIZE.SM, weight: "semibold" }),
               foregroundStyle(theme.textSecondary),
-              padding({ top: SPACING.SM }),
+              ...(mode === "settings" ? [padding({ top: SPACING.SM })] : []),
             ]}>
             {t("import.quickTitle")}
           </Text>

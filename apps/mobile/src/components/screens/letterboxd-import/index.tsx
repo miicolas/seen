@@ -3,8 +3,12 @@ import { tint } from "@expo/ui/swift-ui/modifiers";
 import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Linking } from "react-native";
+import { Linking, PlatformColor, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { Button as RNButton } from "@/components/ui/button/button";
+import { GlassButton } from "@/components/ui/button/glass-button";
+import { SPACING } from "@/constants/design-tokens";
 import { useAccentColor } from "@/hooks/use-accent-color";
 import { useTheme } from "@/hooks/use-theme";
 import { useLetterboxdImport } from "@/hooks/import/use-letterboxd-import";
@@ -13,6 +17,7 @@ import type { ImportSummary, TmdbCandidate, UnmatchedRow } from "@/services/impo
 import { useOnboardingStore } from "@/store/use-onboarding-store";
 
 import { FullHistorySection } from "./full-history-section";
+import { ImportHero } from "./import-hero";
 import { QuickConnectSection } from "./quick-connect-section";
 import { UnmatchedSection } from "./unmatched-section";
 
@@ -35,6 +40,7 @@ export function LetterboxdImport({ mode }: LetterboxdImportProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { accentHex } = useAccentColor();
   const markImportSkipped = useOnboardingStore((state) => state.markLetterboxdImportSkippedAction);
   const markImportCompleted = useOnboardingStore(
@@ -110,14 +116,17 @@ export function LetterboxdImport({ mode }: LetterboxdImportProps) {
       : t("import.summaryNoUnmatched", { imported: summary.imported })
     : null;
 
-  return (
+  const isOnboarding = mode === "onboarding";
+
+  const form = (
     <Host
       matchContents={false}
       ignoreSafeArea="keyboard"
       useViewportSizeMeasurement
-      style={{ flex: 1 }}>
+      style={styles.form}>
       <Form modifiers={[tint(accentHex)]}>
         <QuickConnectSection
+          mode={mode}
           username={usernameState}
           isImporting={isImporting}
           canImport={hasUsername}
@@ -149,20 +158,49 @@ export function LetterboxdImport({ mode }: LetterboxdImportProps) {
           onSkip={handleSkipRow}
         />
 
-        <Section>
-          <Button
-            label={mode === "onboarding" ? t("import.done") : t("import.close")}
-            onPress={finish}
-          />
-          {mode === "onboarding" ? (
-            <Button
-              label={t("import.skipAll")}
-              onPress={finish}
-              modifiers={[tint(theme.textSecondary)]}
-            />
-          ) : null}
-        </Section>
+        {!isOnboarding ? (
+          <Section>
+            <Button label={t("import.close")} onPress={finish} />
+          </Section>
+        ) : null}
       </Form>
     </Host>
   );
+
+  if (!isOnboarding) return form;
+
+  return (
+    <View style={styles.container}>
+      <View style={{ paddingTop: insets.top + SPACING.LG }}>
+        <ImportHero />
+      </View>
+      {form}
+      <View style={[styles.footer, { paddingBottom: insets.bottom + SPACING.MD }]}>
+        <GlassButton title={t("import.done")} width="fill" onPress={finish} haptic={false} />
+        <RNButton
+          title={t("import.skipAll")}
+          variant="link"
+          width="fill"
+          onPress={finish}
+          haptic={false}
+        />
+      </View>
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    // Matches the SwiftUI Form's grouped background so the hero and footer
+    // bands don't read as separate surfaces.
+    backgroundColor: PlatformColor("systemGroupedBackground"),
+  },
+  form: {
+    flex: 1,
+  },
+  footer: {
+    gap: SPACING.XS,
+    paddingHorizontal: SPACING.MD,
+  },
+});
