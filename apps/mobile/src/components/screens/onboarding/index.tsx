@@ -13,7 +13,7 @@ import { isDevAuthBypassEnabled, signInWithDevSeedUser } from "@/lib/dev-auth";
 import { hapticError, hapticSuccess, hapticTap } from "@/lib/haptics";
 
 import { AuthButtons } from "./auth-buttons";
-import { DARK_GRADIENT, ONBOARDING_COLORS } from "./palette";
+import { ALWAYS_DARK_COLORS, DARK_GRADIENT } from "@/constants/always-dark";
 import { useParallaxTilt } from "./use-parallax-tilt";
 
 export function Onboarding() {
@@ -135,7 +135,7 @@ export function Onboarding() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: ONBOARDING_COLORS.surface,
+    backgroundColor: ALWAYS_DARK_COLORS.surface,
   },
   background: {
     position: "absolute",
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     lineHeight: 40,
     fontWeight: "600",
     textAlign: "center",
-    color: ONBOARDING_COLORS.text,
+    color: ALWAYS_DARK_COLORS.text,
   },
   subtitle: {
     fontSize: 18,
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     textAlign: "center",
     marginTop: Spacing.two,
-    color: ONBOARDING_COLORS.textMuted,
+    color: ALWAYS_DARK_COLORS.textMuted,
   },
   buttonArea: {
     minHeight: 44,

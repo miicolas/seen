@@ -14,7 +14,7 @@ import { StyleSheet } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
 
-import { ONBOARDING_COLORS } from "./palette";
+import { ALWAYS_DARK_COLORS } from "@/constants/always-dark";
 
 function GlassButton({
   label,
@@ -35,7 +35,7 @@ function GlassButton({
         modifiers={[
           buttonStyle(prominent ? "glassProminent" : "glass"),
           controlSize("mini"),
-          tint(ONBOARDING_COLORS.text),
+          tint(ALWAYS_DARK_COLORS.text),
           disabledModifier(prominent ?? false),
         ]}
         onPress={onPress}>
@@ -43,7 +43,7 @@ function GlassButton({
           <SwiftUIText
             modifiers={[
               font({ weight: "semibold", size: prominent ? 16 : 15 }),
-              foregroundColor(prominent ? ONBOARDING_COLORS.surface : ONBOARDING_COLORS.text),
+              foregroundColor(prominent ? ALWAYS_DARK_COLORS.surface : ALWAYS_DARK_COLORS.text),
             ]}>
             {label}
           </SwiftUIText>
@@ -115,12 +115,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     textAlign: "center",
-    color: ONBOARDING_COLORS.textMuted,
+    color: ALWAYS_DARK_COLORS.textMuted,
   },
   errorText: {
     fontSize: 14,
     lineHeight: 20,
     textAlign: "center",
-    color: ONBOARDING_COLORS.error,
+    color: ALWAYS_DARK_COLORS.error,
   },
 });
