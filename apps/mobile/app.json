@@ -73,13 +73,7 @@
           "bundleIdentifier": "app.seen.com.ExpoWidgetsTarget",
           "groupIdentifier": "group.app.seen.com",
           "enablePushNotifications": false,
-          "widgets": [
-            {
-              "name": "NowWatchingActivity",
-              "displayName": "Now Watching",
-              "description": "Live progress for your current watch session."
-            }
-          ]
+          "widgets": []
         }
       ],
       "./plugins/with-expo-widgets-version"
