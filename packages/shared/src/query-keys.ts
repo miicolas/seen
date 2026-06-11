@@ -96,6 +96,15 @@ export const episodeReviewKeys = {
     ["episode-reviews", "season-stats", seriesTmdbId, seasonNumber] as const,
 };
 
+export const watchSessionKeys = {
+  all: () => ["watch-sessions"] as const,
+  current: () => ["watch-sessions", "current"] as const,
+  detail: (sessionId: string) => ["watch-sessions", "detail", sessionId] as const,
+  invitations: () => ["watch-sessions", "invitations"] as const,
+  invitableFriends: (sessionId: string) =>
+    ["watch-sessions", "invitable-friends", sessionId] as const,
+};
+
 export const analyticsKeys = {
   // Broad key for blanket invalidation after any action that changes what the
   // Insights screen reads (a review, watchlist edit, like, import, …).

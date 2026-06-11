@@ -2,8 +2,11 @@ import { NativeTabs } from "expo-router/unstable-native-tabs";
 import { useTranslation } from "react-i18next";
 import { useColorScheme } from "react-native";
 
+import { MiniPlayer } from "@/components/mini-player";
 import { Colors } from "@/constants/theme";
 import { useAccentColor } from "@/hooks/use-accent-color";
+import { useCurrentSession } from "@/hooks/watch-sessions/use-current-session";
+import { useLiveActivity } from "@/hooks/watch-sessions/use-live-activity";
 import { hapticSelection } from "@/lib/haptics";
 
 export default function AppTabs() {
@@ -11,6 +14,8 @@ export default function AppTabs() {
   const scheme = useColorScheme();
   const colors = Colors[scheme === "unspecified" ? "light" : scheme];
   const { accentHex } = useAccentColor();
+  const { data: session } = useCurrentSession();
+  useLiveActivity(session);
 
   return (
     <NativeTabs
@@ -19,6 +24,11 @@ export default function AppTabs() {
       tintColor={accentHex}
       screenListeners={{ tabPress: () => hapticSelection() }}
       minimizeBehavior="automatic">
+      {session ? (
+        <NativeTabs.BottomAccessory>
+          <MiniPlayer session={session} />
+        </NativeTabs.BottomAccessory>
+      ) : null}
       <NativeTabs.Trigger name="home">
         <NativeTabs.Trigger.Label hidden>{t("tabs.home")}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf={{ default: "sparkles", selected: "sparkles" }} />

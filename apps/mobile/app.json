@@ -54,6 +54,7 @@
       ],
       "expo-secure-store",
       "expo-sqlite",
+      "expo-notifications",
       [
         "expo-contacts",
         {
@@ -72,7 +73,13 @@
           "bundleIdentifier": "app.seen.com.ExpoWidgetsTarget",
           "groupIdentifier": "group.app.seen.com",
           "enablePushNotifications": false,
-          "widgets": []
+          "widgets": [
+            {
+              "name": "NowWatchingActivity",
+              "displayName": "Now Watching",
+              "description": "Live progress for your current watch session."
+            }
+          ]
         }
       ],
       "./plugins/with-expo-widgets-version"

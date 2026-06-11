@@ -15,6 +15,7 @@ import { WhatsNewGate } from "@/components/whats-new-gate";
 
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { usePushDeepLinks } from "@/hooks/use-push-deep-links";
 import { QueryProvider } from "@/lib/query-client";
 import AuthProvider from "@/providers/auth-provider";
 import { useOnboardingStore } from "@/store/use-onboarding-store";
@@ -24,6 +25,7 @@ function RootNavigator() {
   const onboardingCompleted = useOnboardingStore((state) => state.completed);
   const theme = useTheme();
   const { t } = useTranslation();
+  usePushDeepLinks(isLoggedIn);
 
   return (
     <>
@@ -69,6 +71,26 @@ function RootNavigator() {
             title: t("mediaDetail.allReviews"),
             presentation: "formSheet",
             contentStyle: { backgroundColor: theme.background },
+          }}
+        />
+        <Stack.Screen
+          name="watch-invitations"
+          options={{
+            title: t("watch.inboxTitle"),
+            presentation: "formSheet",
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: [0.5, 0.9],
+            contentStyle: { backgroundColor: theme.background },
+          }}
+        />
+        <Stack.Screen
+          name="now-watching"
+          options={{
+            headerShown: false,
+            presentation: "formSheet",
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: [1.0],
+            contentStyle: { backgroundColor: "#000000" },
           }}
         />
         <Stack.Screen
