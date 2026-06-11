@@ -21,6 +21,7 @@ import { useTheme } from "@/hooks/use-theme";
 import { hapticTap } from "@/lib/haptics";
 import { findFriendsHref, followRequestsHref } from "@/lib/navigation";
 import { profileAvatarUrl } from "@/services/profiles";
+import { shareProfile } from "@/services/share";
 
 import { ActivityRow } from "./activity-row";
 import { FavoritesSection } from "./favorites-section";
@@ -74,6 +75,13 @@ export function ProfileScreen() {
     router.push(followRequestsHref());
   }, [router]);
 
+  const userId = user?.id;
+  const handleShare = useCallback(() => {
+    if (!userId || !username) return;
+    hapticTap();
+    void shareProfile({ profileId: userId, username, isMe: true }).catch(() => {});
+  }, [userId, username]);
+
   const pendingRequests = requests.data.length;
 
   const loadMore = activity.loadMore;
@@ -89,6 +97,9 @@ export function ProfileScreen() {
   return (
     <>
       <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button icon="square.and.arrow.up" onPress={handleShare}>
+          {t("share.profileTitle")}
+        </Stack.Toolbar.Button>
         <Stack.Toolbar.Button icon="person.badge.plus" onPress={openFindFriends}>
           {t("social.findFriends")}
         </Stack.Toolbar.Button>
