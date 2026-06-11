@@ -3,6 +3,7 @@ import { follows, followRequests, profiles } from "@seen/db/schema";
 import { and, count, desc, eq, inArray } from "@seen/db/orm";
 
 import { HttpError } from "../../lib/http-error";
+import { getSocialContexts, type SocialContext } from "./social-context";
 
 export type ProfileRow = typeof profiles.$inferSelect;
 
@@ -165,7 +166,12 @@ export async function getFollowCounts(
   };
 }
 
-export function toProfileCard(row: ProfileRow, viewerId: string, state: ViewerState) {
+export function toProfileCard(
+  row: ProfileRow,
+  viewerId: string,
+  state: ViewerState,
+  context?: SocialContext,
+) {
   return {
     id: row.id,
     username: row.username,
@@ -175,15 +181,26 @@ export function toProfileCard(row: ProfileRow, viewerId: string, state: ViewerSt
     is_following: state.isFollowing,
     follows_me: state.followsMe,
     request_status: state.requestStatus,
+    ...(context
+      ? {
+          followers_count: context.followersCount,
+          seen_count: context.seenCount,
+          mutual_followers: context.mutualFollowers,
+          mutual_followers_count: context.mutualFollowersCount,
+        }
+      : {}),
   };
 }
 
 export async function buildProfileDetail(viewerId: string, row: ProfileRow) {
-  const states = await getViewerStates(viewerId, [row.id]);
+  const [states, contexts, counts] = await Promise.all([
+    getViewerStates(viewerId, [row.id]),
+    getSocialContexts(viewerId, [row.id]),
+    getFollowCounts(row.id),
+  ]);
   const state = getViewerState(states, row.id);
-  const counts = await getFollowCounts(row.id);
   return {
-    ...toProfileCard(row, viewerId, state),
+    ...toProfileCard(row, viewerId, state, contexts.get(row.id)),
     follow_policy: row.followPolicy as "open" | "approval_required",
     profile_visibility: row.profileVisibility as "public" | "followers",
     followers_count: counts.followers,
@@ -193,9 +210,12 @@ export async function buildProfileDetail(viewerId: string, row: ProfileRow) {
 }
 
 export async function buildProfileCards(viewerId: string, rows: ProfileRow[]) {
-  const states = await getViewerStates(
-    viewerId,
-    rows.map((row) => row.id),
+  const ids = rows.map((row) => row.id);
+  const [states, contexts] = await Promise.all([
+    getViewerStates(viewerId, ids),
+    getSocialContexts(viewerId, ids),
+  ]);
+  return rows.map((row) =>
+    toProfileCard(row, viewerId, getViewerState(states, row.id), contexts.get(row.id)),
   );
-  return rows.map((row) => toProfileCard(row, viewerId, getViewerState(states, row.id)));
 }

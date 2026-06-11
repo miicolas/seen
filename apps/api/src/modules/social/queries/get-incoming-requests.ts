@@ -3,6 +3,7 @@ import { followRequests, profiles } from "@seen/db/schema";
 import { and, desc, eq } from "@seen/db/orm";
 
 import { getViewerState, getViewerStates, normalizePagination, toProfileCard } from "../shared";
+import { getSocialContexts } from "../social-context";
 
 // Pending follow requests addressed to the viewer, newest first, each with the
 // requester's profile card.
@@ -18,15 +19,21 @@ export async function getIncomingRequests(viewerId: string, limit = 30, offset =
     .limit(pageSize)
     .offset(from);
 
-  const states = await getViewerStates(
-    viewerId,
-    rows.map((entry) => entry.requester.id),
-  );
+  const requesterIds = rows.map((entry) => entry.requester.id);
+  const [states, contexts] = await Promise.all([
+    getViewerStates(viewerId, requesterIds),
+    getSocialContexts(viewerId, requesterIds),
+  ]);
 
   return rows.map((entry) => ({
     id: entry.request.id,
     created_at: entry.request.createdAt.toISOString(),
     status: entry.request.status as "pending" | "approved" | "rejected",
-    requester: toProfileCard(entry.requester, viewerId, getViewerState(states, entry.requester.id)),
+    requester: toProfileCard(
+      entry.requester,
+      viewerId,
+      getViewerState(states, entry.requester.id),
+      contexts.get(entry.requester.id),
+    ),
   }));
 }

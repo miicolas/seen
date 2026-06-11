@@ -3,6 +3,11 @@ import { Elysia, t } from "elysia";
 const mediaType = t.Union([t.Literal("movie"), t.Literal("tv")]);
 const requestStatus = t.Union([t.Literal("none"), t.Literal("pending"), t.Literal("rejected")]);
 
+const mutualFollower = t.Object({
+  id: t.String(),
+  full_name: t.String(),
+});
+
 const profileCard = t.Object({
   id: t.String(),
   username: t.String(),
@@ -12,6 +17,12 @@ const profileCard = t.Object({
   is_following: t.Boolean(),
   follows_me: t.Boolean(),
   request_status: requestStatus,
+  // Social context: present on list/search/detail responses, optional so older
+  // composites stay valid.
+  followers_count: t.Optional(t.Number()),
+  seen_count: t.Optional(t.Number()),
+  mutual_followers: t.Optional(t.Array(mutualFollower)),
+  mutual_followers_count: t.Optional(t.Number()),
 });
 
 const profile = t.Composite([
