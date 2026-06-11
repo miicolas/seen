@@ -29,7 +29,11 @@ export function MutualFollowersLine({
       ? t("social.followedBy", { name: first })
       : total === 2 && second
         ? t("social.followedByTwo", { first, second })
-        : t("social.followedByOthers", { name: first, count: others, plural: others === 1 ? "" : "s" });
+        : t("social.followedByOthers", {
+            name: first,
+            count: others,
+            plural: others === 1 ? "" : "s",
+          });
 
   return (
     <Pressable

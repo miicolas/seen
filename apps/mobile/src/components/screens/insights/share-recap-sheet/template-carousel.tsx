@@ -1,11 +1,4 @@
-import {
-  Group,
-  Host,
-  HStack,
-  RNHostView,
-  ScrollView,
-  useNativeState,
-} from "@expo/ui/swift-ui";
+import { Group, Host, HStack, RNHostView, ScrollView, useNativeState } from "@expo/ui/swift-ui";
 import {
   id as idModifier,
   padding,
@@ -16,10 +9,7 @@ import {
 import { ActivityIndicator, StyleSheet, useWindowDimensions, View } from "react-native";
 
 import { ShareCard } from "@/components/insights/share/share-card";
-import {
-  SHARE_CARD_HEIGHT,
-  SHARE_CARD_WIDTH,
-} from "@/components/insights/share/share-card-frame";
+import { SHARE_CARD_HEIGHT, SHARE_CARD_WIDTH } from "@/components/insights/share/share-card-frame";
 import { SPACING } from "@/constants/design-tokens";
 import { useAnalyticsShareRecap } from "@/hooks/analytics/use-analytics-share-recap";
 import { useAccentColor } from "@/hooks/use-accent-color";
@@ -39,7 +29,9 @@ function TemplatePage({
   return (
     // Key by readiness: RN content hosted in SwiftUI goes stale on in-place
     // React updates, so the loading → card swap must remount the host.
-    <Group key={`${template}:${recap.data ? "ready" : "loading"}`} modifiers={[idModifier(template)]}>
+    <Group
+      key={`${template}:${recap.data ? "ready" : "loading"}`}
+      modifiers={[idModifier(template)]}>
       <RNHostView matchContents>
         {recap.isLoading || !recap.data ? (
           <View style={styles.placeholder}>

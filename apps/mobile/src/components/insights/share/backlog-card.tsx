@@ -7,7 +7,8 @@ import { ShareCardFrame, shareCardTypography } from "./share-card-frame";
 
 export function BacklogCard({ recap, accent }: { recap: ShareRecap; accent: string }) {
   const backlog = recap.backlog;
-  const weeks = backlog?.weeks_to_clear != null ? Math.max(1, Math.ceil(backlog.weeks_to_clear)) : null;
+  const weeks =
+    backlog?.weeks_to_clear != null ? Math.max(1, Math.ceil(backlog.weeks_to_clear)) : null;
 
   return (
     <ShareCardFrame eyebrow="My backlog" accent={accent}>

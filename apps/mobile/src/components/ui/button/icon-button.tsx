@@ -63,7 +63,11 @@ export function IconButton({
         onPress={handlePress}
         modifiers={[
           buttonStyle(
-            isLiquidGlassAvailable() ? (variant === "glass" ? "glass" : "glassProminent") : "bordered",
+            isLiquidGlassAvailable()
+              ? variant === "glass"
+                ? "glass"
+                : "glassProminent"
+              : "bordered",
           ),
           controlSize(size),
           tint(tintValue),

@@ -124,7 +124,11 @@ export function sectionizePool<T extends PoolRow>(rows: T[], seedInput: string):
   };
 
   // Hero row: resample the head of the diversity-ranked pool.
-  push("today", "content", sampleByScore(usable(byRank).slice(0, TODAY_WINDOW), SECTION_SIZES.today, random));
+  push(
+    "today",
+    "content",
+    sampleByScore(usable(byRank).slice(0, TODAY_WINDOW), SECTION_SIZES.today, random),
+  );
 
   // "Because you rated X": rotate which anchors get a row on every salt.
   const anchorGroups = new Map<string, { title: string | null; rows: T[] }>();

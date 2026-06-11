@@ -46,7 +46,6 @@ describe("deriveCurrentPosition", () => {
   it("never goes backwards on clock skew", () => {
     expect(deriveCurrentPosition(participant({ positionSeconds: 100 }), at(-50))).toBe(100);
   });
-
 });
 
 describe("resume and completion thresholds", () => {

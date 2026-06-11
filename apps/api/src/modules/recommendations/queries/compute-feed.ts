@@ -213,8 +213,7 @@ export async function computeUserFeed(userId: string, region: string): Promise<C
   // Renormalize weights over the signals this user can produce, so a sparse
   // account isn't penalized for having no neighbors or followed profiles.
   const activeSignals: SignalKey[] = ["quality", "availability", "novelty", "trendingGlobal"];
-  if (contentCandidates.length > 0 || expansionCandidates.length > 0)
-    activeSignals.push("content");
+  if (contentCandidates.length > 0 || expansionCandidates.length > 0) activeSignals.push("content");
   if (collaborativeCandidates.length > 0) activeSignals.push("collaborative");
   if (followeeIds.length > 0) activeSignals.push("trendingBubble");
   const weights = normalizeWeights(activeSignals);

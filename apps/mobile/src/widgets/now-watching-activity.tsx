@@ -23,9 +23,7 @@ const NowWatchingActivity = (
     banner: (
       <HStack modifiers={[padding({ all: 12 })]}>
         <VStack alignment="leading">
-          <Text modifiers={[font({ weight: "bold" }), foregroundStyle(ACCENT)]}>
-            {props.title}
-          </Text>
+          <Text modifiers={[font({ weight: "bold" }), foregroundStyle(ACCENT)]}>{props.title}</Text>
           {props.subtitle ? <Text modifiers={[font({ size: 13 })]}>{props.subtitle}</Text> : null}
           <Text modifiers={[font({ size: 13 })]}>{props.remainingLabel}</Text>
         </VStack>

@@ -28,14 +28,20 @@ export function buildProfileSubtitle(
     const others = mutualCount - 1;
     segments.push(
       others > 0
-        ? t("social.followedByOthers", { name: mutualName, count: others, plural: pluralSuffix(others) })
+        ? t("social.followedByOthers", {
+            name: mutualName,
+            count: others,
+            plural: pluralSuffix(others),
+          })
         : t("social.followedBy", { name: mutualName }),
     );
   }
 
   const followers = card.followers_count ?? 0;
   if (segments.length < MAX_SEGMENTS && followers > 0) {
-    segments.push(t("social.followersCount", { count: followers, plural: pluralSuffix(followers) }));
+    segments.push(
+      t("social.followersCount", { count: followers, plural: pluralSuffix(followers) }),
+    );
   }
 
   const seen = card.seen_count ?? 0;

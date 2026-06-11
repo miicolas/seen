@@ -58,9 +58,7 @@ describe("sectionizePool", () => {
   });
 
   it("emits multiple anchored rows with distinct anchors", () => {
-    const anchored = sectionizePool(pool, "user:FR:0").filter(
-      (s) => s.key === "because_you_rated",
-    );
+    const anchored = sectionizePool(pool, "user:FR:0").filter((s) => s.key === "because_you_rated");
     expect(anchored.length).toBeGreaterThanOrEqual(2);
     const titles = anchored.map((s) => s.anchorTitle);
     expect(new Set(titles).size).toBe(titles.length);

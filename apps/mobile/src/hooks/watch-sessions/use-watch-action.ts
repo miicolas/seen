@@ -89,7 +89,9 @@ export function useWatchAction({
     });
   }
 
-  const caption = isResume ? t("watch.resume") : (formatRuntime(runtimeMinutes) ?? t("watch.watch"));
+  const caption = isResume
+    ? t("watch.resume")
+    : (formatRuntime(runtimeMinutes) ?? t("watch.watch"));
 
   return { onPress, loading: start.isPending, caption, isResume };
 }

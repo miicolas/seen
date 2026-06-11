@@ -6,11 +6,7 @@ import { HttpError } from "../../../lib/http-error";
 import { maybeTrigger } from "../../../lib/trigger";
 import { isMutualFollow } from "../../social/queries";
 import { notifyWatchEvent } from "../notify";
-import {
-  invitationExpiresAt,
-  invitationTransition,
-  type InvitationStatus,
-} from "../session-state";
+import { invitationExpiresAt, invitationTransition, type InvitationStatus } from "../session-state";
 import {
   expireStalePendingInvitations,
   loadProfileCards,

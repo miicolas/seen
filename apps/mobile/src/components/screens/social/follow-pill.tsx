@@ -68,7 +68,10 @@ export function FollowPill({ card, size = "sm" }: { card: SocialProfileCard; siz
       ) : (
         <Text
           numberOfLines={1}
-          style={[styles.label, { color: textColor, fontSize: size === "sm" ? FONT_SIZE.SM : FONT_SIZE.MD }]}>
+          style={[
+            styles.label,
+            { color: textColor, fontSize: size === "sm" ? FONT_SIZE.SM : FONT_SIZE.MD },
+          ]}>
           {title}
         </Text>
       )}
