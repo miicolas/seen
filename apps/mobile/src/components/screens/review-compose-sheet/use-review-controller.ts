@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 
-import { useAuthContext } from "@/hooks/use-auth-context";
+import { useMyProfile } from "@/hooks/profiles/use-my-profile";
 import { useMyEpisodeReview } from "@/hooks/reviews/use-my-episode-review";
 import { useMyReview } from "@/hooks/reviews/use-my-review";
 import { tmdbImageUrl, type MediaType } from "@/lib/tmdb";
@@ -50,7 +50,7 @@ export interface ReviewController {
 // is fed inert ids and short-circuits to a null review / no-op save.
 export function useReviewController(params: ReviewSheetParams): ReviewController {
   const { t } = useTranslation();
-  const { user } = useAuthContext();
+  const profile = useMyProfile();
   const isEpisode = params.reviewType === "episode";
 
   const presetRating = params.rating ? Number(params.rating) : 0;
@@ -88,7 +88,7 @@ export function useReviewController(params: ReviewSheetParams): ReviewController
     initialTitle: review?.title ?? "",
     initialComment: review?.comment ?? "",
     initialWatchedAt: review?.watched_at ?? null,
-    nickname: isEpisode ? null : userNickname(user),
+    nickname: isEpisode || !profile.data ? null : `@${profile.data.username}`,
     hasReview: review != null,
     isLoading: active.isLoading,
     isSaving: active.isSaving,
@@ -97,17 +97,4 @@ export function useReviewController(params: ReviewSheetParams): ReviewController
     save: active.save,
     remove: active.remove,
   };
-}
-
-function userNickname(user: ReturnType<typeof useAuthContext>["user"]) {
-  const metadataName = stringValue(user?.name);
-
-  if (metadataName) return metadataName;
-
-  const emailName = user?.email?.split("@")[0]?.trim();
-  return emailName || null;
-}
-
-function stringValue(value: unknown) {
-  return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
 }
