@@ -4,6 +4,7 @@ import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { DiscoverSkeleton } from "@/components/discover/discover-skeleton";
+import { ScreenToolbar } from "@/components/navigation";
 import { GlassButton } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Text } from "@/components/ui/text";
@@ -12,9 +13,12 @@ import { BottomTabInset, Spacing } from "@/constants/theme";
 import { useAccentColor } from "@/hooks/use-accent-color";
 import { useNotInterestedList } from "@/hooks/not-interested/use-not-interested-list";
 import { useFeed } from "@/hooks/recommendations/use-feed";
+import { useInvitations } from "@/hooks/watch-sessions/use-invitations";
 import { hapticTap } from "@/lib/haptics";
 
 import { FeedSectionShelf } from "./feed-section-shelf";
+import { FriendsWatchedShelf } from "./friends-watched-shelf";
+import { ResumeShelf } from "./resume-shelf";
 
 export function Home() {
   const { t } = useTranslation();
@@ -23,6 +27,24 @@ export function Home() {
   const { accentHex } = useAccentColor();
   const feed = useFeed();
   const { isDismissed } = useNotInterestedList();
+  const { inbox } = useInvitations();
+  const pendingInvitations = inbox.data?.length ?? 0;
+
+  const invitationsToolbar =
+    pendingInvitations > 0 ? (
+      <ScreenToolbar
+        placement="right"
+        actions={[
+          {
+            key: "watch-invitations",
+            icon: "bell.badge.fill",
+            label: t("watch.inboxTitle"),
+            tintColor: accentHex,
+            onPress: () => router.push("/watch-invitations"),
+          },
+        ]}
+      />
+    ) : null;
 
   const bottomInset = safeAreaInsets.bottom + BottomTabInset + Spacing.three;
 
@@ -46,7 +68,12 @@ export function Home() {
     }))
     .filter((section) => section.entries.length > 0);
 
-  if (sections.length === 0) {
+  const resume = feed.data?.resume ?? [];
+  const friendsWatched = (feed.data?.friendsRecentlyWatched ?? []).filter(
+    (entry) => !isDismissed(entry.id, entry.media_type),
+  );
+
+  if (sections.length === 0 && resume.length === 0) {
     return (
       <View style={styles.center}>
         <EmptyState
@@ -77,25 +104,27 @@ export function Home() {
   }
 
   return (
-    <ScrollView
-      style={styles.scrollView}
-      showsVerticalScrollIndicator={false}
-      contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={[styles.content, { paddingBottom: bottomInset }]}
-      refreshControl={
-        <RefreshControl
-          refreshing={feed.isRefetching}
-          onRefresh={feed.refresh}
-          tintColor={accentHex}
-        />
-      }>
-      {sections.map((section) => (
-        <FeedSectionShelf
-          key={`${section.key}-${section.anchorTitle ?? ""}`}
-          section={section}
-        />
-      ))}
-    </ScrollView>
+    <>
+      {invitationsToolbar}
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={[styles.content, { paddingBottom: bottomInset }]}
+        refreshControl={
+          <RefreshControl
+            refreshing={feed.isRefetching}
+            onRefresh={feed.refresh}
+            tintColor={accentHex}
+          />
+        }>
+        <ResumeShelf entries={resume} />
+        <FriendsWatchedShelf entries={friendsWatched} />
+        {sections.map((section) => (
+          <FeedSectionShelf key={`${section.key}-${section.anchorTitle ?? ""}`} section={section} />
+        ))}
+      </ScrollView>
+    </>
   );
 }
 

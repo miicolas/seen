@@ -5,6 +5,8 @@ export type {
   FeedEntryDto as FeedEntry,
   FeedSectionDto as FeedSection,
   FeedResponseDto as FeedResponse,
+  ResumeEntryDto as ResumeEntry,
+  FriendsWatchedEntryDto as FriendsWatchedEntry,
 } from "@seen/api/recommendations";
 
 export type AvailableFeedQuery = {
