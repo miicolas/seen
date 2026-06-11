@@ -13,6 +13,12 @@
       "skillPath": "SKILL.md",
       "computedHash": "5d37b39681aa2e325a95a882efcf710185a6a1826c4a7891c2969b4dde0e96e4"
     },
+    "app-store-screenshots": {
+      "source": "qu-skills/skills",
+      "sourceType": "github",
+      "skillPath": "guides/design/app-store-screenshots/SKILL.md",
+      "computedHash": "a32d59a5965a5cd3b469aa471289db45f6c69eb428622bd44dfcb1113be3b1c4"
+    },
     "apple-search-ads": {
       "source": "eronred/aso-skills",
       "sourceType": "github",
