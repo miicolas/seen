@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import { Link } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 import { Text } from "@/components/ui/text";
 import { BORDER_RADIUS, SPACING } from "@/constants/design-tokens";
@@ -38,9 +38,9 @@ export function PosterCard({ movie, width, showMeta = true, base = "discover" }:
   const meta = releaseYear(movie.release_date);
 
   return (
-    <Link href={mediaDetailHref(movie, base)} onPress={() => hapticTap()}>
+    <Link href={mediaDetailHref(movie, base)} asChild>
       <Link.Trigger withAppleZoom>
-        <View style={StyleSheet.flatten([styles.card, { width }])}>
+        <Pressable onPress={() => hapticTap()} style={StyleSheet.flatten([styles.card, { width }])}>
           <Image
             source={uri ? { uri } : undefined}
             style={StyleSheet.flatten([
@@ -64,7 +64,7 @@ export function PosterCard({ movie, width, showMeta = true, base = "discover" }:
               </Text>
             ) : null}
           </View>
-        </View>
+        </Pressable>
       </Link.Trigger>
       <Link.Menu>
         <Link.MenuAction
