@@ -26,10 +26,7 @@ export default function AppTabs() {
 
       <NativeTabs.Trigger name="discover">
         <NativeTabs.Trigger.Label hidden>{t("tabs.discover")}</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require("@/assets/images/tabIcons/explore.png")}
-          renderingMode="template"
-        />
+        <NativeTabs.Trigger.Icon sf={{ default: "tv", selected: "tv.fill" }} />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="watchlist">
