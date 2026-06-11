@@ -3,7 +3,7 @@ import { Elysia } from "elysia";
 import { authGuard } from "../../auth-plugin";
 import { PreferencesModel } from "./model";
 import { recordOnboardingSwipes, setMyPreferences } from "./mutations";
-import { getMyPreferences, getOnboardingSeed } from "./queries";
+import { getMyPreferences, getOnboardingNext, getOnboardingSeed } from "./queries";
 
 export const preferencesController = new Elysia({
   name: "Preferences.Controller",
@@ -28,4 +28,9 @@ export const preferencesController = new Elysia({
     auth: true,
     body: "preferences.SwipeBatch",
     response: { 200: "preferences.SwipeResult" },
+  })
+  .post("/onboarding-next", ({ user, body }) => getOnboardingNext(user.id, body), {
+    auth: true,
+    body: "preferences.NextRequest",
+    response: { 200: "preferences.SeedList" },
   });

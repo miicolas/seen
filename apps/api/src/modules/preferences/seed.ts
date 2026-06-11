@@ -5,7 +5,8 @@ export type SeedEntry = {
   mediaType: MediaType;
 };
 
-// Fixed, hand-curated diverse seed (#10 v1 — adaptive selection is out of scope).
+// Hand-curated diverse probe set for the adaptive deck: it opens the deck and
+// fills the explore slots between recommendation-driven (exploit) cards.
 // Ordered round-robin so any prefix (the importer-shortened ~8 or the full ~18)
 // already spans many genres and decades. The genre/decade of each title is noted
 // in the trailing comment so the diversity intent stays readable.

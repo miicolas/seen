@@ -44,12 +44,26 @@ const swipeResult = t.Object({
   disliked: t.Number(),
 });
 
+const excludeItem = t.Object({
+  tmdb_id: t.Number(),
+  media_type: mediaType,
+});
+
+// Stateless adaptive-deck request: the client owns the session (its swipe
+// history and everything already shown or queued) and asks for the next cards.
+const nextRequest = t.Object({
+  swipes: t.Array(swipeItem, { maxItems: 50 }),
+  exclude: t.Array(excludeItem, { maxItems: 100 }),
+  count: t.Integer({ minimum: 1, maximum: 6, default: 3 }),
+});
+
 export const PreferencesModel = new Elysia({ name: "Preferences.Model" }).model({
   "preferences.Me": me,
   "preferences.Input": input,
   "preferences.SeedList": seedList,
   "preferences.SwipeBatch": swipeBatch,
   "preferences.SwipeResult": swipeResult,
+  "preferences.NextRequest": nextRequest,
 });
 
 export type PreferencesMeDto = Static<typeof me>;
@@ -57,3 +71,4 @@ export type PreferencesInputDto = Static<typeof input>;
 export type SeedItemDto = Static<typeof seedItem>;
 export type SwipeItemDto = Static<typeof swipeItem>;
 export type SwipeResultDto = Static<typeof swipeResult>;
+export type OnboardingNextRequestDto = Static<typeof nextRequest>;

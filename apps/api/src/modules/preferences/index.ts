@@ -1,5 +1,6 @@
 export { preferencesController } from "./router";
 export type {
+  OnboardingNextRequestDto,
   PreferencesMeDto,
   PreferencesInputDto,
   SeedItemDto,
