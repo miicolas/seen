@@ -248,6 +248,7 @@ export const fr: typeof en = {
     deleteFinalTitle: "Action irréversible",
     deleteFinalMessage: "Votre compte Seen et toutes vos données seront définitivement supprimés.",
     deleteError: "Échec de la suppression. Vous devrez peut-être vous reconnecter.",
+    restartOnboarding: "Recommencer l’onboarding",
   },
   tabs: {
     home: "Pour toi",
@@ -393,6 +394,20 @@ export const fr: typeof en = {
       "L'accès aux contacts est désactivé. Active-le dans Réglages pour trouver des personnes que tu connais.",
     addMoreContacts: "Ajouter des contacts",
     retry: "Réessayer",
+    resultsTitle: "Résultats",
+    seenStat: "Vus",
+    followedBy: "Suivi par {{name}}",
+    followedByTwo: "Suivi par {{first}} et {{second}}",
+    followedByOthers: "Suivi par {{name}} et {{count}} autre{{plural}}",
+    followersCount: "{{count}} abonné{{plural}}",
+    seenCount: "{{count}} titre{{plural}} vu{{plural}}",
+  },
+  share: {
+    profileTitle: "Partager le profil",
+    profileMessageSelf:
+      "Suis-moi sur Seen — @{{username}}\nInstalle la bêta : {{testflightUrl}}\nDéjà sur Seen ? {{deepLink}}",
+    profileMessageOther:
+      "Découvre @{{username}} sur Seen\nInstalle la bêta : {{testflightUrl}}\nDéjà sur Seen ? {{deepLink}}",
   },
   privacy: {
     title: "Confidentialité",

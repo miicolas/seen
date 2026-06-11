@@ -5,6 +5,11 @@ export type FollowPolicy = "open" | "approval_required";
 export type ProfileVisibility = "public" | "followers";
 export type WatchlistVisibility = "private" | "followers" | "public";
 
+export interface MutualFollower {
+  id: string;
+  full_name: string;
+}
+
 export interface SocialProfileCard {
   id: string;
   username: string;
@@ -14,6 +19,11 @@ export interface SocialProfileCard {
   is_following: boolean;
   follows_me: boolean;
   request_status: FollowRequestStatus;
+  // Social context, present on list/search/detail responses.
+  followers_count?: number;
+  seen_count?: number;
+  mutual_followers?: MutualFollower[];
+  mutual_followers_count?: number;
 }
 
 export interface SocialProfile extends SocialProfileCard {

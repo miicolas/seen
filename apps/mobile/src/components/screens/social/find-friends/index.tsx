@@ -1,37 +1,24 @@
-import { Stack, useRouter } from "expo-router";
-import { useCallback, useState } from "react";
+import { Section } from "@expo/ui/swift-ui";
+import { Stack } from "expo-router";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { NativeSyntheticEvent, TextInputFocusEventData } from "react-native";
-import { StyleSheet, View } from "react-native";
 
 import { ContentUnavailable } from "@/components/ui/content-unavailable";
-import { Text } from "@/components/ui/text";
-import { SPACING } from "@/constants/design-tokens";
 import { useProfileSearch } from "@/hooks/social/use-profile-search";
-import { useTheme } from "@/hooks/use-theme";
-import { socialProfileHref } from "@/lib/navigation";
 
-import { ProfileCardRow } from "../profile-card-row";
+import { ProfileList } from "../profile-list";
+import { ProfileListRow, profileRowKey } from "../profile-list-row";
 import { SocialLoading } from "../social-loading";
-import { SocialScrollView } from "../social-scroll-view";
 import { ContactSuggestions } from "./contact-suggestions";
 
 // "Find Friends": a people search bar over the catalog, with contact-based
 // suggestions shown when the query is empty.
 export function FindFriends() {
   const { t } = useTranslation();
-  const theme = useTheme();
-  const router = useRouter();
   const [term, setTerm] = useState("");
   const search = useProfileSearch(term);
   const trimmed = term.trim();
-
-  const openProfile = useCallback(
-    (id: string) => {
-      router.push(socialProfileHref(id));
-    },
-    [router],
-  );
 
   return (
     <>
@@ -44,35 +31,27 @@ export function FindFriends() {
         onClose={() => setTerm("")}
       />
 
-      <SocialScrollView keyboardDismissMode="on-drag">
-        {trimmed.length > 0 ? (
-          search.isLoading ? (
-            <SocialLoading />
-          ) : search.data.length > 0 ? (
-            <View style={styles.list}>
-              {search.data.map((card) => (
-                <ProfileCardRow key={card.id} card={card} onPress={() => openProfile(card.id)} />
-              ))}
-            </View>
-          ) : (
-            <ContentUnavailable icon="magnifyingglass" title={t("social.noResults")} />
-          )
-        ) : (
-          <ContactSuggestions onOpenProfile={openProfile} />
-        )}
-
-        {search.error ? (
-          <Text size="sm" color={theme.error} fillWidth>
-            {search.error}
-          </Text>
-        ) : null}
-      </SocialScrollView>
+      {trimmed.length === 0 ? (
+        <ContactSuggestions />
+      ) : search.isLoading ? (
+        <SocialLoading />
+      ) : search.error ? (
+        <ContentUnavailable
+          icon="exclamationmark.triangle"
+          title={t("social.noResults")}
+          description={search.error}
+        />
+      ) : search.data.length > 0 ? (
+        <ProfileList>
+          <Section title={t("social.resultsTitle")}>
+            {search.data.map((card) => (
+              <ProfileListRow key={profileRowKey(card)} card={card} />
+            ))}
+          </Section>
+        </ProfileList>
+      ) : (
+        <ContentUnavailable icon="magnifyingglass" title={t("social.noResults")} />
+      )}
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  list: {
-    gap: SPACING.MD,
-  },
-});

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, View } from "react-native";
 
 import { ProfileAvatar } from "@/components/ui/profile-avatar";
@@ -8,23 +9,29 @@ import { hapticTap } from "@/lib/haptics";
 import { profileAvatarUrl } from "@/services/profiles";
 import type { SocialProfileCard } from "@/services/social";
 
-import { FollowButton } from "./follow-button";
+import { buildProfileSubtitle } from "./build-profile-subtitle";
+import { FollowPill } from "./follow-pill";
 
-const AVATAR_SIZE = 48;
+const AVATAR_SIZE = 44;
 
-// A tappable row showing a profile (avatar, name, @username, optional subtitle)
-// with the follow control on the trailing edge. Shared by search, contacts,
-// requests and follower/following lists.
+// A tappable row showing a profile (avatar, name, @username + social context)
+// with the follow pill on the trailing edge. Shared by search, contacts,
+// requests and follower/following lists. Pure RN so it renders identically in
+// RNHostView list rows and plain ScrollViews.
 export function ProfileCardRow({
   card,
-  subtitle,
+  contactName,
+  trailing,
   onPress,
 }: {
   card: SocialProfileCard;
-  subtitle?: string | null;
+  contactName?: string | null;
+  trailing?: React.ReactNode;
   onPress?: () => void;
 }) {
+  const { t } = useTranslation();
   const theme = useTheme();
+  const subtitle = buildProfileSubtitle(t, card, { contactName });
 
   const handlePress = () => {
     if (!onPress) return;
@@ -36,7 +43,7 @@ export function ProfileCardRow({
     <Pressable onPress={handlePress} disabled={!onPress} style={styles.row}>
       <ProfileAvatar uri={profileAvatarUrl(card)} name={card.full_name} size={AVATAR_SIZE} />
       <View style={styles.body}>
-        <Text size="md" weight="bold" color={theme.text} numberOfLines={1} fillWidth>
+        <Text size="md" weight="semibold" color={theme.text} numberOfLines={1} fillWidth>
           {card.full_name}
         </Text>
         <Text size="sm" color={theme.textSecondary} numberOfLines={1} fillWidth>
@@ -48,7 +55,7 @@ export function ProfileCardRow({
           </Text>
         ) : null}
       </View>
-      <FollowButton card={card} />
+      {trailing ?? <FollowPill card={card} />}
     </Pressable>
   );
 }

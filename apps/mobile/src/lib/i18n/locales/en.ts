@@ -244,6 +244,7 @@ export const en = {
     deleteFinalTitle: "This cannot be undone",
     deleteFinalMessage: "Your Seen account and all data will be permanently removed.",
     deleteError: "Account deletion failed. You may need to sign in again.",
+    restartOnboarding: "Restart onboarding",
   },
   tabs: {
     home: "For You",
@@ -386,6 +387,20 @@ export const en = {
     contactsDenied: "Contacts access is off. Enable it in Settings to find people you know.",
     addMoreContacts: "Add more contacts",
     retry: "Retry",
+    resultsTitle: "Results",
+    seenStat: "Seen",
+    followedBy: "Followed by {{name}}",
+    followedByTwo: "Followed by {{first}} and {{second}}",
+    followedByOthers: "Followed by {{name}} and {{count}} other{{plural}}",
+    followersCount: "{{count}} follower{{plural}}",
+    seenCount: "{{count}} title{{plural}} seen",
+  },
+  share: {
+    profileTitle: "Share Profile",
+    profileMessageSelf:
+      "Follow me on Seen — @{{username}}\nGet the beta: {{testflightUrl}}\nAlready have Seen? {{deepLink}}",
+    profileMessageOther:
+      "Check out @{{username}} on Seen\nGet the beta: {{testflightUrl}}\nAlready have Seen? {{deepLink}}",
   },
   privacy: {
     title: "Privacy",
