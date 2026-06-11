@@ -6,3 +6,4 @@ export { getFollowers } from "./get-followers";
 export { getFollowing } from "./get-following";
 export { getFollowingActivity } from "./get-following-activity";
 export { getIncomingRequests } from "./get-incoming-requests";
+export { isMutualFollow } from "./is-mutual-follow";
