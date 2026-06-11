@@ -3,7 +3,6 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import type { SFSymbol } from "sf-symbols-typescript";
 
 import { Segmented } from "@/components/ui/segmented";
 import { LAYOUT, SPACING } from "@/constants/design-tokens";
@@ -14,7 +13,7 @@ import { useAnalyticsTaste } from "@/hooks/analytics/use-analytics-taste";
 import { useAnalyticsTimeline } from "@/hooks/analytics/use-analytics-timeline";
 import { useTheme } from "@/hooks/use-theme";
 import { hapticSelection, hapticTap } from "@/lib/haptics";
-import type { AnalyticsRange, ShareTemplate } from "@/services/analytics";
+import type { AnalyticsRange } from "@/services/analytics";
 
 import { BacklogSection } from "./backlog-section";
 import { DiscoverySection } from "./discovery-section";
@@ -33,16 +32,10 @@ export function Insights() {
   const insets = useSafeAreaInsets();
   const [range, setRange] = useState<AnalyticsRange>("week");
 
-  const openShare = (template: ShareTemplate) => {
+  const openShare = () => {
     hapticTap();
-    router.push({ pathname: "/share-recap", params: { template } });
+    router.push("/share-recap");
   };
-
-  const shareOptions: { template: ShareTemplate; label: string; icon: SFSymbol }[] = [
-    { template: "weekly", label: t("insights.shareWeekly"), icon: "calendar" },
-    { template: "taste", label: t("insights.shareTaste"), icon: "sparkles" },
-    { template: "watchlist", label: t("insights.shareWatchlist"), icon: "bookmark" },
-  ];
 
   const overview = useAnalyticsOverview(range);
   const timeline = useAnalyticsTimeline(range);
@@ -66,17 +59,9 @@ export function Insights() {
   return (
     <>
       <Stack.Toolbar placement="right">
-        <Stack.Toolbar.Menu icon="square.and.arrow.up">
-          <Stack.Toolbar.Label>{t("insights.shareTitle")}</Stack.Toolbar.Label>
-          {shareOptions.map((option) => (
-            <Stack.Toolbar.MenuAction
-              key={option.template}
-              icon={option.icon}
-              onPress={() => openShare(option.template)}>
-              {option.label}
-            </Stack.Toolbar.MenuAction>
-          ))}
-        </Stack.Toolbar.Menu>
+        <Stack.Toolbar.Button icon="square.and.arrow.up" onPress={openShare}>
+          {t("insights.shareTitle")}
+        </Stack.Toolbar.Button>
       </Stack.Toolbar>
 
       <ScrollView

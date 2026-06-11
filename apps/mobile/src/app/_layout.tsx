@@ -74,7 +74,7 @@ function RootNavigator() {
         <Stack.Screen
           name="share-recap"
           options={{
-            title: t("insights.shareTitle"),
+            headerShown: false,
             presentation: "formSheet",
             sheetGrabberVisible: true,
             sheetAllowedDetents: [0.7],
