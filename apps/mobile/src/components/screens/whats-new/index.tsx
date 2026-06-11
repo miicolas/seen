@@ -1,16 +1,20 @@
+import { Host, ScrollView, Text as SwiftUIText, VStack } from "@expo/ui/swift-ui";
+import { font, foregroundColor, frame, padding } from "@expo/ui/swift-ui/modifiers";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { GlassButton } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
-import { LAYOUT, SPACING } from "@/constants/design-tokens";
+import { FONT_SIZE, LAYOUT, SPACING } from "@/constants/design-tokens";
 import { useTheme } from "@/hooks/use-theme";
 
 import { FeatureRow } from "./feature-row";
 import { useWhatsNew } from "./use-whats-new";
 
+// What's New announcement sheet. The scrollable content is native SwiftUI in a
+// flex:1 Host (the working formSheet pattern — an RN ScrollView here gets its
+// frame hijacked by react-native-screens' sheet layout and renders blank).
 export function WhatsNew() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -25,26 +29,40 @@ export function WhatsNew() {
 
   return (
     <View style={[styles.root, { backgroundColor: theme.background }]}>
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}>
-        <Text size="4xl" weight="bold" color={theme.text} align="leading" fillWidth>
-          {t("whatsNew.title")}
-        </Text>
+      <Host matchContents={false} useViewportSizeMeasurement style={styles.host}>
+        <ScrollView showsIndicators={false}>
+          <VStack
+            alignment="leading"
+            spacing={SPACING.LG}
+            modifiers={[
+              padding({
+                horizontal: LAYOUT.SCREEN_PADDING,
+                top: SPACING.XL,
+                bottom: SPACING.LG,
+              }),
+            ]}>
+            <SwiftUIText
+              modifiers={[
+                font({ size: FONT_SIZE.XXXXL, weight: "bold" }),
+                foregroundColor(theme.text),
+                frame({ maxWidth: 10000, alignment: "leading" }),
+              ]}>
+              {t("whatsNew.title")}
+            </SwiftUIText>
 
-        <View style={styles.features}>
-          {features.length > 0 ? (
-            features.map((feature, index) => (
-              <FeatureRow key={`${feature.icon}-${index}`} feature={feature} />
-            ))
-          ) : (
-            <Text size="md" color={theme.textSecondary} fillWidth>
-              {t("whatsNew.empty")}
-            </Text>
-          )}
-        </View>
-      </ScrollView>
+            {features.length > 0 ? (
+              features.map((feature, index) => (
+                <FeatureRow key={`${feature.icon}-${index}`} feature={feature} />
+              ))
+            ) : (
+              <SwiftUIText
+                modifiers={[font({ size: FONT_SIZE.MD }), foregroundColor(theme.textSecondary)]}>
+                {t("whatsNew.empty")}
+              </SwiftUIText>
+            )}
+          </VStack>
+        </ScrollView>
+      </Host>
 
       <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, SPACING.MD) }]}>
         <GlassButton title={t("whatsNew.continue")} onPress={handleContinue} />
@@ -57,18 +75,8 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
   },
-  scroll: {
+  host: {
     flex: 1,
-  },
-  content: {
-    flexGrow: 1,
-    paddingHorizontal: LAYOUT.SCREEN_PADDING,
-    paddingTop: SPACING.XL,
-    paddingBottom: SPACING.LG,
-    gap: SPACING.LG,
-  },
-  features: {
-    gap: SPACING.LG,
   },
   footer: {
     paddingHorizontal: LAYOUT.SCREEN_PADDING,

@@ -1,17 +1,18 @@
-import { SymbolView } from "expo-symbols";
+import { HStack, Image, Text as SwiftUIText, VStack } from "@expo/ui/swift-ui";
+import { font, foregroundColor, frame } from "@expo/ui/swift-ui/modifiers";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, View } from "react-native";
 
-import { Text } from "@/components/ui/text";
-import { SPACING } from "@/constants/design-tokens";
-import type { WhatsNewFeature } from "@/services/whats-new";
+import { FONT_SIZE, SPACING } from "@/constants/design-tokens";
 import { useAccentColor } from "@/hooks/use-accent-color";
 import { useTheme } from "@/hooks/use-theme";
 import { resolveAppLanguage } from "@/lib/i18n";
+import type { WhatsNewFeature } from "@/services/whats-new";
 
-const ICON_SIZE = 40;
+const ICON_SIZE = 36;
 const ICON_COLUMN = 56;
 
+// One announced feature as native SwiftUI content (icon + title + description).
+// Must stay SwiftUI — the What's New sheet renders inside a Host.
 export function FeatureRow({ feature }: { feature: WhatsNewFeature }) {
   const theme = useTheme();
   const { i18n } = useTranslation();
@@ -19,35 +20,31 @@ export function FeatureRow({ feature }: { feature: WhatsNewFeature }) {
   const lang = resolveAppLanguage(i18n.language);
 
   return (
-    <View style={styles.row}>
-      <View style={styles.iconColumn}>
-        <SymbolView name={feature.icon} size={ICON_SIZE} tintColor={accentHex} />
-      </View>
-      <View style={styles.body}>
-        <Text size="lg" weight="bold" color={theme.text} fillWidth>
+    <HStack spacing={SPACING.MD} alignment="top">
+      <Image
+        systemName={feature.icon}
+        size={ICON_SIZE}
+        color={accentHex}
+        modifiers={[frame({ width: ICON_COLUMN })]}
+      />
+      <VStack alignment="leading" spacing={SPACING.XS}>
+        <SwiftUIText
+          modifiers={[
+            font({ size: FONT_SIZE.LG, weight: "bold" }),
+            foregroundColor(theme.text),
+            frame({ maxWidth: 10000, alignment: "leading" }),
+          ]}>
           {feature.title[lang]}
-        </Text>
-        <Text size="md" weight="regular" color={theme.textSecondary} fillWidth>
+        </SwiftUIText>
+        <SwiftUIText
+          modifiers={[
+            font({ size: FONT_SIZE.MD }),
+            foregroundColor(theme.textSecondary),
+            frame({ maxWidth: 10000, alignment: "leading" }),
+          ]}>
           {feature.description[lang]}
-        </Text>
-      </View>
-    </View>
+        </SwiftUIText>
+      </VStack>
+    </HStack>
   );
 }
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: SPACING.MD,
-  },
-  iconColumn: {
-    width: ICON_COLUMN,
-    alignItems: "center",
-    paddingTop: SPACING.XS,
-  },
-  body: {
-    flex: 1,
-    gap: SPACING.XS,
-  },
-});
