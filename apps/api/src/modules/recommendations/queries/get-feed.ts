@@ -4,9 +4,11 @@ import { desc, eq, inArray } from "@seen/db/orm";
 
 import { normalizeSummary } from "../../tmdb/normalize";
 import { mediaKey } from "../../similarity/shared";
+import { listResumeSessions } from "../../watch-sessions/queries/list-resume-sessions";
 import { movieRowToSummary } from "./movie-row";
+import { getFriendsRecentlyWatched } from "./friends-recently-watched";
 import type { RecommendationSource } from "../../events/shared";
-import type { FeedResponseDto, FeedSectionDto } from "../model";
+import type { FeedResponseDto, FeedSectionDto, ResumeEntryDto } from "../model";
 import { DEFAULT_FEED_SALT, getCachedFeed, setCachedFeed } from "../cache";
 import { passesQualityGate } from "../quality-gate";
 import type { ScoreComponents } from "../scoring";
@@ -28,7 +30,7 @@ export async function getRecommendationFeed(
   salt = DEFAULT_FEED_SALT,
 ): Promise<FeedResponseDto> {
   const cached = await getCachedFeed(userId, region, salt);
-  if (cached) return cached;
+  if (cached) return withServeTimeSections(userId, cached);
 
   let rows = await getStoredPool(userId, region);
   let coldStart = false;
@@ -43,7 +45,36 @@ export async function getRecommendationFeed(
 
   const response = await hydrate(userId, region, salt, rows ?? [], coldStart);
   await setCachedFeed(userId, region, salt, response);
-  return response;
+  return withServeTimeSections(userId, response);
+}
+
+async function withServeTimeSections(
+  userId: string,
+  response: FeedResponseDto,
+): Promise<FeedResponseDto> {
+  const [resume, friendsRecentlyWatched] = await Promise.all([
+    listResumeSessions(userId)
+      .then((sessions) =>
+        sessions.map(
+          (session): ResumeEntryDto => ({
+            session_id: session.id,
+            media_type: session.media_type as ResumeEntryDto["media_type"],
+            tmdb_id: session.tmdb_id,
+            season_number: session.season_number,
+            episode_number: session.episode_number,
+            title: session.title,
+            poster_path: session.poster_path,
+            status: session.me.status,
+            position_seconds: session.me.position_seconds,
+            duration_seconds: session.me.duration_seconds,
+            last_progress_at: session.me.last_progress_at,
+          }),
+        ),
+      )
+      .catch(() => []),
+    getFriendsRecentlyWatched(userId).catch(() => []),
+  ]);
+  return { ...response, resume, friendsRecentlyWatched };
 }
 
 // The stored pool, or null when there is none for this user+region (a region

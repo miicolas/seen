@@ -72,10 +72,34 @@ const feedSection = t.Object({
   entries: t.Array(feedEntry),
 });
 
+const resumeEntry = t.Object({
+  session_id: t.String(),
+  media_type: t.Union([t.Literal("movie"), t.Literal("episode")]),
+  tmdb_id: t.Number(),
+  season_number: t.Nullable(t.Number()),
+  episode_number: t.Nullable(t.Number()),
+  title: t.String(),
+  poster_path: t.Nullable(t.String()),
+  status: t.String(),
+  position_seconds: t.Number(),
+  duration_seconds: t.Number(),
+  last_progress_at: t.String(),
+});
+
+const friendsWatchedEntry = t.Composite([
+  summary,
+  t.Object({
+    friendCount: t.Number(),
+    friendReason: t.Nullable(t.String()),
+  }),
+]);
+
 const feedResponse = t.Object({
   sections: t.Array(feedSection),
   coldStart: t.Boolean(),
   computedAt: t.Nullable(t.String()),
+  resume: t.Optional(t.Array(resumeEntry)),
+  friendsRecentlyWatched: t.Optional(t.Array(friendsWatchedEntry)),
 });
 
 export const RecommendationsModel = new Elysia({ name: "Recommendations.Model" }).model({
@@ -98,3 +122,5 @@ export type AvailableEntryDto = Static<typeof availableEntry>;
 export type FeedEntryDto = Static<typeof feedEntry>;
 export type FeedSectionDto = Static<typeof feedSection>;
 export type FeedResponseDto = Static<typeof feedResponse>;
+export type ResumeEntryDto = Static<typeof resumeEntry>;
+export type FriendsWatchedEntryDto = Static<typeof friendsWatchedEntry>;

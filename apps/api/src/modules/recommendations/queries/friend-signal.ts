@@ -3,23 +3,31 @@ import { profiles, reviews, watchlist } from "@seen/db/schema";
 import { and, inArray } from "@seen/db/orm";
 
 import type { MediaType } from "../../tmdb";
+import { listFriendsWatchRows } from "../../watch-sessions/queries/list-friends-watch-rows";
 
 // Reuse the social module's follow lookup rather than duplicating the query.
 export { getFolloweeIds } from "../../social/activity";
 
 type CandidateRef = { id: number; media_type: MediaType };
-export type SignalAction = "review" | "watchlist";
+export type SignalAction = "review" | "watched" | "watchlist";
 
 export type FriendSignal = { count: number; reason: string | null };
 
+const ACTION_PRIORITY: SignalAction[] = ["review", "watched", "watchlist"];
+
+const SINGLE_REASONS: Record<SignalAction, (username: string) => string> = {
+  review: (username) => `@${username} reviewed this`,
+  watched: (username) => `@${username} watched this`,
+  watchlist: (username) => `@${username} added this to their watchlist`,
+};
+
 export function buildReason(entries: { username: string; action: SignalAction }[]): string | null {
-  const primary = entries.find((entry) => entry.action === "review") ?? entries[0];
+  const primary =
+    ACTION_PRIORITY.map((action) => entries.find((entry) => entry.action === action)).find(
+      Boolean,
+    ) ?? entries[0];
   if (!primary) return null;
-  if (entries.length === 1) {
-    return primary.action === "review"
-      ? `@${primary.username} reviewed this`
-      : `@${primary.username} added this to their watchlist`;
-  }
+  if (entries.length === 1) return SINGLE_REASONS[primary.action](primary.username);
   const others = entries.length - 1;
   return `@${primary.username} and ${others} other${others > 1 ? "s" : ""}`;
 }
@@ -40,7 +48,7 @@ export async function computeFriendSignals(
     candidates.map((candidate) => `${candidate.media_type}:${candidate.id}`),
   );
 
-  const [reviewRows, watchRows] = await Promise.all([
+  const [reviewRows, watchlistRows, sessionRows] = await Promise.all([
     db
       .select({ userId: reviews.userId, tmdbId: reviews.tmdbId, mediaType: reviews.mediaType })
       .from(reviews)
@@ -59,9 +67,9 @@ export async function computeFriendSignals(
           inArray(watchlist.visibility, ["followers", "public"]),
         ),
       ),
+    listFriendsWatchRows(followeeIds),
   ]);
 
-  // key -> (followeeId -> action). A review outweighs a watchlist entry.
   const byKey = new Map<string, Map<string, SignalAction>>();
   const record = (key: string, userId: string, action: SignalAction) => {
     if (!candidateKeys.has(key)) return;
@@ -70,10 +78,19 @@ export async function computeFriendSignals(
       users = new Map();
       byKey.set(key, users);
     }
-    if (users.get(userId) !== "review") users.set(userId, action);
+    const current = users.get(userId);
+    if (!current || ACTION_PRIORITY.indexOf(action) < ACTION_PRIORITY.indexOf(current)) {
+      users.set(userId, action);
+    }
   };
   for (const row of reviewRows) record(`${row.mediaType}:${row.tmdbId}`, row.userId, "review");
-  for (const row of watchRows) record(`${row.mediaType}:${row.tmdbId}`, row.userId, "watchlist");
+  for (const row of watchlistRows)
+    record(`${row.mediaType}:${row.tmdbId}`, row.userId, "watchlist");
+  for (const row of sessionRows) {
+    for (const watcherId of row.watcherIds) {
+      record(`${row.mediaType}:${row.tmdbId}`, watcherId, "watched");
+    }
+  }
 
   const userIds = new Set<string>();
   for (const users of byKey.values()) for (const id of users.keys()) userIds.add(id);
