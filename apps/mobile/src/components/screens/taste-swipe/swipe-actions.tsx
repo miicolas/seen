@@ -1,8 +1,7 @@
-import { SymbolView } from "expo-symbols";
-import { Pressable, StyleSheet, View } from "react-native";
-import type { SFSymbol } from "sf-symbols-typescript";
+import { StyleSheet, View } from "react-native";
 
-import { BORDER_RADIUS, SPACING } from "@/constants/design-tokens";
+import { GlassCircleButton } from "@/components/ui/button/glass-circle-button";
+import { SPACING } from "@/constants/design-tokens";
 import { useAccentColor } from "@/hooks/use-accent-color";
 import { useTheme } from "@/hooks/use-theme";
 
@@ -19,68 +18,28 @@ export function SwipeActions({ onDislike, onSkip, onLike, disabled }: Props) {
 
   return (
     <View style={styles.row}>
-      <ActionButton
+      <GlassCircleButton
         symbol="xmark"
         tint={theme.error}
         diameter={64}
-        background={theme.backgroundElement}
         onPress={onDislike}
         disabled={disabled}
       />
-      <ActionButton
+      <GlassCircleButton
         symbol="eye.slash"
-        tint={theme.textSecondary}
+        tint="rgba(255,255,255,0.8)"
         diameter={52}
-        background={theme.backgroundElement}
         onPress={onSkip}
         disabled={disabled}
       />
-      <ActionButton
+      <GlassCircleButton
         symbol="heart.fill"
         tint={accentHex}
         diameter={64}
-        background={theme.backgroundElement}
         onPress={onLike}
         disabled={disabled}
       />
     </View>
-  );
-}
-
-type ActionButtonProps = {
-  symbol: SFSymbol;
-  tint: string;
-  diameter: number;
-  background: string;
-  onPress: () => void;
-  disabled?: boolean;
-};
-
-function ActionButton({
-  symbol,
-  tint,
-  diameter,
-  background,
-  onPress,
-  disabled,
-}: ActionButtonProps) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      disabled={disabled}
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.button,
-        {
-          width: diameter,
-          height: diameter,
-          borderRadius: BORDER_RADIUS.FULL,
-          backgroundColor: background,
-          opacity: disabled ? 0.4 : pressed ? 0.7 : 1,
-        },
-      ]}>
-      <SymbolView name={symbol} size={diameter * 0.42} tintColor={tint} />
-    </Pressable>
   );
 }
 
@@ -90,9 +49,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: SPACING.LG,
-  },
-  button: {
-    alignItems: "center",
-    justifyContent: "center",
   },
 });

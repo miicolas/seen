@@ -1,6 +1,6 @@
 import MaskedView from "@react-native-masked-view/masked-view";
 import { BlurView, type BlurTint } from "expo-blur";
-import { Image, type ImageSource } from "expo-image";
+import { Image, type ImageContentPosition, type ImageProps, type ImageSource } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, View, type ColorValue, type ImageStyle, type ViewStyle } from "react-native";
 
@@ -28,6 +28,8 @@ export interface LinearGradientImageBlurProps {
   lightGradientColors?: GradientColors;
   darkGradientColors?: GradientColors;
   imageUrl?: ImageSource | number;
+  imageTransition?: ImageProps["transition"];
+  imageContentPosition?: ImageContentPosition;
   blurIntensity?: number;
   tintColor?: BlurTint;
   solidColor?: string;
@@ -90,6 +92,8 @@ export function LinearGradientImageBlur({
     Colors.dark.background,
   ],
   imageUrl,
+  imageTransition,
+  imageContentPosition = "top",
   blurIntensity = 30,
   tintColor = "default",
   solidColor,
@@ -108,7 +112,8 @@ export function LinearGradientImageBlur({
             source={imageUrl}
             style={[styles.sizeFull, imageStyle]}
             contentFit="cover"
-            contentPosition="top"
+            contentPosition={imageContentPosition}
+            transition={imageTransition}
           />
         </View>
       ) : null}

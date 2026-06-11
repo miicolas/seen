@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
@@ -38,8 +39,12 @@ export function SwipeDeck({ card, nextCard, onDecide, disabled }: Props) {
   const theme = useTheme();
   const { accentHex } = useAccentColor();
 
-  const cardWidth = width - SPACING.MD * 2;
-  const cardHeight = Math.min(cardWidth * 1.5, height * 0.6);
+  // The card fills whatever vertical space is left between the header and the
+  // action row (measured via onLayout), capped by the 2:3 poster ratio.
+  const [stackAreaHeight, setStackAreaHeight] = useState(0);
+  const maxCardWidth = width - SPACING.MD * 2;
+  const cardHeight = Math.min(maxCardWidth * 1.5, stackAreaHeight);
+  const cardWidth = cardHeight / 1.5;
   const threshold = width * 0.25;
 
   const hasFlownOut = useSharedValue(false);
@@ -108,33 +113,44 @@ export function SwipeDeck({ card, nextCard, onDecide, disabled }: Props) {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.stack, { width: cardWidth, height: cardHeight }]}>
-        {nextCard ? (
-          <View style={[StyleSheet.absoluteFill, styles.behind]} pointerEvents="none">
-            <SwipeCard item={nextCard} width={cardWidth} height={cardHeight} />
+      <View
+        style={styles.stackArea}
+        onLayout={(event) => setStackAreaHeight(event.nativeEvent.layout.height)}>
+        {stackAreaHeight > 0 ? (
+          <View style={[styles.stack, { width: cardWidth, height: cardHeight }]}>
+            {nextCard ? (
+              <View style={[StyleSheet.absoluteFill, styles.behind]} pointerEvents="none">
+                <SwipeCard item={nextCard} width={cardWidth} height={cardHeight} />
+              </View>
+            ) : null}
+
+            <GestureDetector gesture={pan}>
+              <Animated.View style={[StyleSheet.absoluteFill, styles.floating, cardStyle]}>
+                <SwipeCard item={card} width={cardWidth} height={cardHeight} />
+                <Animated.View
+                  pointerEvents="none"
+                  style={[
+                    styles.badge,
+                    styles.likeBadge,
+                    { borderColor: accentHex },
+                    likeBadgeStyle,
+                  ]}>
+                  <Text style={[styles.badgeText, { color: accentHex }]}>{"LIKE"}</Text>
+                </Animated.View>
+                <Animated.View
+                  pointerEvents="none"
+                  style={[
+                    styles.badge,
+                    styles.dislikeBadge,
+                    { borderColor: theme.error },
+                    dislikeBadgeStyle,
+                  ]}>
+                  <Text style={[styles.badgeText, { color: theme.error }]}>{"NOPE"}</Text>
+                </Animated.View>
+              </Animated.View>
+            </GestureDetector>
           </View>
         ) : null}
-
-        <GestureDetector gesture={pan}>
-          <Animated.View style={[StyleSheet.absoluteFill, cardStyle]}>
-            <SwipeCard item={card} width={cardWidth} height={cardHeight} />
-            <Animated.View
-              pointerEvents="none"
-              style={[styles.badge, styles.likeBadge, { borderColor: accentHex }, likeBadgeStyle]}>
-              <Text style={[styles.badgeText, { color: accentHex }]}>{"LIKE"}</Text>
-            </Animated.View>
-            <Animated.View
-              pointerEvents="none"
-              style={[
-                styles.badge,
-                styles.dislikeBadge,
-                { borderColor: theme.error },
-                dislikeBadgeStyle,
-              ]}>
-              <Text style={[styles.badgeText, { color: theme.error }]}>{"NOPE"}</Text>
-            </Animated.View>
-          </Animated.View>
-        </GestureDetector>
       </View>
 
       <SwipeActions
@@ -151,8 +167,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
     gap: SPACING.LG,
+  },
+  stackArea: {
+    flex: 1,
+    alignSelf: "stretch",
+    alignItems: "center",
+    justifyContent: "center",
   },
   stack: {
     alignItems: "center",
@@ -160,6 +181,13 @@ const styles = StyleSheet.create({
   },
   behind: {
     transform: [{ scale: 0.95 }, { translateY: SPACING.SM }],
+  },
+  // Lifts the sharp poster off the blurred artwork background.
+  floating: {
+    shadowColor: "#000",
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
   },
   badge: {
     position: "absolute",
