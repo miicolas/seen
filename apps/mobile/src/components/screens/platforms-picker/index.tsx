@@ -1,13 +1,14 @@
 import { SymbolView } from "expo-symbols";
 import { useRouter } from "expo-router";
-import { Fragment, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/ui/button/button";
+import { GlassButton } from "@/components/ui/button/glass-button";
 import { Text } from "@/components/ui/text";
-import { BORDER_RADIUS, SPACING } from "@/constants/design-tokens";
+import { SPACING } from "@/constants/design-tokens";
 import { useMyPlatforms } from "@/hooks/platforms/use-my-platforms";
 import { useProviders } from "@/hooks/platforms/use-providers";
 import { useSetMyPlatforms } from "@/hooks/platforms/use-set-my-platforms";
@@ -17,7 +18,7 @@ import { getRegion } from "@/lib/region";
 import { toggleInSet } from "@/lib/set";
 import { useOnboardingStore } from "@/store/use-onboarding-store";
 
-import { ProviderRow } from "./provider-row";
+import { ProviderPill } from "./provider-pill";
 
 type Props = {
   mode: "onboarding" | "settings";
@@ -101,7 +102,7 @@ export function PlatformsPicker({ mode }: Props) {
         showsVerticalScrollIndicator={false}>
         {isOnboarding ? (
           <View style={styles.header}>
-            <Text size="3xl" weight="bold" color={theme.text}>
+            <Text size="5xl" weight="semibold" color={theme.text}>
               {headerTitle}
             </Text>
             <Text inline size="md" weight="regular" color={theme.textSecondary}>
@@ -129,19 +130,15 @@ export function PlatformsPicker({ mode }: Props) {
             </Text>
           </View>
         ) : (
-          <View style={[styles.list, { backgroundColor: theme.backgroundElement }]}>
-            {providers.data.map((provider, index) => (
-              <Fragment key={provider.providerId}>
-                {index > 0 ? (
-                  <View style={[styles.separator, { backgroundColor: theme.background }]} />
-                ) : null}
-                <ProviderRow
-                  name={provider.name}
-                  logoPath={provider.logoPath}
-                  selected={selected.has(provider.providerId)}
-                  onToggle={() => toggle(provider.providerId)}
-                />
-              </Fragment>
+          <View style={styles.cloud}>
+            {providers.data.map((provider) => (
+              <ProviderPill
+                key={provider.providerId}
+                name={provider.name}
+                logoPath={provider.logoPath}
+                selected={selected.has(provider.providerId)}
+                onToggle={() => toggle(provider.providerId)}
+              />
             ))}
           </View>
         )}
@@ -156,7 +153,7 @@ export function PlatformsPicker({ mode }: Props) {
         ) : null}
 
         <View style={styles.actions}>
-          <Button title={primaryLabel} width="fill" onPress={() => save({ skipped: false })} />
+          <GlassButton title={primaryLabel} width="fill" onPress={() => save({ skipped: false })} />
           {mode === "onboarding" ? (
             <Button
               title={t("platforms.skip")}
@@ -182,13 +179,10 @@ const styles = StyleSheet.create({
   header: {
     gap: SPACING.XS,
   },
-  list: {
-    borderRadius: BORDER_RADIUS.MD,
-    overflow: "hidden",
-  },
-  separator: {
-    height: StyleSheet.hairlineWidth,
-    marginLeft: SPACING.MD + 40 + SPACING.MD,
+  cloud: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: SPACING.SM,
   },
   empty: {
     alignItems: "center",
