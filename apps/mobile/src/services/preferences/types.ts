@@ -1,4 +1,5 @@
 export type {
+  OnboardingNextRequestDto as OnboardingNextRequest,
   PreferencesMeDto as Preferences,
   PreferencesInputDto as PreferencesInput,
   SeedItemDto as SeedItem,
