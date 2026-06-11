@@ -11,6 +11,7 @@ import { useSessions } from "@/hooks/account/use-sessions";
 import { hapticError, hapticSuccess, hapticTap } from "@/lib/haptics";
 import { privacyHref } from "@/lib/navigation";
 import { signOut } from "@/services/account";
+import { useOnboardingStore } from "@/store/use-onboarding-store";
 
 import { SettingsRow } from "../settings-row";
 import { LinkedAccountsSection } from "./linked-accounts-section";
@@ -59,6 +60,13 @@ export function AccountSettingsSheet() {
     router.push("/whats-new");
   }, [router]);
 
+  const resetOnboarding = useOnboardingStore((state) => state.resetOnboardingAction);
+
+  const restartOnboarding = useCallback(() => {
+    hapticTap();
+    resetOnboarding();
+  }, [resetOnboarding]);
+
   const handleSignOut = useCallback(async () => {
     hapticTap();
     try {
@@ -106,6 +114,11 @@ export function AccountSettingsSheet() {
             />
             <SettingsRow icon="lock.shield" label={t("privacy.entry")} onPress={openPrivacy} />
             <SettingsRow icon="sparkles" label={t("whatsNew.title")} onPress={openWhatsNew} />
+            <SettingsRow
+              icon="arrow.counterclockwise"
+              label={t("account.restartOnboarding")}
+              onPress={restartOnboarding}
+            />
           </Section>
 
           <LinkedAccountsSection linked={linked} />

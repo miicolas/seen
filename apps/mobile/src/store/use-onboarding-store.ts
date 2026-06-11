@@ -22,6 +22,7 @@ interface OnboardingStore {
   markTasteCompletedAction: () => void;
   markPlatformsSkippedAction: () => void;
   markPlatformsCompletedAction: () => void;
+  resetOnboardingAction: () => void;
   setHasHydratedAction: (value: boolean) => void;
 }
 
@@ -40,6 +41,13 @@ export const useOnboardingStore = create(
       markTasteCompletedAction: () => set({ tasteStatus: "completed" }),
       markPlatformsSkippedAction: () => set({ platformsStatus: "skipped" }),
       markPlatformsCompletedAction: () => set({ platformsStatus: "completed" }),
+      resetOnboardingAction: () =>
+        set({
+          completed: false,
+          letterboxdImportStatus: "pending",
+          tasteStatus: "pending",
+          platformsStatus: "pending",
+        }),
       setHasHydratedAction: (value) => set({ hasHydrated: value }),
     }),
     {
