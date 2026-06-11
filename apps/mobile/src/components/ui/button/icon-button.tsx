@@ -22,6 +22,8 @@ export function IconButton({
   onPress,
   tintColor,
   iconColor,
+  variant = "prominent",
+  size = "large",
   disabled = false,
   haptic = true,
   role = "default",
@@ -32,6 +34,9 @@ export function IconButton({
   onPress: () => void;
   tintColor?: string;
   iconColor?: string;
+  /** prominent = accent-filled glass; glass = neutral translucent glass. */
+  variant?: "prominent" | "glass";
+  size?: "regular" | "large" | "extraLarge";
   disabled?: boolean;
   haptic?: boolean;
   role?: "default" | "cancel" | "destructive";
@@ -57,8 +62,10 @@ export function IconButton({
         systemImage={icon}
         onPress={handlePress}
         modifiers={[
-          buttonStyle(isLiquidGlassAvailable() ? "glassProminent" : "bordered"),
-          controlSize("large"),
+          buttonStyle(
+            isLiquidGlassAvailable() ? (variant === "glass" ? "glass" : "glassProminent") : "bordered",
+          ),
+          controlSize(size),
           tint(tintValue),
           labelStyle("iconOnly"),
           ...symbolTransitionModifiers,

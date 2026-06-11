@@ -7,11 +7,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScreenHeader, ScreenToolbar, type ScreenAction } from "@/components/navigation";
 import { Text } from "@/components/ui/text";
 import { useTheme } from "@/hooks/use-theme";
+import { useWatchAction } from "@/hooks/watch-sessions/use-watch-action";
 
 import { CastSection } from "./cast-section";
 import { EpisodesSection } from "./episodes-section";
 import { InfoSection } from "./info-section";
-import { MediaActions } from "./media-actions";
+import { MediaActionBar } from "./media-action-bar";
 import { MediaParallaxHeader } from "./media-parallax-header";
 import { MediaSummary } from "./media-summary";
 import { OverviewSection } from "./overview-section";
@@ -26,6 +27,12 @@ export function MediaDetail() {
   const vm = useMediaDetailViewModel();
 
   const handleRate = useCallback(() => vm.openReview(vm.myStars || undefined), [vm]);
+
+  const watchAction = useWatchAction({
+    mediaType: "movie",
+    tmdbId: vm.tmdbId,
+    runtimeMinutes: vm.detail?.runtime,
+  });
 
   const toolbarActions: ScreenAction[] = [
     {
@@ -75,18 +82,32 @@ export function MediaDetail() {
             hasReview={vm.hasReview}
           />
 
-          <MediaActions
-            hasRating={vm.hasRating}
+          <MediaActionBar
             accentHex={vm.accentHex}
-            onRate={handleRate}
-            showReviewAction={vm.mediaType === "movie"}
-            showWatchlistAction
-            isInWatchlist={vm.isInWatchlist}
-            isWatchlistSaving={vm.isWatchlistSaving}
-            onToggleWatchlist={vm.toggleWatchlist}
-            watchlistLabel={vm.isInWatchlist ? t("watchlist.remove") : t("watchlist.add")}
-            reviewedLabel={t("mediaDetail.seen")}
-            unreviewedLabel={t("mediaDetail.markAsSeen")}
+            watch={
+              vm.mediaType === "movie"
+                ? {
+                    caption: watchAction.caption,
+                    onPress: watchAction.onPress,
+                    loading: watchAction.loading,
+                  }
+                : undefined
+            }
+            rate={
+              vm.mediaType === "movie"
+                ? { caption: t("mediaDetail.seen"), onPress: handleRate, active: vm.hasRating }
+                : undefined
+            }
+            watchlist={
+              vm.hasRating
+                ? undefined
+                : {
+                    caption: t("watchlist.title"),
+                    onPress: vm.toggleWatchlist,
+                    active: vm.isInWatchlist,
+                    disabled: vm.isWatchlistSaving,
+                  }
+            }
           />
 
           {vm.error && !vm.detail ? (

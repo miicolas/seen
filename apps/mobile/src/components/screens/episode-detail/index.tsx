@@ -6,10 +6,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScreenHeader, ScreenToolbar } from "@/components/navigation";
 import { Text } from "@/components/ui/text";
 import { useTheme } from "@/hooks/use-theme";
+import { useWatchAction } from "@/hooks/watch-sessions/use-watch-action";
 
 import { CastSection } from "../media-detail/cast-section";
 import { InfoSection } from "../media-detail/info-section";
-import { MediaActions } from "../media-detail/media-actions";
+import { MediaActionBar } from "../media-detail/media-action-bar";
 import { MediaParallaxHeader } from "../media-detail/media-parallax-header";
 import { MediaSummary } from "../media-detail/media-summary";
 import { OverviewSection } from "../media-detail/overview-section";
@@ -21,6 +22,15 @@ export function EpisodeDetail() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const vm = useEpisodeDetailViewModel();
+
+  const watchAction = useWatchAction({
+    mediaType: "episode",
+    tmdbId: vm.seriesId,
+    seasonNumber: vm.seasonNumber,
+    episodeNumber: vm.episodeNumber,
+    episodeTmdbId: vm.episodeTmdbId > 0 ? vm.episodeTmdbId : undefined,
+    runtimeMinutes: vm.runtimeMinutes,
+  });
 
   return (
     <>
@@ -55,15 +65,19 @@ export function EpisodeDetail() {
             hasReview={vm.hasReview}
           />
 
-          {vm.episodeTmdbId > 0 ? (
-            <MediaActions
-              hasRating={vm.hasRating}
-              accentHex={vm.accentHex}
-              onRate={vm.handleRate}
-              reviewedLabel={t("episode.rated")}
-              unreviewedLabel={t("episode.rate")}
-            />
-          ) : null}
+          <MediaActionBar
+            accentHex={vm.accentHex}
+            watch={{
+              caption: watchAction.caption,
+              onPress: watchAction.onPress,
+              loading: watchAction.loading,
+            }}
+            rate={
+              vm.episodeTmdbId > 0
+                ? { caption: t("mediaDetail.seen"), onPress: vm.handleRate, active: vm.hasRating }
+                : undefined
+            }
+          />
 
           {vm.error && !vm.hasEpisode ? (
             <Text size="sm" weight="regular" color={theme.textSecondary} fillWidth>
