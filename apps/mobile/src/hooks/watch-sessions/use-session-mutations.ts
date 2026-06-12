@@ -21,10 +21,15 @@ type CacheSnapshot = {
 
 const nowIso = () => new Date().toISOString();
 
-export function useSessionMutations(sessionId: string) {
+export function useSessionMutations(sessionId: string | undefined) {
   const queryClient = useQueryClient();
   const currentKey = watchSessionKeys.current();
-  const detailKey = watchSessionKeys.detail(sessionId);
+  const detailKey = watchSessionKeys.detail(sessionId ?? "");
+
+  const requireSessionId = (): string => {
+    if (!sessionId) throw new Error("Watch session mutation requires an active session");
+    return sessionId;
+  };
 
   const patchCaches = (patch: ParticipantPatch) => {
     queryClient.setQueryData<WatchSession | null>(currentKey, (session) =>
@@ -86,7 +91,7 @@ export function useSessionMutations(sessionId: string) {
 
   const pause = useMutation(
     optimisticOptions(
-      () => pauseWatchSession(sessionId),
+      () => pauseWatchSession(requireSessionId()),
       (me) => ({
         ...me,
         status: "paused",
@@ -98,14 +103,14 @@ export function useSessionMutations(sessionId: string) {
 
   const resume = useMutation(
     optimisticOptions(
-      () => resumeWatchSession(sessionId),
+      () => resumeWatchSession(requireSessionId()),
       (me) => ({ ...me, status: "active", last_progress_at: nowIso() }),
     ),
   );
 
   const seek = useMutation(
     optimisticOptions(
-      (positionSeconds: number) => seekWatchSession(sessionId, positionSeconds),
+      (positionSeconds: number) => seekWatchSession(requireSessionId(), positionSeconds),
       (me, positionSeconds) => ({
         ...me,
         position_seconds: Math.max(0, Math.min(positionSeconds, me.duration_seconds)),
@@ -116,7 +121,7 @@ export function useSessionMutations(sessionId: string) {
 
   const finish = useMutation({
     ...optimisticOptions(
-      () => finishWatchSession(sessionId),
+      () => finishWatchSession(requireSessionId()),
       (me) => ({
         ...me,
         status: "completed",
@@ -132,7 +137,7 @@ export function useSessionMutations(sessionId: string) {
   });
 
   const cancel = useMutation({
-    mutationFn: () => cancelWatchSession(sessionId),
+    mutationFn: () => cancelWatchSession(requireSessionId()),
     onSuccess: () => {
       queryClient.setQueryData(currentKey, null);
       queryClient.invalidateQueries({ queryKey: watchSessionKeys.all() });
