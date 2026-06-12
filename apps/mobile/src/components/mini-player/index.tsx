@@ -45,7 +45,7 @@ export function MiniPlayer({ session }: { session: WatchSession }) {
       onPress={() => router.push(nowWatchingHref(session.id))}>
       <Image
         source={{ uri: tmdbImageUrl(session.poster_path, "w154") }}
-        style={styles.poster}
+        style={[styles.poster, compact && styles.posterCompact]}
         contentFit="cover"
         transition={150}
       />
@@ -85,28 +85,37 @@ export function MiniPlayer({ session }: { session: WatchSession }) {
 
 const styles = StyleSheet.create({
   row: {
-    flex: 1,
+    height: 44,
     flexDirection: "row",
     alignItems: "center",
     gap: SPACING.SM,
-    paddingHorizontal: SPACING.SM,
-    paddingVertical: SPACING.XS,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
   rowCompact: {
-    paddingVertical: 2,
+    height: 38,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
   },
   poster: {
-    width: 34,
-    height: 48,
-    borderRadius: BORDER_RADIUS.SM,
+    width: 30,
+    height: 30,
+    borderRadius: 7,
     backgroundColor: "#00000022",
+  },
+  posterCompact: {
+    width: 28,
+    height: 28,
+    borderRadius: 7,
   },
   info: {
     flex: 1,
+    minWidth: 0,
     gap: 2,
+    justifyContent: "center",
   },
   track: {
-    height: 3,
+    height: 2,
     borderRadius: BORDER_RADIUS.FULL,
     backgroundColor: "#7878805C",
     overflow: "hidden",
@@ -116,8 +125,10 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.FULL,
   },
   playButton: {
-    width: 40,
-    height: 40,
+    width: 32,
+    height: 32,
+    borderRadius: BORDER_RADIUS.FULL,
+    backgroundColor: "#78788024",
     alignItems: "center",
     justifyContent: "center",
   },
