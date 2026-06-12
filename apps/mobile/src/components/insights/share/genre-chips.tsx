@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { FONT_SIZE, SPACING } from "@/constants/design-tokens";
 
-import { shareCardTextColors } from "./share-card-frame";
+import { shareCardColors } from "./share-card-frame";
 
 // Filled accent-tinted genre capsules shared by the weekly and taste cards.
 export function GenreChips({ genres, accent }: { genres: string[]; accent: string }) {
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   label: {
-    color: shareCardTextColors.text,
+    color: shareCardColors.text,
     fontSize: FONT_SIZE.SM,
     fontWeight: "600",
   },

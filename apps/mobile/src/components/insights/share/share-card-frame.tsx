@@ -4,28 +4,43 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { FONT_SIZE, SPACING } from "@/constants/design-tokens";
 
-export const SHARE_CARD_WIDTH = 320;
-export const SHARE_CARD_HEIGHT = 400;
+export type ShareCardFormat = "story" | "square";
+
+// Logical sizes chosen so a 3× capture is exactly 1080×1920 / 1080×1080 px
+// (Instagram story / square post).
+export const SHARE_CARD_SIZES: Record<ShareCardFormat, { width: number; height: number }> = {
+  story: { width: 360, height: 640 },
+  square: { width: 360, height: 360 },
+};
+
+const SHARE_CARD_EXPORT_SCALE = 3;
+
+export function shareCardExportSize(format: ShareCardFormat): { width: number; height: number } {
+  const { width, height } = SHARE_CARD_SIZES[format];
+  return { width: width * SHARE_CARD_EXPORT_SCALE, height: height * SHARE_CARD_EXPORT_SCALE };
+}
 
 const CARD_BG = "#0B0B0F";
 const CARD_TEXT = "#F4F5F8";
 const CARD_MUTED = "#8E93A0";
+const CARD_TRACK = "#23252C";
 const CARD_RADIUS = 28;
 
 interface ShareCardFrameProps {
   eyebrow: string;
   accent: string;
+  format: ShareCardFormat;
   children: ReactNode;
 }
 
-// The branded, fixed-size canvas every share template renders into. Always dark
-// (a share card reads the same in anyone's feed regardless of app theme), with
-// an accent glow washing down from the top, the Seen wordmark and the period
-// eyebrow so the image is self-explanatory. Snapshot-safe: gradients only, no
-// blur views (UIVisualEffectView captures unreliably with view-shot).
-export function ShareCardFrame({ eyebrow, accent, children }: ShareCardFrameProps) {
+// The branded canvas every share template renders into. Always dark (a share
+// card reads the same in anyone's feed regardless of app theme), with an accent
+// glow washing down from the top, the Seen wordmark and the period eyebrow so
+// the image is self-explanatory. Snapshot-safe: gradients only, no blur views
+// (UIVisualEffectView captures unreliably with view-shot).
+export function ShareCardFrame({ eyebrow, accent, format, children }: ShareCardFrameProps) {
   return (
-    <View style={styles.frame}>
+    <View style={[styles.frame, SHARE_CARD_SIZES[format]]}>
       <LinearGradient
         colors={[`${accent}52`, "transparent"]}
         start={{ x: 0.5, y: 0 }}
@@ -44,7 +59,12 @@ export function ShareCardFrame({ eyebrow, accent, children }: ShareCardFrameProp
   );
 }
 
-export const shareCardTextColors = { text: CARD_TEXT, muted: CARD_MUTED };
+export const shareCardColors = {
+  text: CARD_TEXT,
+  muted: CARD_MUTED,
+  track: CARD_TRACK,
+  background: CARD_BG,
+};
 
 // Shared type ramp for the card bodies — cards override only the hero size.
 export const shareCardTypography = StyleSheet.create({
@@ -71,8 +91,6 @@ export const shareCardTypography = StyleSheet.create({
 
 const styles = StyleSheet.create({
   frame: {
-    width: SHARE_CARD_WIDTH,
-    height: SHARE_CARD_HEIGHT,
     backgroundColor: CARD_BG,
     borderRadius: CARD_RADIUS,
     borderCurve: "continuous",

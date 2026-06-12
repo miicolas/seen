@@ -99,7 +99,7 @@ function RootNavigator() {
             headerShown: false,
             presentation: "formSheet",
             sheetGrabberVisible: true,
-            sheetAllowedDetents: [0.7],
+            sheetAllowedDetents: [1.0],
             contentStyle: { backgroundColor: theme.background },
           }}
         />
