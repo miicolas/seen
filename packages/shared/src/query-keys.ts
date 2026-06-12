@@ -63,19 +63,19 @@ export const reviewKeys = {
     ["reviews", "summary", mediaType, tmdbId] as const,
 };
 
+export const libraryKeys = {
+  memberships: () => ["library", "memberships"] as const,
+};
+
 export const watchlistKeys = {
-  my: (mediaType: MediaType, tmdbId: number) => ["watchlist", "my", mediaType, tmdbId] as const,
   list: (filter: string = "all", search = "") => ["watchlist", "list", filter, search] as const,
 };
 
 export const notInterestedKeys = {
-  my: (mediaType: MediaType, tmdbId: number) =>
-    ["not-interested", "my", mediaType, tmdbId] as const,
   list: () => ["not-interested", "list"] as const,
 };
 
 export const likeKeys = {
-  my: (mediaType: MediaType, tmdbId: number) => ["likes", "my", mediaType, tmdbId] as const,
   list: (kind: string = "favorite") => ["likes", "list", kind] as const,
 };
 

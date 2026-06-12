@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 
+import { useMembershipsCache } from "@/hooks/library/use-memberships-cache";
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { errorMessage } from "@/lib/format";
@@ -37,6 +38,7 @@ interface WatchlistState {
 export function useWatchlist(filter: MediaFilter, search: string): WatchlistState {
   const { user } = useAuthContext();
   const queryClient = useQueryClient();
+  const membershipsCache = useMembershipsCache();
   const [mutationError, setMutationError] = useState<string | null>(null);
   const canLoad = !!user;
 
@@ -79,20 +81,21 @@ export function useWatchlist(filter: MediaFilter, search: string): WatchlistStat
           })),
         });
       }
-      queryClient.setQueryData(watchlistKeys.my(item.media_type, item.tmdb_id), null);
+      membershipsCache.remove("watchlist", { tmdb_id: item.tmdb_id, media_type: item.media_type });
       return { previous, item };
     },
     onError: (_error, _variables, context) => {
       if (context?.previous) queryClient.setQueryData(key, context.previous);
-    },
-    onSettled: (_data, _error, _variables, context) => {
-      // Every filter/search variant is a separate cache; refresh them all.
-      queryClient.invalidateQueries({ queryKey: ["watchlist", "list"] });
       if (context?.item) {
-        queryClient.invalidateQueries({
-          queryKey: watchlistKeys.my(context.item.media_type, context.item.tmdb_id),
+        membershipsCache.add("watchlist", {
+          tmdb_id: context.item.tmdb_id,
+          media_type: context.item.media_type,
         });
       }
+    },
+    onSettled: () => {
+      // Every filter/search variant is a separate cache; refresh them all.
+      queryClient.invalidateQueries({ queryKey: ["watchlist", "list"] });
     },
   });
 

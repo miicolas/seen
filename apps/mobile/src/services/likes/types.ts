@@ -22,11 +22,6 @@ export interface LikeItem {
   created_at: string;
 }
 
-export interface LikeMembership {
-  like: LikeItem | null;
-  favorite: LikeItem | null;
-}
-
 export interface LikeItemWithMedia extends LikeItem {
   media: TmdbMovieSummary;
 }

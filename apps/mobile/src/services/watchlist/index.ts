@@ -8,6 +8,5 @@ export type {
 } from "./types";
 
 export { addToWatchlist } from "./handlers/add";
-export { getMyWatchlistItem } from "./handlers/get-my";
 export { getMyWatchlistPage } from "./handlers/list";
 export { removeFromWatchlist } from "./handlers/remove";

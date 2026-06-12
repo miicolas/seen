@@ -1,48 +1,29 @@
-import { watchlistKeys } from "@seen/shared";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
 
 import { useInvalidateAnalytics } from "@/hooks/analytics/use-invalidate-analytics";
-import { useAuthContext } from "@/hooks/use-auth-context";
-import { errorMessage } from "@/lib/format";
+import { useLibraryMemberships } from "@/hooks/library/use-library-memberships";
+import { useMembershipsCache } from "@/hooks/library/use-memberships-cache";
 import type { MediaType } from "@/lib/tmdb";
 import { track } from "@/services/events";
-import {
-  addToWatchlist,
-  getMyWatchlistItem,
-  removeFromWatchlist,
-  type WatchlistItem,
-} from "@/services/watchlist";
+import { hasMembership } from "@/services/library";
+import { addToWatchlist, removeFromWatchlist } from "@/services/watchlist";
 
 interface WatchlistMembershipState {
-  item: WatchlistItem | null;
   isInWatchlist: boolean;
-  isLoading: boolean;
   isSaving: boolean;
-  error: string | null;
-  add: () => Promise<void>;
-  remove: () => Promise<void>;
   toggle: () => Promise<void>;
-  refetch: () => void;
 }
 
 export function useWatchlistMembership(
   tmdbId: number,
   mediaType: MediaType,
 ): WatchlistMembershipState {
-  const { user } = useAuthContext();
   const queryClient = useQueryClient();
-  const [mutationError, setMutationError] = useState<string | null>(null);
-  const canLoad = !!user && Number.isFinite(tmdbId) && tmdbId > 0;
-  const key = watchlistKeys.my(mediaType, tmdbId);
-
-  const query = useQuery({
-    queryKey: key,
-    queryFn: () => getMyWatchlistItem({ tmdbId, mediaType }),
-    enabled: canLoad,
-  });
-  const refetchQuery = query.refetch;
+  const { memberships } = useLibraryMemberships();
+  const cache = useMembershipsCache();
   const invalidateAnalytics = useInvalidateAnalytics();
+  const isInWatchlist = hasMembership(memberships, "watchlist", tmdbId, mediaType);
 
   const invalidateLists = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ["watchlist", "list"] });
@@ -52,91 +33,43 @@ export function useWatchlistMembership(
   const addMutation = useMutation({
     mutationFn: () => addToWatchlist({ tmdb_id: tmdbId, media_type: mediaType }),
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: key });
-      const previous = queryClient.getQueryData<WatchlistItem | null>(key);
-      queryClient.setQueryData<WatchlistItem>(key, {
-        id: "optimistic",
-        user_id: user?.id ?? "",
-        tmdb_id: tmdbId,
-        media_type: mediaType,
-        added_at: new Date().toISOString(),
-        visibility: "private",
-      });
+      const previous = await cache.begin();
+      cache.add("watchlist", { tmdb_id: tmdbId, media_type: mediaType });
       return { previous };
     },
     onError: (_error, _variables, context) => {
-      queryClient.setQueryData(key, context?.previous ?? null);
+      cache.restore(context?.previous);
     },
-    onSuccess: (saved) => {
-      queryClient.setQueryData(key, saved);
+    onSuccess: () => {
       invalidateLists();
       track("added_watchlist", { tmdbId, mediaType });
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: key });
     },
   });
 
   const removeMutation = useMutation({
     mutationFn: () => removeFromWatchlist({ tmdbId, mediaType }),
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: key });
-      const previous = queryClient.getQueryData<WatchlistItem | null>(key);
-      queryClient.setQueryData(key, null);
+      const previous = await cache.begin();
+      cache.remove("watchlist", { tmdb_id: tmdbId, media_type: mediaType });
       return { previous };
     },
     onError: (_error, _variables, context) => {
-      queryClient.setQueryData(key, context?.previous ?? null);
+      cache.restore(context?.previous);
     },
     onSuccess: () => {
       invalidateLists();
       track("removed_watchlist", { tmdbId, mediaType });
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: key });
-    },
   });
 
-  const add = useCallback(async () => {
-    setMutationError(null);
-    try {
-      await addMutation.mutateAsync();
-    } catch (err) {
-      setMutationError(errorMessage(err, "Failed to add to Watchlist"));
-      throw err;
-    }
-  }, [addMutation]);
-
-  const remove = useCallback(async () => {
-    setMutationError(null);
-    try {
-      await removeMutation.mutateAsync();
-    } catch (err) {
-      setMutationError(errorMessage(err, "Failed to remove from Watchlist"));
-      throw err;
-    }
-  }, [removeMutation]);
-
   const toggle = useCallback(async () => {
-    if (query.data) await remove();
-    else await add();
-  }, [add, query.data, remove]);
-
-  const refetch = useCallback(() => {
-    refetchQuery();
-  }, [refetchQuery]);
+    if (isInWatchlist) await removeMutation.mutateAsync();
+    else await addMutation.mutateAsync();
+  }, [addMutation, isInWatchlist, removeMutation]);
 
   return {
-    item: query.data ?? null,
-    isInWatchlist: !!query.data,
-    isLoading: query.isLoading,
+    isInWatchlist,
     isSaving: addMutation.isPending || removeMutation.isPending,
-    error:
-      mutationError ??
-      (query.error ? errorMessage(query.error, "Failed to load Watchlist state") : null),
-    add,
-    remove,
     toggle,
-    refetch,
   };
 }
