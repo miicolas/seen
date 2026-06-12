@@ -23,6 +23,8 @@ const period = t.Object({
   to: t.String(),
   previous_from: t.Nullable(t.String()),
   previous_to: t.Nullable(t.String()),
+  is_current: t.Boolean(),
+  has_previous: t.Boolean(),
 });
 
 const currentEra = t.Object({
@@ -77,6 +79,47 @@ const timelineBucket = t.Object({
   total_minutes: t.Number(),
   media_count: t.Number(),
   episode_count: t.Number(),
+  average_rating: t.Nullable(t.Number()),
+});
+
+const baselineBound = t.Object({ p25: t.Number(), p75: t.Number() });
+
+const metricSummary = t.Object({
+  current: t.Number(),
+  previous: t.Number(),
+  delta: t.Number(),
+  delta_pct: t.Nullable(t.Number()),
+});
+
+const series = t.Object({
+  period,
+  granularity: t.Union([t.Literal("day"), t.Literal("month")]),
+  buckets: t.Array(timelineBucket),
+  baselines: t.Object({
+    watch_time: t.Nullable(t.Array(baselineBound)),
+    titles: t.Nullable(t.Array(baselineBound)),
+    episodes: t.Nullable(t.Array(baselineBound)),
+    avg_rating: t.Nullable(t.Array(baselineBound)),
+  }),
+  summary: t.Object({
+    watch_time: metricSummary,
+    titles: metricSummary,
+    episodes: metricSummary,
+    avg_rating: t.Object({
+      current: t.Nullable(t.Number()),
+      previous: t.Nullable(t.Number()),
+      delta: t.Nullable(t.Number()),
+    }),
+  }),
+});
+
+const streaks = t.Object({
+  current_streak_days: t.Number(),
+  longest_streak_days: t.Number(),
+  longest_from: t.Nullable(t.String()),
+  longest_to: t.Nullable(t.String()),
+  active_today: t.Boolean(),
+  last_30_days: t.Array(t.Boolean()),
 });
 
 const timeline = t.Object({
@@ -150,7 +193,12 @@ const discoveryFlow = t.Object({
   totals: discoveryTotals,
 });
 
-const shareTemplate = t.Union([t.Literal("weekly"), t.Literal("taste"), t.Literal("watchlist")]);
+const shareTemplate = t.Union([
+  t.Literal("weekly"),
+  t.Literal("taste"),
+  t.Literal("watchlist"),
+  t.Literal("stats"),
+]);
 
 const shareRecap = t.Object({
   template: shareTemplate,
@@ -164,6 +212,11 @@ const shareRecap = t.Object({
   current_era: t.Optional(currentEra),
   media_type_mix: t.Optional(t.Object({ movie: t.Number(), tv: t.Number() })),
   total_logged: t.Optional(t.Number()),
+  buckets: t.Optional(t.Array(timelineBucket)),
+  streak: t.Optional(
+    t.Pick(streaks, ["current_streak_days", "longest_streak_days", "active_today"]),
+  ),
+  sparkline_minutes: t.Optional(t.Array(t.Number())),
   backlog: t.Optional(
     t.Object({
       count: t.Number(),
@@ -178,6 +231,10 @@ const shareRecap = t.Object({
 export const AnalyticsModel = new Elysia({ name: "Analytics.Model" }).model({
   "analytics.RangeQuery": t.Object({
     range: t.Optional(range),
+    offset: t.Optional(t.Numeric({ minimum: 0 })),
+    timezone: t.Optional(t.String()),
+  }),
+  "analytics.StreaksQuery": t.Object({
     timezone: t.Optional(t.String()),
   }),
   "analytics.TimelineItemsQuery": t.Object({
@@ -195,6 +252,8 @@ export const AnalyticsModel = new Elysia({ name: "Analytics.Model" }).model({
   "analytics.Taste": taste,
   "analytics.DiscoveryFlow": discoveryFlow,
   "analytics.ShareRecap": shareRecap,
+  "analytics.Series": series,
+  "analytics.Streaks": streaks,
 });
 
 export const analyticsModels = AnalyticsModel.models;

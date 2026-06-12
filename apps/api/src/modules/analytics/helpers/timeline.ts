@@ -1,6 +1,7 @@
 import { type Granularity, enumerateBuckets, granularityFor } from "../range";
 import type { Period, WatchedTime, WatchEntry } from "../shared";
 import { tzDayKey, tzMonthKey, WEEKDAYS } from "../tz";
+import { averageRatingOf, countKinds } from "./entries";
 import { accumulateWatchedTime, emptyWatchedTime, totalMinutes } from "./watched-time";
 
 export type TimelineBucket = {
@@ -10,6 +11,7 @@ export type TimelineBucket = {
   total_minutes: number;
   media_count: number;
   episode_count: number;
+  average_rating: number | null;
 };
 
 export type Timeline = {
@@ -53,19 +55,13 @@ export function buildTimeline(entries: WatchEntry[], period: Period, timeZone: s
     const watchedTime = bucketEntries.length
       ? accumulateWatchedTime(bucketEntries)
       : emptyWatchedTime();
-    let media_count = 0;
-    let episode_count = 0;
-    for (const e of bucketEntries) {
-      if (e.kind === "media") media_count += 1;
-      else episode_count += 1;
-    }
     return {
       key,
       label: labelFor(key, period.range, granularity),
       watched_time: watchedTime,
       total_minutes: totalMinutes(watchedTime),
-      media_count,
-      episode_count,
+      ...countKinds(bucketEntries),
+      average_rating: averageRatingOf(bucketEntries),
     };
   });
 

@@ -5,7 +5,9 @@ import { AnalyticsModel } from "./model";
 import {
   getDiscoveryFlow,
   getOverview,
+  getSeries,
   getShareRecap,
+  getStreaks,
   getTaste,
   getTimeline,
   getTimelineItems,
@@ -22,7 +24,8 @@ export const analyticsController = new Elysia({
   .use(AnalyticsModel)
   .get(
     "/overview",
-    ({ user, query }) => getOverview(user.id, query.range ?? DEFAULT_RANGE, query.timezone),
+    ({ user, query }) =>
+      getOverview(user.id, query.range ?? DEFAULT_RANGE, query.timezone, query.offset ?? 0),
     {
       auth: true,
       query: "analytics.RangeQuery",
@@ -31,13 +34,29 @@ export const analyticsController = new Elysia({
   )
   .get(
     "/timeline",
-    ({ user, query }) => getTimeline(user.id, query.range ?? DEFAULT_RANGE, query.timezone),
+    ({ user, query }) =>
+      getTimeline(user.id, query.range ?? DEFAULT_RANGE, query.timezone, query.offset ?? 0),
     {
       auth: true,
       query: "analytics.RangeQuery",
       response: { 200: "analytics.Timeline" },
     },
   )
+  .get(
+    "/series",
+    ({ user, query }) =>
+      getSeries(user.id, query.range ?? DEFAULT_RANGE, query.timezone, query.offset ?? 0),
+    {
+      auth: true,
+      query: "analytics.RangeQuery",
+      response: { 200: "analytics.Series" },
+    },
+  )
+  .get("/streaks", ({ user, query }) => getStreaks(user.id, query.timezone), {
+    auth: true,
+    query: "analytics.StreaksQuery",
+    response: { 200: "analytics.Streaks" },
+  })
   .get("/timeline/items", ({ user, query }) => getTimelineItems(user.id, query.from, query.to), {
     auth: true,
     query: "analytics.TimelineItemsQuery",
@@ -45,7 +64,8 @@ export const analyticsController = new Elysia({
   })
   .get(
     "/taste",
-    ({ user, query }) => getTaste(user.id, query.range ?? DEFAULT_RANGE, query.timezone),
+    ({ user, query }) =>
+      getTaste(user.id, query.range ?? DEFAULT_RANGE, query.timezone, query.offset ?? 0),
     {
       auth: true,
       query: "analytics.RangeQuery",

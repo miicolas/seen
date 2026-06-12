@@ -24,6 +24,8 @@ export type Period = {
   to: string;
   previous_from: string | null;
   previous_to: string | null;
+  is_current: boolean;
+  has_previous: boolean;
 };
 
 export type WatchEntry = {

@@ -7,8 +7,9 @@ export async function getTimeline(
   userId: string,
   range: AnalyticsRange,
   timezone: string | undefined,
+  offset = 0,
 ): Promise<Timeline> {
-  const { period, timezone: tz } = getAnalyticsPeriod(range, timezone);
+  const { period, timezone: tz } = getAnalyticsPeriod(range, timezone, offset);
   const entries = await fetchWatchEntries(userId, period.from, period.to);
   return buildTimeline(entries, period, tz);
 }

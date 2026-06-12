@@ -9,8 +9,9 @@ export async function getTaste(
   userId: string,
   range: AnalyticsRange,
   timezone: string | undefined,
+  offset = 0,
 ): Promise<TasteResponse> {
-  const { period } = getAnalyticsPeriod(range, timezone);
+  const { period } = getAnalyticsPeriod(range, timezone, offset);
   const entries = await fetchWatchEntries(userId, period.from, period.to);
   return { period, ...buildTaste(entries) };
 }

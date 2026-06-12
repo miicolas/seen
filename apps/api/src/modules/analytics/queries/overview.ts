@@ -10,8 +10,9 @@ export async function getOverview(
   userId: string,
   range: AnalyticsRange,
   timezone: string | undefined,
+  offset = 0,
 ): Promise<Overview> {
-  const { period } = getAnalyticsPeriod(range, timezone);
+  const { period } = getAnalyticsPeriod(range, timezone, offset);
 
   const [current, previous, watchlist] = await Promise.all([
     fetchWatchEntries(userId, period.from, period.to),
