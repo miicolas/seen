@@ -84,6 +84,16 @@ function RootNavigator() {
           }}
         />
         <Stack.Screen
+          name="watch-invite"
+          options={{
+            title: t("watch.inviteTitle"),
+            presentation: "formSheet",
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: [0.55, 0.9],
+            contentStyle: { backgroundColor: theme.background },
+          }}
+        />
+        <Stack.Screen
           name="now-watching"
           options={{
             headerShown: false,

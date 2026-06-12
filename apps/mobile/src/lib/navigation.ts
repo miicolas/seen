@@ -168,6 +168,13 @@ export function nowWatchingHref(sessionId: string): Href {
   } as Href;
 }
 
+export function watchInviteHref(sessionId: string): Href {
+  return {
+    pathname: "/watch-invite",
+    params: { sessionId },
+  } as Href;
+}
+
 // Social routes live under the profile tab's `social/` segment so they don't
 // collide with the media-detail `[id]` route. See AGENTS.md "Screens vs routes".
 export type ConnectionsKind = "followers" | "following";

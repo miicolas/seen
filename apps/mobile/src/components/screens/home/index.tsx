@@ -40,7 +40,10 @@ export function Home() {
             icon: "bell.badge.fill",
             label: t("watch.inboxTitle"),
             tintColor: accentHex,
-            onPress: () => router.push("/watch-invitations"),
+            onPress: () => {
+              hapticTap();
+              router.push("/watch-invitations");
+            },
           },
         ]}
       />

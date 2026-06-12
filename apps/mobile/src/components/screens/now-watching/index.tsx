@@ -21,6 +21,14 @@ export function NowWatching() {
   const insets = useSafeAreaInsets();
   const { accentHex } = useAccentColor();
   const vm = useNowWatchingViewModel();
+  const pendingInviteLabel =
+    vm.pendingInvitees.length === 1
+      ? t("watch.inviteSent", {
+          name: vm.pendingInvitees[0]?.full_name ?? vm.pendingInvitees[0]?.username ?? "",
+        })
+      : vm.pendingInvitees.length > 1
+        ? t("watch.inviteSentMultiple", { count: vm.pendingInvitees.length })
+        : null;
 
   if (!vm.detail) {
     return (
@@ -72,11 +80,9 @@ export function NowWatching() {
             <Text size="xs" weight="medium" color={SUBTLE_TINT} align="center">
               {t("watch.watchingWith", { name: vm.watchingWith })}
             </Text>
-          ) : vm.pendingInvitee ? (
+          ) : pendingInviteLabel ? (
             <Text size="xs" weight="medium" color={SUBTLE_TINT} align="center">
-              {t("watch.inviteSent", {
-                name: vm.pendingInvitee.full_name ?? vm.pendingInvitee.username ?? "",
-              })}
+              {pendingInviteLabel}
             </Text>
           ) : null}
         </View>

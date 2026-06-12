@@ -3,12 +3,11 @@ import { useTranslation } from "react-i18next";
 import { ActionSheetIOS, Alert } from "react-native";
 
 import { useAuthContext } from "@/hooks/use-auth-context";
-import { useInviteFriend } from "@/hooks/watch-sessions/use-invite-friend";
 import { useSessionDetail } from "@/hooks/watch-sessions/use-session-detail";
 import { useSessionMutations } from "@/hooks/watch-sessions/use-session-mutations";
 import { useTickingPosition } from "@/hooks/watch-sessions/use-ticking-position";
 import { hapticDelete, hapticSelection, hapticSuccess, hapticTap } from "@/lib/haptics";
-import { episodeReviewSheetHref, reviewSheetHref } from "@/lib/navigation";
+import { episodeReviewSheetHref, reviewSheetHref, watchInviteHref } from "@/lib/navigation";
 import { tmdbImageUrl } from "@/lib/tmdb/images";
 
 const SKIP_SECONDS = 30;
@@ -36,9 +35,8 @@ export function useNowWatchingViewModel() {
       : null;
   const watchingWith = others[0]?.full_name ?? null;
 
-  const pendingInvitee = detail?.pending_invitations[0]?.invitee ?? null;
-  const canInvite = isHost && others.length === 0 && !pendingInvitee;
-  const { friends, invite } = useInviteFriend(sessionId, canInvite);
+  const pendingInvitees = detail?.pending_invitations.map((row) => row.invitee) ?? [];
+  const canInvite = isHost && others.length === 0;
 
   function togglePlay() {
     hapticTap();
@@ -86,31 +84,9 @@ export function useNowWatchingViewModel() {
   }
 
   function openInvite() {
+    if (!sessionId) return;
     hapticSelection();
-    const candidates = friends.data ?? [];
-    if (candidates.length === 0) {
-      Alert.alert(t("watch.inviteTitle"), t("watch.noInvitableFriends"));
-      return;
-    }
-    const labels = candidates.map((friend) => friend.full_name ?? friend.username ?? "");
-    ActionSheetIOS.showActionSheetWithOptions(
-      {
-        title: t("watch.inviteTitle"),
-        options: [...labels, t("watch.cancel")],
-        cancelButtonIndex: labels.length,
-      },
-      (index) => {
-        if (index == null || index >= candidates.length) return;
-        const friend = candidates[index]!;
-        invite.mutate(friend.user_id, {
-          onSuccess: () => {
-            hapticSuccess();
-            Alert.alert(t("watch.inviteSent", { name: labels[index] }));
-          },
-          onError: () => Alert.alert(t("watch.inviteError")),
-        });
-      },
-    );
+    router.push(watchInviteHref(sessionId));
   }
 
   function openMenu() {
@@ -143,7 +119,7 @@ export function useNowWatchingViewModel() {
     isHost,
     subtitle,
     watchingWith,
-    pendingInvitee,
+    pendingInvitees,
     canInvite,
     posterUri: tmdbImageUrl(detail?.poster_path, "w780"),
     isFinishing: finish.isPending,
