@@ -4,27 +4,31 @@ import type {
   AnalyticsRange,
   DiscoveryFlow,
   Overview,
+  Series,
   ShareRecap,
   ShareTemplate,
+  Streaks,
   Taste,
-  Timeline,
   TimelineItem,
 } from "./types";
 
 export const analyticsService = {
-  overview: (range: AnalyticsRange, timezone: string): Promise<Overview> =>
-    unwrapEden<Overview>(eden.analytics.overview.get({ query: { range, timezone } })),
+  overview: (range: AnalyticsRange, timezone: string, offset = 0): Promise<Overview> =>
+    unwrapEden<Overview>(eden.analytics.overview.get({ query: { range, timezone, offset } })),
 
-  timeline: (range: AnalyticsRange, timezone: string): Promise<Timeline> =>
-    unwrapEden<Timeline>(eden.analytics.timeline.get({ query: { range, timezone } })),
+  series: (range: AnalyticsRange, timezone: string, offset = 0): Promise<Series> =>
+    unwrapEden<Series>(eden.analytics.series.get({ query: { range, timezone, offset } })),
+
+  streaks: (timezone: string): Promise<Streaks> =>
+    unwrapEden<Streaks>(eden.analytics.streaks.get({ query: { timezone } })),
 
   timelineItems: (from: string, to: string, timezone: string): Promise<{ items: TimelineItem[] }> =>
     unwrapEden<{ items: TimelineItem[] }>(
       eden.analytics.timeline.items.get({ query: { from, to, timezone } }),
     ),
 
-  taste: (range: AnalyticsRange, timezone: string): Promise<Taste> =>
-    unwrapEden<Taste>(eden.analytics.taste.get({ query: { range, timezone } })),
+  taste: (range: AnalyticsRange, timezone: string, offset = 0): Promise<Taste> =>
+    unwrapEden<Taste>(eden.analytics.taste.get({ query: { range, timezone, offset } })),
 
   discoveryFlow: (range: AnalyticsRange, timezone: string): Promise<DiscoveryFlow> =>
     unwrapEden<DiscoveryFlow>(eden.analytics["discovery-flow"].get({ query: { range, timezone } })),

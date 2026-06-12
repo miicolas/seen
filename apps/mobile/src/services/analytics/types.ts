@@ -1,7 +1,7 @@
 import type { MediaType } from "@/lib/tmdb";
 
 export type AnalyticsRange = "week" | "month" | "year" | "all";
-export type ShareTemplate = "weekly" | "taste" | "watchlist";
+export type ShareTemplate = "weekly" | "taste" | "watchlist" | "stats";
 export type RuntimeConfidence = "exact" | "estimated" | "unknown";
 export type RecommendationSource =
   | "content"
@@ -23,6 +23,8 @@ export interface Period {
   to: string;
   previous_from: string | null;
   previous_to: string | null;
+  is_current: boolean;
+  has_previous: boolean;
 }
 
 export interface CurrentEra {
@@ -69,12 +71,52 @@ export interface TimelineBucket {
   total_minutes: number;
   media_count: number;
   episode_count: number;
+  average_rating: number | null;
 }
 
-export interface Timeline {
+export interface BaselineBound {
+  p25: number;
+  p75: number;
+}
+
+export interface SeriesBaselines {
+  watch_time: BaselineBound[] | null;
+  titles: BaselineBound[] | null;
+  episodes: BaselineBound[] | null;
+  avg_rating: BaselineBound[] | null;
+}
+
+export interface MetricSummary {
+  current: number;
+  previous: number;
+  delta: number;
+  delta_pct: number | null;
+}
+
+export interface Series {
   period: Period;
   granularity: "day" | "month";
   buckets: TimelineBucket[];
+  baselines: SeriesBaselines;
+  summary: {
+    watch_time: MetricSummary;
+    titles: MetricSummary;
+    episodes: MetricSummary;
+    avg_rating: {
+      current: number | null;
+      previous: number | null;
+      delta: number | null;
+    };
+  };
+}
+
+export interface Streaks {
+  current_streak_days: number;
+  longest_streak_days: number;
+  longest_from: string | null;
+  longest_to: string | null;
+  active_today: boolean;
+  last_30_days: boolean[];
 }
 
 export interface TimelineItem {
@@ -153,6 +195,9 @@ export interface ShareRecap {
   current_era?: CurrentEra;
   media_type_mix?: { movie: number; tv: number };
   total_logged?: number;
+  buckets?: TimelineBucket[];
+  streak?: Pick<Streaks, "current_streak_days" | "longest_streak_days" | "active_today">;
+  sparkline_minutes?: number[];
   backlog?: {
     count: number;
     movie_count: number;

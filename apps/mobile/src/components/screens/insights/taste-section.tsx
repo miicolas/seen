@@ -2,8 +2,9 @@ import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, View } from "react-native";
 
 import { BarChart, type BarDatum } from "@/components/insights/bar-chart";
+import { DotMatrix } from "@/components/insights/charts/dot-matrix";
+import { useSeriesColors } from "@/components/insights/charts/series-colors";
 import { InsightCard } from "@/components/insights/insight-card";
-import { LabeledBar } from "@/components/insights/labeled-bar";
 import { FONT_SIZE, SPACING } from "@/constants/design-tokens";
 import { useAccentColor } from "@/hooks/use-accent-color";
 import { useTheme } from "@/hooks/use-theme";
@@ -13,11 +14,11 @@ export function TasteSection({ taste }: { taste: Taste }) {
   const { t } = useTranslation();
   const theme = useTheme();
   const { accentHex } = useAccentColor();
+  const colors = useSeriesColors();
 
   if (taste.total_logged === 0) return null;
 
-  const genres = taste.genre_mix.slice(0, 6);
-  const maxGenre = Math.max(1, ...genres.map((g) => g.count));
+  const matrixGenres = taste.genre_mix.slice(0, 3);
 
   // Distribution: 10 stored-rating buckets → label only the whole stars.
   const distribution: BarDatum[] = taste.rating_distribution.map((count, index) => ({
@@ -28,28 +29,36 @@ export function TasteSection({ taste }: { taste: Taste }) {
   }));
   const hasRatings = taste.total_rated > 0;
 
-  const moviePct =
-    taste.media_type_mix.movie + taste.media_type_mix.tv > 0
-      ? Math.round(
-          (taste.media_type_mix.movie / (taste.media_type_mix.movie + taste.media_type_mix.tv)) *
-            100,
-        )
-      : 0;
-
   return (
     <InsightCard title={t("insights.tasteTitle")}>
-      <View style={styles.group}>
-        {genres.map((genre) => (
-          <LabeledBar
-            key={genre.genre}
-            label={genre.genre}
-            value={genre.count}
-            max={maxGenre}
-            trailing={`${Math.round(genre.share * 100)}%`}
-            color={accentHex}
-          />
-        ))}
-      </View>
+      {taste.current_era.decade != null ? (
+        <Text style={[styles.era, { color: theme.text }]}>
+          {t("insights.eraStatement")}{" "}
+          <Text style={{ color: accentHex }}>{taste.current_era.label}</Text>
+        </Text>
+      ) : null}
+
+      {matrixGenres.length > 0 ? (
+        <View style={styles.matrices}>
+          {matrixGenres.map((genre, index) => (
+            <View key={genre.genre} style={styles.matrix}>
+              <DotMatrix
+                percent={genre.share}
+                color={colors[index % colors.length]}
+                inactiveColor={theme.backgroundSelected}
+              />
+              <Text style={[styles.matrixPercent, { color: theme.text }]}>
+                {Math.round(genre.share * 100)}%
+              </Text>
+              <Text
+                style={[styles.matrixLabel, { color: colors[index % colors.length] }]}
+                numberOfLines={1}>
+                {genre.genre}
+              </Text>
+            </View>
+          ))}
+        </View>
+      ) : null}
 
       {hasRatings ? (
         <View style={styles.subsection}>
@@ -86,17 +95,32 @@ export function TasteSection({ taste }: { taste: Taste }) {
           {contradiction.label}
         </Text>
       ))}
-
-      <Text style={[styles.meta, { color: theme.textSecondary }]}>
-        {t("insights.mediaSplit", { movies: moviePct, series: 100 - moviePct })}
-      </Text>
     </InsightCard>
   );
 }
 
 const styles = StyleSheet.create({
-  group: {
-    gap: SPACING.SM,
+  era: {
+    fontSize: FONT_SIZE.XL,
+    fontWeight: "700",
+  },
+  matrices: {
+    flexDirection: "row",
+    gap: SPACING.MD,
+    marginTop: SPACING.XS,
+  },
+  matrix: {
+    flex: 1,
+    gap: SPACING.XS,
+  },
+  matrixPercent: {
+    fontSize: FONT_SIZE.XL,
+    fontWeight: "800",
+    fontVariant: ["tabular-nums"],
+  },
+  matrixLabel: {
+    fontSize: FONT_SIZE.SM,
+    fontWeight: "700",
   },
   subsection: {
     gap: SPACING.XS,
@@ -121,10 +145,6 @@ const styles = StyleSheet.create({
   contradiction: {
     fontSize: FONT_SIZE.SM,
     fontStyle: "italic",
-    marginTop: 2,
-  },
-  meta: {
-    fontSize: FONT_SIZE.XS,
     marginTop: 2,
   },
 });

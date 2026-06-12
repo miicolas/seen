@@ -4,6 +4,6 @@ import { analyticsService, type AnalyticsRange } from "@/services/analytics";
 
 import { useAnalyticsOffsetQuery } from "./use-analytics-query";
 
-export function useAnalyticsTaste(range: AnalyticsRange, offset = 0) {
-  return useAnalyticsOffsetQuery(range, offset, analyticsKeys.taste, analyticsService.taste);
+export function useAnalyticsSeries(range: AnalyticsRange, offset = 0) {
+  return useAnalyticsOffsetQuery(range, offset, analyticsKeys.series, analyticsService.series);
 }
