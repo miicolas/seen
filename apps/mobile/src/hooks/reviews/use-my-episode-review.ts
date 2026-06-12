@@ -1,4 +1,4 @@
-import { episodeReviewKeys, profileKeys } from "@seen/shared";
+import { episodeReviewKeys, profileKeys, reviewKeys } from "@seen/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
@@ -68,6 +68,8 @@ export function useMyEpisodeReview(params: {
     queryClient.invalidateQueries({
       queryKey: episodeReviewKeys.seasonRatings(params.seriesTmdbId, params.seasonNumber),
     });
+    // Episode ratings roll up into the series' aggregate stats on the detail screen.
+    queryClient.invalidateQueries({ queryKey: reviewKeys.summary("tv", params.seriesTmdbId) });
     queryClient.invalidateQueries({ queryKey: profileKeys.activity() });
     invalidateAnalytics();
   }, [params, queryClient, invalidateAnalytics]);

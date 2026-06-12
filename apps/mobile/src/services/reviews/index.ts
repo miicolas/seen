@@ -4,12 +4,13 @@ export type {
   PaginatedMediaRef,
   Review,
   ReviewInput,
+  ReviewSummary,
 } from "./types";
 export { EMPTY_HISTOGRAM } from "./types";
 
 export { upsertReview } from "./handlers/upsert";
 export { deleteReview } from "./handlers/delete";
 export { getMyReview } from "./handlers/get-my-review";
-export { getMediaReviews, getMediaReviewsPage } from "./handlers/list";
-export { getMediaStats } from "./handlers/stats";
+export { getMediaReviewsPage } from "./handlers/list";
+export { getReviewSummary } from "./handlers/summary";
 export { starsToRating, ratingToStars } from "@/services/core";

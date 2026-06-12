@@ -59,7 +59,8 @@ export const socialKeys = {
 export const reviewKeys = {
   my: (mediaType: MediaType, tmdbId: number) => ["reviews", "my", mediaType, tmdbId] as const,
   list: (mediaType: MediaType, tmdbId: number) => ["reviews", "list", mediaType, tmdbId] as const,
-  stats: (mediaType: MediaType, tmdbId: number) => ["reviews", "stats", mediaType, tmdbId] as const,
+  summary: (mediaType: MediaType, tmdbId: number) =>
+    ["reviews", "summary", mediaType, tmdbId] as const,
 };
 
 export const watchlistKeys = {

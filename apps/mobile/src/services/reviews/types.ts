@@ -50,5 +50,13 @@ export interface MediaReviewsPage {
   count: number;
 }
 
+// GET /reviews/summary — my review + public preview + stats in one round trip.
+export interface ReviewSummary {
+  my_review: Review | null;
+  reviews: Review[];
+  count: number;
+  stats: MediaReviewStats | null;
+}
+
 // Zeroed 10 half-star buckets — fallback when a stats row has no histogram yet.
 export const EMPTY_HISTOGRAM: number[] = new Array(10).fill(0);

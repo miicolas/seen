@@ -1,12 +1,10 @@
-import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect } from "react";
 import { Linking, Share, useWindowDimensions } from "react-native";
 
 import { useAccentColor } from "@/hooks/use-accent-color";
 import { useMediaDetail } from "@/hooks/tmdb/use-media-detail";
-import { useMediaReviewPreview } from "@/hooks/reviews/use-media-reviews";
-import { useMediaStats } from "@/hooks/reviews/use-media-stats";
-import { useMyReview } from "@/hooks/reviews/use-my-review";
+import { useReviewSummary } from "@/hooks/reviews/use-review-summary";
 import { useLikesMembership } from "@/hooks/likes/use-likes-membership";
 import { useNotInterestedMembership } from "@/hooks/not-interested/use-not-interested-membership";
 import { useWatchlistMembership } from "@/hooks/watchlist/use-watchlist-membership";
@@ -38,41 +36,19 @@ export function useMediaDetailViewModel() {
   const { width } = useWindowDimensions();
 
   const { detail, isLoading, error } = useMediaDetail(tmdbId, mediaType);
-  const { review, refetch } = useMyReview(tmdbId, mediaType);
+  const {
+    myReview: review,
+    reviews,
+    count: reviewCount,
+    stats,
+  } = useReviewSummary(tmdbId, mediaType);
   const watchlist = useWatchlistMembership(tmdbId, mediaType);
-  const refetchWatchlist = watchlist.refetch;
   const toggleWatchlistMutation = watchlist.toggle;
   const likes = useLikesMembership(tmdbId, mediaType);
-  const refetchLikes = likes.refetch;
   const toggleLikeMutation = likes.toggleLike;
   const toggleFavoriteMutation = likes.toggleFavorite;
   const notInterested = useNotInterestedMembership(tmdbId, mediaType);
-  const refetchNotInterested = notInterested.refetch;
   const toggleNotInterestedMutation = notInterested.toggle;
-  const {
-    reviews,
-    count: reviewCount,
-    refetch: refetchReviews,
-  } = useMediaReviewPreview(tmdbId, mediaType);
-  const { stats, refetch: refetchStats } = useMediaStats(tmdbId, mediaType);
-
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-      refetchWatchlist();
-      refetchLikes();
-      refetchNotInterested();
-      refetchReviews();
-      refetchStats();
-    }, [
-      refetch,
-      refetchLikes,
-      refetchNotInterested,
-      refetchReviews,
-      refetchStats,
-      refetchWatchlist,
-    ]),
-  );
 
   useEffect(() => {
     if (Number.isFinite(tmdbId) && tmdbId > 0) {

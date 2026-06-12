@@ -1,8 +1,9 @@
-import { profileKeys, reviewKeys, watchlistKeys } from "@seen/shared";
+import { profileKeys, reviewKeys } from "@seen/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
 import { useInvalidateAnalytics } from "@/hooks/analytics/use-invalidate-analytics";
+import { useMembershipsCache } from "@/hooks/library/use-memberships-cache";
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { track } from "@/services/events";
 import { errorMessage } from "@/lib/format";
@@ -38,19 +39,21 @@ export function useMyReview(tmdbId: number, mediaType: MediaType): MyReviewState
   });
 
   const invalidateAnalytics = useInvalidateAnalytics();
+  const membershipsCache = useMembershipsCache();
 
   const invalidateDerived = useCallback(() => {
     queryClient.invalidateQueries({
       queryKey: reviewKeys.list(mediaType, tmdbId),
     });
     queryClient.invalidateQueries({
-      queryKey: reviewKeys.stats(mediaType, tmdbId),
+      queryKey: reviewKeys.summary(mediaType, tmdbId),
     });
-    queryClient.setQueryData(watchlistKeys.my(mediaType, tmdbId), null);
+    // Saving a review removes the media from the watchlist server-side.
+    membershipsCache.remove("watchlist", { tmdb_id: tmdbId, media_type: mediaType });
     queryClient.invalidateQueries({ queryKey: ["watchlist", "list"] });
     queryClient.invalidateQueries({ queryKey: profileKeys.activity() });
     invalidateAnalytics();
-  }, [mediaType, queryClient, tmdbId, invalidateAnalytics]);
+  }, [mediaType, membershipsCache, queryClient, tmdbId, invalidateAnalytics]);
 
   const saveMutation = useMutation({
     mutationFn: (input: Omit<ReviewInput, "tmdb_id" | "media_type">) =>
