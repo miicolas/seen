@@ -5,6 +5,7 @@ import { analyticsController } from "./analytics";
 import { episodeReviewController } from "./episode-reviews";
 import { eventsController } from "./events";
 import { importController } from "./import";
+import { libraryController } from "./library";
 import { likesController } from "./likes";
 import { notInterestedController } from "./not-interested";
 import { notificationController } from "./notifications";
@@ -26,6 +27,7 @@ export const apiRouter = new Elysia({ name: "api.router" })
   .use(reviewController)
   .use(watchlistController)
   .use(likesController)
+  .use(libraryController)
   .use(notInterestedController)
   .use(episodeReviewController)
   .use(eventsController)
