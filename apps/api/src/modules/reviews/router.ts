@@ -2,7 +2,7 @@ import { Elysia } from "elysia";
 
 import { authGuard } from "../../auth-plugin";
 import { ReviewModel } from "./model";
-import { getMediaReviewsPage, getMediaStats, getMyReview } from "./queries";
+import { getMediaReviewsPage, getMediaReviewSummary, getMediaStats, getMyReview } from "./queries";
 import { assertReviewInput, deleteReview, upsertReview } from "./mutations";
 
 export const reviewController = new Elysia({
@@ -53,6 +53,17 @@ export const reviewController = new Elysia({
       query: "review.ListQuery",
       response: {
         200: "review.Page",
+      },
+    },
+  )
+  .get(
+    "/summary",
+    ({ user, query }) => getMediaReviewSummary(user.id, query.tmdbId, query.mediaType),
+    {
+      auth: true,
+      query: "review.MediaRefQuery",
+      response: {
+        200: "review.Summary",
       },
     },
   )

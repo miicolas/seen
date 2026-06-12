@@ -20,6 +20,17 @@ const mediaRefQuery = t.Object({
   mediaType,
 });
 
+const stats = t.Nullable(
+  t.Object({
+    tmdb_id: t.Number(),
+    media_type: mediaType,
+    rating_count: t.Number(),
+    avg_rating: t.Nullable(t.Number()),
+    review_count: t.Number(),
+    histogram: t.Nullable(t.Array(t.Number())),
+  }),
+);
+
 export const ReviewModel = new Elysia({ name: "Review.Model" }).model({
   "review.Review": review,
   "review.NullableReview": t.Nullable(review),
@@ -42,16 +53,13 @@ export const ReviewModel = new Elysia({ name: "Review.Model" }).model({
     reviews: t.Array(review),
     count: t.Number(),
   }),
-  "review.Stats": t.Nullable(
-    t.Object({
-      tmdb_id: t.Number(),
-      media_type: mediaType,
-      rating_count: t.Number(),
-      avg_rating: t.Nullable(t.Number()),
-      review_count: t.Number(),
-      histogram: t.Nullable(t.Array(t.Number())),
-    }),
-  ),
+  "review.Stats": stats,
+  "review.Summary": t.Object({
+    my_review: t.Nullable(review),
+    reviews: t.Array(review),
+    count: t.Number(),
+    stats,
+  }),
   "review.DeleteResponse": t.Object({
     ok: t.Boolean(),
   }),
