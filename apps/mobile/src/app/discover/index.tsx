@@ -1,5 +1,5 @@
 import { Redirect } from "expo-router";
 
-export default function TabsIndexRoute() {
+export default function LegacyDiscoverRoute() {
   return <Redirect href="/search" />;
 }

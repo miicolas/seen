@@ -125,6 +125,10 @@ export const fr: typeof en = {
     pickPlatformsSubtitle: "Choisis tes services pour voir ce qui est disponible ce soir.",
     pickPlatformsAction: "Choisir mes services",
   },
+  search: {
+    title: "Tes recommandations",
+    titleWithName: "Pour toi, {{name}}",
+  },
   review: {
     screenTitle: "Critique",
     writeReview: "Écrire une critique",
@@ -255,6 +259,7 @@ export const fr: typeof en = {
   tabs: {
     home: "Pour toi",
     discover: "Découvrir",
+    search: "Découvrir",
     watchlist: "Watchlist",
     insights: "Stats",
     profile: "Profil",

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { HeroCard } from "@/components/discover/hero-card";
 import { PosterCard } from "@/components/discover/poster-card";
 import { Shelf } from "@/components/discover/shelf";
+import type { MediaRouteBase } from "@/lib/navigation";
 import type { FeedEntry, FeedSection } from "@/services/recommendations";
 
 const keyOf = (entry: FeedEntry, index: number) => `${entry.media_type}-${entry.id}-${index}`;
@@ -14,7 +15,13 @@ const impressionRef = (entry: FeedEntry) => ({
 
 // One "For You" section as a shelf: the lead section gets hero treatment, the
 // rest are poster rows. Impressions are credited to the section's source.
-export function FeedSectionShelf({ section }: { section: FeedSection }) {
+export function FeedSectionShelf({
+  section,
+  base = "search",
+}: {
+  section: FeedSection;
+  base?: MediaRouteBase;
+}) {
   const { t } = useTranslation();
   const isHero = section.key === "today";
 
@@ -44,11 +51,11 @@ export function FeedSectionShelf({ section }: { section: FeedSection }) {
           <HeroCard
             movie={entry}
             width={cardWidth}
-            base="home"
+            base={base}
             eyebrow={t("home.sections.todayEyebrow")}
           />
         ) : (
-          <PosterCard movie={entry} width={cardWidth} base="home" />
+          <PosterCard movie={entry} width={cardWidth} base={base} />
         )
       }
     />

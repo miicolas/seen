@@ -193,7 +193,7 @@ export function ProfileScreen() {
                     action={
                       <GlassButton
                         title={t("profile.discover")}
-                        onPress={() => router.push("/(tabs)/discover")}
+                        onPress={() => router.push("/(tabs)/search")}
                         size="sm"
                       />
                     }

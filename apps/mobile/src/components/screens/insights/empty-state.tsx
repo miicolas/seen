@@ -22,7 +22,7 @@ export function InsightsEmptyState() {
       <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
         {t("insights.emptySubtitle")}
       </Text>
-      <Link href="/(tabs)/discover" asChild>
+      <Link href="/(tabs)/search" asChild>
         <Pressable onPress={() => hapticTap()} hitSlop={8}>
           <Text style={[styles.cta, { color: accentHex }]}>{t("insights.emptyCta")}</Text>
         </Pressable>

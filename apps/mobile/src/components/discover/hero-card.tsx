@@ -15,7 +15,7 @@ interface HeroCardProps {
   base?: MediaRouteBase;
 }
 
-export function HeroCard({ movie, width, eyebrow = "Featured", base = "discover" }: HeroCardProps) {
+export function HeroCard({ movie, width, eyebrow = "Featured", base = "search" }: HeroCardProps) {
   const uri = tmdbImageUrl(movie.backdrop_path ?? movie.poster_path, "w1280");
   const title = truncate(movie.title ?? movie.original_title ?? "Untitled", 32);
 

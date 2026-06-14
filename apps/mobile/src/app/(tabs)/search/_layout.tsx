@@ -3,14 +3,14 @@ import { useTranslation } from "react-i18next";
 
 import { useTheme } from "@/hooks/use-theme";
 
-export default function HomeLayout() {
+export default function SearchLayout() {
   const { t } = useTranslation();
   const theme = useTheme();
 
   return (
     <Stack
       screenOptions={{
-        title: t("home.title"),
+        title: t("tabs.search"),
         headerLargeTitle: true,
         contentStyle: { backgroundColor: theme.background },
       }}>

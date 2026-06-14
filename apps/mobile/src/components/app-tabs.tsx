@@ -23,20 +23,15 @@ export default function AppTabs() {
       indicatorColor={colors.backgroundElement}
       tintColor={accentHex}
       screenListeners={{ tabPress: () => hapticSelection() }}
-      minimizeBehavior="automatic">
+      minimizeBehavior="onScrollDown">
       {session ? (
         <NativeTabs.BottomAccessory>
           <MiniPlayer session={session} />
         </NativeTabs.BottomAccessory>
       ) : null}
-      <NativeTabs.Trigger name="home">
-        <NativeTabs.Trigger.Label hidden>{t("tabs.home")}</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf={{ default: "sparkles", selected: "sparkles" }} />
-      </NativeTabs.Trigger>
-
-      <NativeTabs.Trigger name="discover">
-        <NativeTabs.Trigger.Label hidden>{t("tabs.discover")}</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf={{ default: "tv", selected: "tv.fill" }} />
+      <NativeTabs.Trigger name="search">
+        <NativeTabs.Trigger.Label hidden>{t("tabs.search")}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf={{ default: "magnifyingglass", selected: "magnifyingglass" }} />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="watchlist">

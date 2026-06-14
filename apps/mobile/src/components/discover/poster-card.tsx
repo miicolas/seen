@@ -23,7 +23,7 @@ interface PosterCardProps {
 
 // Tap + long-press context menu use expo-router's Link.Trigger/Link.Menu —
 // wrapping the Link in an external MenuView swallows simple taps.
-export function PosterCard({ movie, width, showMeta = true, base = "discover" }: PosterCardProps) {
+export function PosterCard({ movie, width, showMeta = true, base = "search" }: PosterCardProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const watchlist = useWatchlistMembership(movie.id, movie.media_type);

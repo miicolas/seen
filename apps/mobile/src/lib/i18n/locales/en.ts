@@ -121,6 +121,10 @@ export const en = {
     pickPlatformsSubtitle: "Pick your services to see what's available tonight.",
     pickPlatformsAction: "Choose services",
   },
+  search: {
+    title: "Your recommendations",
+    titleWithName: "For you, {{name}}",
+  },
   review: {
     screenTitle: "Review Sheet",
     writeReview: "Write a Review",
@@ -251,6 +255,7 @@ export const en = {
   tabs: {
     home: "For You",
     discover: "Discover",
+    search: "Discover",
     watchlist: "Watchlist",
     insights: "Insights",
     profile: "Profile",

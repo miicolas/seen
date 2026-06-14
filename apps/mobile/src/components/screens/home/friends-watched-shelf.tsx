@@ -5,10 +5,17 @@ import { PosterCard } from "@/components/discover/poster-card";
 import { Shelf } from "@/components/discover/shelf";
 import { Text } from "@/components/ui/text";
 import { SPACING } from "@/constants/design-tokens";
+import type { MediaRouteBase } from "@/lib/navigation";
 import { useTheme } from "@/hooks/use-theme";
 import type { FriendsWatchedEntry } from "@/services/recommendations";
 
-export function FriendsWatchedShelf({ entries }: { entries: FriendsWatchedEntry[] }) {
+export function FriendsWatchedShelf({
+  entries,
+  base = "search",
+}: {
+  entries: FriendsWatchedEntry[];
+  base?: MediaRouteBase;
+}) {
   const { t } = useTranslation();
   const theme = useTheme();
 
@@ -24,7 +31,7 @@ export function FriendsWatchedShelf({ entries }: { entries: FriendsWatchedEntry[
       impressionItem={(entry) => ({ tmdbId: entry.id, mediaType: entry.media_type })}
       renderItem={(entry, _index, cardWidth) => (
         <View style={[styles.card, { width: cardWidth }]}>
-          <PosterCard movie={entry} width={cardWidth} showMeta={false} base="home" />
+          <PosterCard movie={entry} width={cardWidth} showMeta={false} base={base} />
           {entry.friendReason ? (
             <Text size="xs" weight="medium" color={theme.textSecondary} numberOfLines={1} inline>
               {entry.friendReason}

@@ -3,9 +3,9 @@ import type { Href } from "expo-router";
 import type { MediaType } from "@/lib/tmdb";
 
 // Which tab Stack owns the media-detail route tree. The detail screen lives in
-// the home, discover, watchlist, profile and insights stacks so navigation (and
-// the back/zoom transition) stays within the tab the user came from.
-export type MediaRouteBase = "home" | "discover" | "watchlist" | "profile" | "insights";
+// the search, watchlist, profile and insights stacks so navigation (and the
+// back/zoom transition) stays within the tab the user came from.
+export type MediaRouteBase = "search" | "watchlist" | "profile" | "insights";
 
 export function mediaTitle(media: {
   title?: string | null;
@@ -25,7 +25,7 @@ export type MediaDetailLink = {
   backdrop_path?: string | null;
 };
 
-export function mediaDetailHref(media: MediaDetailLink, base: MediaRouteBase = "discover"): Href {
+export function mediaDetailHref(media: MediaDetailLink, base: MediaRouteBase = "search"): Href {
   return {
     pathname: `/(tabs)/${base}/[id]`,
     params: {
@@ -38,7 +38,7 @@ export function mediaDetailHref(media: MediaDetailLink, base: MediaRouteBase = "
   } as Href;
 }
 
-export function imageViewerHref(uri: string, base: MediaRouteBase = "discover"): Href {
+export function imageViewerHref(uri: string, base: MediaRouteBase = "search"): Href {
   return {
     pathname: `/(tabs)/${base}/image`,
     params: { uri },
@@ -104,7 +104,7 @@ export function episodeDetailHref(
     poster_path?: string | null;
     still_path?: string | null;
   },
-  base: MediaRouteBase = "discover",
+  base: MediaRouteBase = "search",
 ): Href {
   return {
     pathname: `/(tabs)/${base}/episode`,
