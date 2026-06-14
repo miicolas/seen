@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import { NativeTabs } from "expo-router/unstable-native-tabs";
 import { SymbolView } from "expo-symbols";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 
 import { Text } from "@/components/ui/text";
 import { BORDER_RADIUS, SPACING } from "@/constants/design-tokens";
@@ -20,6 +20,7 @@ export function MiniPlayer({ session }: { session: WatchSession }) {
   const { t } = useTranslation();
   const router = useRouter();
   const { accentHex } = useAccentColor();
+  const { width } = useWindowDimensions();
   const placement = NativeTabs.BottomAccessory.usePlacement();
   const { pause, resume } = useSessionMutations(session.id);
 
@@ -37,10 +38,11 @@ export function MiniPlayer({ session }: { session: WatchSession }) {
   }
 
   const compact = placement === "inline";
+  const playerWidth = compact ? Math.min(width - 96, 260) : Math.min(width - SPACING.MD * 2, 420);
 
   return (
     <Pressable
-      style={[styles.row, compact && styles.rowCompact]}
+      style={[styles.row, { width: playerWidth }, compact && styles.rowCompact]}
       accessibilityLabel={t("watch.screenTitle")}
       onPress={() => router.push(nowWatchingHref(session.id))}>
       <Image
@@ -86,6 +88,7 @@ export function MiniPlayer({ session }: { session: WatchSession }) {
 const styles = StyleSheet.create({
   row: {
     height: 44,
+    alignSelf: "center",
     flexDirection: "row",
     alignItems: "center",
     gap: SPACING.SM,
