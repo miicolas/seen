@@ -87,11 +87,7 @@ const NowWatchingActivity = (
     compactLeading: compactActionButton,
     compactTrailing: (
       <Text
-        modifiers={[
-          font({ size: 12, weight: "semibold" }),
-          foregroundStyle(ACCENT),
-          lineLimit(1),
-        ]}>
+        modifiers={[font({ size: 12, weight: "semibold" }), foregroundStyle(ACCENT), lineLimit(1)]}>
         {props.remainingLabel}
       </Text>
     ),

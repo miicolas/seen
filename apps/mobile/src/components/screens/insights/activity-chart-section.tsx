@@ -19,10 +19,7 @@ import { TimelineItemRow } from "./timeline-item-row";
 
 const DRILL_DOWN_DELAY_MS = 400;
 
-function bucketValue(
-  bucket: Series["buckets"][number],
-  metric: SeriesMetric,
-): number {
+function bucketValue(bucket: Series["buckets"][number], metric: SeriesMetric): number {
   switch (metric) {
     case "watch_time":
       return bucket.total_minutes;
@@ -126,7 +123,9 @@ export function ActivityChartSection({ series }: { series: Series }) {
   const selectedBucket = selectedIndex != null ? series.buckets[selectedIndex] : null;
   const selectedBand = selectedIndex != null && band ? band[selectedIndex] : null;
 
-  const hasData = series.buckets.some((bucket) => bucket.total_minutes > 0 || bucket.media_count > 0);
+  const hasData = series.buckets.some(
+    (bucket) => bucket.total_minutes > 0 || bucket.media_count > 0,
+  );
 
   return (
     <InsightCard>
@@ -147,8 +146,7 @@ export function ActivityChartSection({ series }: { series: Series }) {
               : ""}
           </Text>
         ) : deltaText ? (
-          <Text
-            style={[styles.delta, { color: deltaPct! >= 0 ? accentHex : theme.textSecondary }]}>
+          <Text style={[styles.delta, { color: deltaPct! >= 0 ? accentHex : theme.textSecondary }]}>
             {deltaText}
           </Text>
         ) : null}
@@ -185,9 +183,7 @@ export function ActivityChartSection({ series }: { series: Series }) {
       />
 
       {band ? (
-        <ChartLegend
-          items={[{ label: t("insights.typicalBand"), color: `${accentHex}55` }]}
-        />
+        <ChartLegend items={[{ label: t("insights.typicalBand"), color: `${accentHex}55` }]} />
       ) : null}
 
       {!hasData ? (
@@ -202,14 +198,15 @@ export function ActivityChartSection({ series }: { series: Series }) {
             </Text>
           ) : (
             itemsQuery.data?.items.map((item) => (
-              <TimelineItemRow key={`${item.kind}-${item.tmdb_id}-${item.watched_at}`} item={item} />
+              <TimelineItemRow
+                key={`${item.kind}-${item.tmdb_id}-${item.watched_at}`}
+                item={item}
+              />
             ))
           )}
         </View>
       ) : (
-        <Text style={[styles.hint, { color: theme.textSecondary }]}>
-          {t("insights.scrubHint")}
-        </Text>
+        <Text style={[styles.hint, { color: theme.textSecondary }]}>{t("insights.scrubHint")}</Text>
       )}
     </InsightCard>
   );

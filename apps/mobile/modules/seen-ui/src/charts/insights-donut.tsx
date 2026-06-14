@@ -12,6 +12,5 @@ export type InsightsDonutProps = {
   style: StyleProp<ViewStyle>;
 };
 
-export const InsightsDonut = createInsightsChart<Omit<InsightsDonutProps, "style">>(
-  "InsightsDonutView",
-);
+export const InsightsDonut =
+  createInsightsChart<Omit<InsightsDonutProps, "style">>("InsightsDonutView");

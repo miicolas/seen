@@ -17,8 +17,11 @@ export function ShareCard({
   accent: string;
   format: ShareCardFormat;
 }) {
-  if (recap.template === "weekly") return <WeeklyCard recap={recap} accent={accent} format={format} />;
-  if (recap.template === "taste") return <TasteCard recap={recap} accent={accent} format={format} />;
-  if (recap.template === "stats") return <StatsCard recap={recap} accent={accent} format={format} />;
+  if (recap.template === "weekly")
+    return <WeeklyCard recap={recap} accent={accent} format={format} />;
+  if (recap.template === "taste")
+    return <TasteCard recap={recap} accent={accent} format={format} />;
+  if (recap.template === "stats")
+    return <StatsCard recap={recap} accent={accent} format={format} />;
   return <BacklogCard recap={recap} accent={accent} format={format} />;
 }

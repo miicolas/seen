@@ -29,8 +29,6 @@ export async function cacheWidgetPosterImage(posterPath: string | null | undefin
 }
 
 function buildPosterFileName(posterPath: string) {
-  const normalizedPath = posterPath
-    .replace(/^\/+/, "")
-    .replace(/[^a-zA-Z0-9._-]/g, "_");
+  const normalizedPath = posterPath.replace(/^\/+/, "").replace(/[^a-zA-Z0-9._-]/g, "_");
   return `${POSTER_SIZE}_${normalizedPath}`;
 }

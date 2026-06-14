@@ -100,9 +100,7 @@ export function buildBaselines(
       if (bucketEntries.length) hasActivity = true;
       const position = positionOf(key, range);
       const { media_count: titles, episode_count: episodes } = countKinds(bucketEntries);
-      const minutes = bucketEntries.length
-        ? totalMinutes(accumulateWatchedTime(bucketEntries))
-        : 0;
+      const minutes = bucketEntries.length ? totalMinutes(accumulateWatchedTime(bucketEntries)) : 0;
       const samples = samplesByPosition.get(position);
       const stats = { minutes, titles, episodes };
       if (samples) samples.push(stats);

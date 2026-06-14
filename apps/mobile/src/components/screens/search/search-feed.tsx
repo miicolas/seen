@@ -72,8 +72,7 @@ export function SearchFeed({ filter, bottomInset }: { filter: MediaFilter; botto
   const firstPersonal = personalSections.slice(0, PERSONAL_BATCH_SIZE);
   const nextPersonal = personalSections.slice(PERSONAL_BATCH_SIZE, PERSONAL_BATCH_SIZE * 2);
   const remainingPersonal = personalSections.slice(PERSONAL_BATCH_SIZE * 2);
-  const hasPersonalContent =
-    sections.length > 0 || resume.length > 0 || friendsWatched.length > 0;
+  const hasPersonalContent = sections.length > 0 || resume.length > 0 || friendsWatched.length > 0;
 
   const visibleTrending = discover.trending.filter(filterDismissed);
   const featured = visibleTrending.slice(0, 5);

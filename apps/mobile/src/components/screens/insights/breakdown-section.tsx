@@ -23,9 +23,7 @@ export function BreakdownSection({ taste }: { taste: Taste }) {
   const tv = taste.media_type_mix.tv;
 
   const topGenres = taste.genre_mix.slice(0, TOP_GENRES);
-  const otherCount = taste.genre_mix
-    .slice(TOP_GENRES)
-    .reduce((sum, genre) => sum + genre.count, 0);
+  const otherCount = taste.genre_mix.slice(TOP_GENRES).reduce((sum, genre) => sum + genre.count, 0);
   const genreSegments = [
     ...topGenres.map((genre, index) => ({
       label: genre.genre,

@@ -11,6 +11,5 @@ export type InsightsRingProps = {
   style: StyleProp<ViewStyle>;
 };
 
-export const InsightsRing = createInsightsChart<Omit<InsightsRingProps, "style">>(
-  "InsightsRingView",
-);
+export const InsightsRing =
+  createInsightsChart<Omit<InsightsRingProps, "style">>("InsightsRingView");

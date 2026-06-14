@@ -14,7 +14,11 @@ function parseDayKey(key: string): CalendarDay {
   return { year, month, day };
 }
 
-export function buildStreaks(watchedDayKeys: string[], timeZone: string, now = new Date()): Streaks {
+export function buildStreaks(
+  watchedDayKeys: string[],
+  timeZone: string,
+  now = new Date(),
+): Streaks {
   const daySet = new Set(watchedDayKeys);
   const sortedKeys = [...daySet].sort();
 
