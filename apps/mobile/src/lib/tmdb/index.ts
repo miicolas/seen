@@ -5,6 +5,7 @@ export type {
   GenreRow,
   TmdbMovieSummary,
   TmdbMovieDetail,
+  TmdbPersonDetail,
   TmdbCredit,
   TmdbProviderRef,
   TmdbTvEpisodeDetail,
@@ -22,6 +23,7 @@ export { trendingMedia } from "./trending";
 export { findByExternalId } from "./find";
 export { getMovieDetail } from "./movie";
 export { getMediaRecommendations } from "./recommendations";
+export { getPersonDetail } from "./person";
 export { getTvEpisodeDetail, getTvSeasonDetail } from "./tv";
 export { getWatchProviders } from "./watch-providers";
 export { tmdbLanguage } from "./client";
