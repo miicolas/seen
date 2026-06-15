@@ -174,6 +174,7 @@ export const fr: typeof en = {
     noReviewsHint: "Sois le premier à partager ton avis.",
     retry: "Réessayer",
     whereToWatch: "Où regarder",
+    youMayAlsoLike: "À voir aussi",
   },
   likes: {
     like: "J'aime",

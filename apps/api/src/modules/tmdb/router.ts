@@ -5,6 +5,7 @@ import { TmdbModel } from "./model";
 import {
   discoverFeed,
   getMediaDetail,
+  getMediaRecommendations,
   getTvEpisodeDetail,
   getTvSeasonDetail,
   getWatchProviders,
@@ -63,6 +64,18 @@ export const tmdbController = new Elysia({
       query: "tmdb.RegionQuery",
       response: {
         200: "tmdb.WatchProviders",
+      },
+    },
+  )
+  .get(
+    "/:mediaType/:tmdbId/recommendations",
+    ({ params, query }) =>
+      getMediaRecommendations(params.mediaType, params.tmdbId, query.language ?? DEFAULT_LANGUAGE),
+    {
+      params: "tmdb.MediaParams",
+      query: "tmdb.LanguageQuery",
+      response: {
+        200: "tmdb.SummaryList",
       },
     },
   )
