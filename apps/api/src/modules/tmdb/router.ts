@@ -6,6 +6,7 @@ import {
   discoverFeed,
   getMediaDetail,
   getMediaRecommendations,
+  getPersonDetail,
   getTvEpisodeDetail,
   getTvSeasonDetail,
   getWatchProviders,
@@ -35,6 +36,17 @@ export const tmdbController = new Elysia({
       query: "tmdb.SearchQuery",
       response: {
         200: "tmdb.SummaryList",
+      },
+    },
+  )
+  .get(
+    "/person/:personId",
+    ({ params, query }) => getPersonDetail(params.personId, query.language ?? DEFAULT_LANGUAGE),
+    {
+      params: "tmdb.PersonParams",
+      query: "tmdb.LanguageQuery",
+      response: {
+        200: "tmdb.PersonDetail",
       },
     },
   )

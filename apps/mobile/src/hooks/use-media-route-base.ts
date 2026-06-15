@@ -10,5 +10,6 @@ export function useMediaRouteBase(): MediaRouteBase {
   if (segments.includes("search")) return "search";
   if (segments.includes("watchlist")) return "watchlist";
   if (segments.includes("profile")) return "profile";
+  if (segments.includes("insights")) return "insights";
   return "search";
 }
