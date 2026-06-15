@@ -13,10 +13,16 @@
       "usesAppleSignIn": true,
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
-        "CFBundleLocalizations": ["en", "fr", "en", "fr"],
+        "CFBundleLocalizations": [
+          "en",
+          "fr",
+          "en",
+          "fr"
+        ],
         "ITSAppUsesNonExemptEncryption": false,
         "NSContactsUsageDescription": "Seen uses your contacts to help you find friends who are already on Seen. Your contacts are matched privately and never stored in plain text."
-      }
+      },
+      "appleTeamId": "HZAYG4Q47N"
     },
     "android": {
       "adaptiveIcon": {
@@ -26,7 +32,10 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "permissions": ["android.permission.RECORD_AUDIO", "android.permission.RECORD_AUDIO"]
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "output": "static",
@@ -64,7 +73,10 @@
       [
         "expo-localization",
         {
-          "supportedLocales": ["en", "fr"]
+          "supportedLocales": [
+            "en",
+            "fr"
+          ]
         }
       ],
       [
