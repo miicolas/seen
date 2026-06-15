@@ -21,6 +21,32 @@ interface WhatsNewRelease {
 
 export const WHATS_NEW_RELEASES: WhatsNewRelease[] = [
   {
+    id: "in-app-recommendations",
+    features: [
+      {
+        icon: "paperplane",
+        title: { en: "Recommend to Friends", fr: "Recommander à des amis" },
+        description: {
+          en: "Send a movie or series to people you follow, with an optional note.",
+          fr: "Envoyez un film ou une série à vos abonnements, avec un mot si vous voulez.",
+        },
+      },
+    ],
+  },
+  {
+    id: "person-pages",
+    features: [
+      {
+        icon: "person.crop.rectangle.stack",
+        title: { en: "Cast & Crew Pages", fr: "Fiches des acteurs" },
+        description: {
+          en: "Tap any cast member to explore their photo, bio, and filmography.",
+          fr: "Touchez un acteur pour voir sa photo, sa bio et sa filmographie.",
+        },
+      },
+    ],
+  },
+  {
     id: "you-may-also-like",
     features: [
       {

@@ -116,6 +116,17 @@ export default function ProfileLayout() {
         }}
       />
       <Stack.Screen
+        name="person/[id]"
+        options={{
+          title: "",
+          headerShown: true,
+          headerLargeTitle: false,
+          headerTransparent: true,
+          headerShadowVisible: false,
+          headerBackButtonDisplayMode: "minimal",
+        }}
+      />
+      <Stack.Screen
         name="image"
         options={{
           headerShown: false,

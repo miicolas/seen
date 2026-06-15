@@ -38,6 +38,17 @@ export function mediaDetailHref(media: MediaDetailLink, base: MediaRouteBase = "
   } as Href;
 }
 
+export function personDetailHref(
+  personId: number,
+  name: string,
+  base: MediaRouteBase = "search",
+): Href {
+  return {
+    pathname: `/(tabs)/${base}/person/[id]`,
+    params: { id: String(personId), name },
+  } as Href;
+}
+
 export function imageViewerHref(uri: string, base: MediaRouteBase = "search"): Href {
   return {
     pathname: `/(tabs)/${base}/image`,
@@ -159,6 +170,27 @@ export function episodeReviewSheetHref(params: {
       ...buildReviewParams(params),
     },
   } as Href;
+}
+
+export function recommendHref(params: {
+  tmdbId: number;
+  mediaType: MediaType;
+  title: string;
+  posterPath?: string | null;
+}): Href {
+  return {
+    pathname: "/recommend",
+    params: {
+      tmdbId: String(params.tmdbId),
+      mediaType: params.mediaType,
+      title: params.title,
+      poster_path: params.posterPath ?? "",
+    },
+  } as Href;
+}
+
+export function recommendationsInboxHref(): Href {
+  return "/media-recommendations" as Href;
 }
 
 export function nowWatchingHref(sessionId: string): Href {

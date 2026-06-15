@@ -40,10 +40,14 @@ export async function ensurePushRegistration(): Promise<boolean> {
 export type WatchPushData = {
   type?: string;
   sessionId?: string;
+  recommendationId?: string;
 };
 
 export function pushDeepLinkPath(data: WatchPushData): string | null {
-  if (!data.type?.startsWith("watch-session.")) return null;
-  if (data.type === "watch-session.invited") return "/watch-invitations";
-  return data.sessionId ? `/now-watching?sessionId=${data.sessionId}` : null;
+  if (data.type === "media-recommendation.received") return "/media-recommendations";
+  if (data.type?.startsWith("watch-session.")) {
+    if (data.type === "watch-session.invited") return "/watch-invitations";
+    return data.sessionId ? `/now-watching?sessionId=${data.sessionId}` : null;
+  }
+  return null;
 }

@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ScreenHeader, ScreenToolbar } from "@/components/navigation";
 import { Text } from "@/components/ui/text";
+import { useMediaRouteBase } from "@/hooks/use-media-route-base";
 import { useTheme } from "@/hooks/use-theme";
 import { useWatchAction } from "@/hooks/watch-sessions/use-watch-action";
 
@@ -21,6 +22,7 @@ export function EpisodeDetail() {
   const theme = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const base = useMediaRouteBase();
   const vm = useEpisodeDetailViewModel();
 
   const watchAction = useWatchAction({
@@ -96,7 +98,7 @@ export function EpisodeDetail() {
             onOpenReviews={vm.openReviews}
           />
 
-          <CastSection cast={vm.cast.slice(0, 16)} />
+          <CastSection cast={vm.cast.slice(0, 16)} base={base} />
 
           <InfoSection rows={vm.infoRows} />
 
