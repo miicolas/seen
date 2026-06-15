@@ -172,6 +172,11 @@ export const en = {
     whereToWatch: "Where to watch",
     youMayAlsoLike: "You may also like",
   },
+  person: {
+    biography: "Biography",
+    acting: "Acting",
+    crew: "Directing & Crew",
+  },
   likes: {
     like: "Like",
     unlike: "Unlike",

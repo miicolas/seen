@@ -134,7 +134,7 @@ export function MediaDetail() {
             />
           ) : null}
 
-          <CastSection cast={vm.cast} />
+          <CastSection cast={vm.cast} base={base} />
 
           <InfoSection rows={vm.infoRows} />
 
