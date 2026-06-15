@@ -112,6 +112,16 @@ const episodeDetail = t.Composite([
   }),
 ]);
 
+const personDetail = t.Object({
+  id: t.Number(),
+  name: t.String(),
+  biography: t.Optional(t.Nullable(t.String())),
+  profile_path: t.Optional(t.Nullable(t.String())),
+  known_for_department: t.Optional(t.Nullable(t.String())),
+  acting: t.Array(summary),
+  crew: t.Array(summary),
+});
+
 const providerRef = t.Object({
   providerId: t.Number(),
   name: t.String(),
@@ -158,6 +168,10 @@ export const TmdbModel = new Elysia({ name: "Tmdb.Model" }).model({
     mediaType,
     tmdbId: t.Numeric(),
   }),
+  "tmdb.PersonParams": t.Object({
+    personId: t.Numeric(),
+  }),
+  "tmdb.PersonDetail": personDetail,
   "tmdb.LanguageQuery": t.Object({
     language: t.Optional(t.String({ minLength: 2, maxLength: 12 })),
   }),
@@ -191,6 +205,7 @@ export type CreditDto = Static<typeof credit>;
 export type SeasonSummaryDto = Static<typeof seasonSummary>;
 export type EpisodeSummaryDto = Static<typeof episodeSummary>;
 export type MovieDetailDto = Static<typeof movieDetail>;
+export type PersonDetailDto = Static<typeof personDetail>;
 export type SeasonDetailDto = Static<typeof seasonDetail>;
 export type EpisodeDetailDto = Static<typeof episodeDetail>;
 export type DiscoverFeedDto = Static<typeof discoverFeed>;

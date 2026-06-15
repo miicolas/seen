@@ -2,6 +2,7 @@ import type { MediaType } from "@seen/shared";
 
 export type {
   MovieDetailDto as TmdbMovieDetail,
+  PersonDetailDto as TmdbPersonDetail,
   SeasonDetailDto as TmdbTvSeasonDetail,
   EpisodeDetailDto as TmdbTvEpisodeDetail,
   EpisodeSummaryDto as TmdbTvEpisodeSummary,

@@ -33,11 +33,12 @@ const PREVIEW_LINES = 3;
 const PREVIEW_FADE_WIDTH = 116;
 const PREVIEW_LINE_HEIGHT = LINE_HEIGHT.SM;
 
-export function OverviewSection({ overview }: { overview?: string | null }) {
+export function OverviewSection({ overview, title }: { overview?: string | null; title?: string }) {
   const theme = useTheme();
   const { t } = useTranslation();
   const [isPresented, setIsPresented] = useState(false);
   const trimmedOverview = overview?.trim() ?? "";
+  const sectionTitle = title ?? t("mediaDetail.about");
 
   if (!trimmedOverview) return null;
 
@@ -51,7 +52,7 @@ export function OverviewSection({ overview }: { overview?: string | null }) {
 
   return (
     <>
-      <DetailSection title={t("mediaDetail.about")}>
+      <DetailSection title={sectionTitle}>
         {isLong ? (
           <View style={styles.preview}>
             <Text
@@ -115,7 +116,7 @@ export function OverviewSection({ overview }: { overview?: string | null }) {
                       font({ size: FONT_SIZE.XL, weight: "bold" }),
                       foregroundStyle(theme.text),
                     ]}>
-                    {t("mediaDetail.about")}
+                    {sectionTitle}
                   </SwiftUIText>
                   <SwiftUIText
                     modifiers={[

@@ -176,6 +176,11 @@ export const fr: typeof en = {
     whereToWatch: "Où regarder",
     youMayAlsoLike: "À voir aussi",
   },
+  person: {
+    biography: "Biographie",
+    acting: "Rôles",
+    crew: "Réalisation & Équipe",
+  },
   likes: {
     like: "J'aime",
     unlike: "Je n'aime plus",

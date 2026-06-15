@@ -21,6 +21,19 @@ interface WhatsNewRelease {
 
 export const WHATS_NEW_RELEASES: WhatsNewRelease[] = [
   {
+    id: "person-pages",
+    features: [
+      {
+        icon: "person.crop.rectangle.stack",
+        title: { en: "Cast & Crew Pages", fr: "Fiches des acteurs" },
+        description: {
+          en: "Tap any cast member to explore their photo, bio, and filmography.",
+          fr: "Touchez un acteur pour voir sa photo, sa bio et sa filmographie.",
+        },
+      },
+    ],
+  },
+  {
     id: "you-may-also-like",
     features: [
       {
