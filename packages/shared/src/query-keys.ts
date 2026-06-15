@@ -109,6 +109,13 @@ export const watchSessionKeys = {
     ["watch-sessions", "invitable-friends", sessionId] as const,
 };
 
+export const mediaRecommendationKeys = {
+  all: () => ["media-recommendations"] as const,
+  received: () => ["media-recommendations", "received"] as const,
+  recommendableFriends: () => ["media-recommendations", "recommendable-friends"] as const,
+  unreadCount: () => ["media-recommendations", "unread-count"] as const,
+};
+
 export const analyticsKeys = {
   // Broad key for blanket invalidation after any action that changes what the
   // Insights screen reads (a review, watchlist edit, like, import, …).
