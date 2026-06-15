@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ScreenHeader, ScreenToolbar, type ScreenAction } from "@/components/navigation";
 import { Text } from "@/components/ui/text";
+import { useMediaRouteBase } from "@/hooks/use-media-route-base";
 import { useTheme } from "@/hooks/use-theme";
 import { useWatchAction } from "@/hooks/watch-sessions/use-watch-action";
 
@@ -17,6 +18,7 @@ import { MediaParallaxHeader } from "./media-parallax-header";
 import { MediaSummary } from "./media-summary";
 import { OverviewSection } from "./overview-section";
 import { RatingsSection } from "./ratings-section";
+import { RecommendationsSection } from "./recommendations-section";
 import { useMediaDetailViewModel } from "./use-media-detail-view-model";
 import { WatchProvidersSection } from "./watch-providers-section";
 
@@ -24,6 +26,7 @@ export function MediaDetail() {
   const theme = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const base = useMediaRouteBase();
   const vm = useMediaDetailViewModel();
 
   const handleRate = useCallback(() => vm.openReview(vm.myStars || undefined), [vm]);
@@ -147,6 +150,8 @@ export function MediaDetail() {
             reviewCount={vm.reviewCount}
             onOpenReviews={vm.openReviews}
           />
+
+          <RecommendationsSection tmdbId={vm.tmdbId} mediaType={vm.mediaType} base={base} />
 
           {vm.isLoading && !vm.detail ? (
             <Text size="sm" weight="regular" color={theme.textSecondary} fillWidth>
