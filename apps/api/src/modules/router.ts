@@ -7,6 +7,7 @@ import { eventsController } from "./events";
 import { importController } from "./import";
 import { libraryController } from "./library";
 import { likesController } from "./likes";
+import { mediaRecommendationController } from "./media-recommendations";
 import { notInterestedController } from "./not-interested";
 import { notificationController } from "./notifications";
 import { platformsController } from "./platforms";
@@ -38,6 +39,7 @@ export const apiRouter = new Elysia({ name: "api.router" })
   .use(recommendationsController)
   .use(socialController)
   .use(watchSessionController)
+  .use(mediaRecommendationController)
   .use(notificationController)
   .use(analyticsController)
   .use(whatsNewController);

@@ -94,6 +94,26 @@ function RootNavigator() {
           }}
         />
         <Stack.Screen
+          name="recommend"
+          options={{
+            title: t("recommend.title"),
+            presentation: "formSheet",
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: [0.6, 0.95],
+            contentStyle: { backgroundColor: theme.background },
+          }}
+        />
+        <Stack.Screen
+          name="media-recommendations"
+          options={{
+            title: t("recommend.inboxTitle"),
+            presentation: "formSheet",
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: [0.5, 0.9],
+            contentStyle: { backgroundColor: theme.background },
+          }}
+        />
+        <Stack.Screen
           name="now-watching"
           options={{
             headerShown: false,

@@ -12,4 +12,5 @@ export * from "./media-features";
 export * from "./user-taste-vectors";
 export * from "./feed-entries";
 export * from "./watch-sessions";
+export * from "./media-recommendations";
 export * from "./notifications";

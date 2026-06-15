@@ -14,12 +14,13 @@ import { BottomTabInset } from "@/constants/theme";
 import { LAYOUT, OPACITY, SPACING } from "@/constants/design-tokens";
 import { useProfileActivity } from "@/hooks/profiles/use-profile-activity";
 import { useMyProfile } from "@/hooks/profiles/use-my-profile";
+import { useUnreadRecommendations } from "@/hooks/media-recommendations/use-unread-recommendations";
 import { useAccentColor } from "@/hooks/use-accent-color";
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { useFollowRequests } from "@/hooks/social/use-follow-requests";
 import { useTheme } from "@/hooks/use-theme";
 import { hapticTap } from "@/lib/haptics";
-import { findFriendsHref, followRequestsHref } from "@/lib/navigation";
+import { findFriendsHref, followRequestsHref, recommendationsInboxHref } from "@/lib/navigation";
 import { profileAvatarUrl } from "@/services/profiles";
 import { shareProfile } from "@/services/share";
 
@@ -37,16 +38,19 @@ export function ProfileScreen() {
   const profile = useMyProfile();
   const activity = useProfileActivity();
   const requests = useFollowRequests();
+  const recommendations = useUnreadRecommendations();
   const refetchProfile = profile.refetch;
   const refetchActivity = activity.refetch;
   const refetchRequests = requests.refetch;
+  const refetchRecommendations = recommendations.refetch;
 
   useFocusEffect(
     useCallback(() => {
       refetchProfile();
       refetchActivity();
       refetchRequests();
-    }, [refetchActivity, refetchProfile, refetchRequests]),
+      refetchRecommendations();
+    }, [refetchActivity, refetchProfile, refetchRequests, refetchRecommendations]),
   );
 
   const avatarUri = profileAvatarUrl(profile.data);
@@ -75,6 +79,11 @@ export function ProfileScreen() {
     router.push(followRequestsHref());
   }, [router]);
 
+  const openRecommendations = useCallback(() => {
+    hapticTap();
+    router.push(recommendationsInboxHref());
+  }, [router]);
+
   const userId = user?.id;
   const handleShare = useCallback(() => {
     if (!userId || !username) return;
@@ -97,6 +106,11 @@ export function ProfileScreen() {
   return (
     <>
       <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button
+          icon={recommendations.count > 0 ? "bell.badge" : "bell"}
+          onPress={openRecommendations}>
+          {t("recommend.inboxTitle")}
+        </Stack.Toolbar.Button>
         <Stack.Toolbar.Button icon="square.and.arrow.up" onPress={handleShare}>
           {t("share.profileTitle")}
         </Stack.Toolbar.Button>
