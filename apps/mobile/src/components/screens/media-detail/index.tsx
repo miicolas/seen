@@ -1,13 +1,15 @@
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ScreenHeader, ScreenToolbar, type ScreenAction } from "@/components/navigation";
 import { Text } from "@/components/ui/text";
 import { useMediaRouteBase } from "@/hooks/use-media-route-base";
 import { useTheme } from "@/hooks/use-theme";
+import { hapticTap } from "@/lib/haptics";
+import { recommendHref } from "@/lib/navigation";
 import { useWatchAction } from "@/hooks/watch-sessions/use-watch-action";
 
 import { CastSection } from "./cast-section";
@@ -26,10 +28,23 @@ export function MediaDetail() {
   const theme = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const base = useMediaRouteBase();
   const vm = useMediaDetailViewModel();
 
   const handleRate = useCallback(() => vm.openReview(vm.myStars || undefined), [vm]);
+
+  const handleRecommend = useCallback(() => {
+    hapticTap();
+    router.push(
+      recommendHref({
+        tmdbId: vm.tmdbId,
+        mediaType: vm.mediaType,
+        title: vm.title,
+        posterPath: vm.posterPath,
+      }),
+    );
+  }, [router, vm.tmdbId, vm.mediaType, vm.title, vm.posterPath]);
 
   const watchAction = useWatchAction({
     mediaType: "movie",
@@ -38,6 +53,12 @@ export function MediaDetail() {
   });
 
   const toolbarActions: ScreenAction[] = [
+    {
+      key: "recommend",
+      icon: "paperplane",
+      onPress: handleRecommend,
+      label: t("recommend.action"),
+    },
     {
       key: "like",
       icon: vm.isLiked ? "heart.fill" : "heart",

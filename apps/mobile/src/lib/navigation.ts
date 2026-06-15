@@ -172,6 +172,27 @@ export function episodeReviewSheetHref(params: {
   } as Href;
 }
 
+export function recommendHref(params: {
+  tmdbId: number;
+  mediaType: MediaType;
+  title: string;
+  posterPath?: string | null;
+}): Href {
+  return {
+    pathname: "/recommend",
+    params: {
+      tmdbId: String(params.tmdbId),
+      mediaType: params.mediaType,
+      title: params.title,
+      poster_path: params.posterPath ?? "",
+    },
+  } as Href;
+}
+
+export function recommendationsInboxHref(): Href {
+  return "/media-recommendations" as Href;
+}
+
 export function nowWatchingHref(sessionId: string): Href {
   return {
     pathname: "/now-watching",
