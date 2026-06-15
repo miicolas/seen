@@ -21,6 +21,19 @@ interface WhatsNewRelease {
 
 export const WHATS_NEW_RELEASES: WhatsNewRelease[] = [
   {
+    id: "you-may-also-like",
+    features: [
+      {
+        icon: "rectangle.stack",
+        title: { en: "You May Also Like", fr: "À voir aussi" },
+        description: {
+          en: "Discover related titles right on any movie or series page.",
+          fr: "Trouvez des titres similaires directement sur chaque film ou série.",
+        },
+      },
+    ],
+  },
+  {
     id: "letterboxd-account",
     features: [
       {

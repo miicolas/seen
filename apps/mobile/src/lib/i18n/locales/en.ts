@@ -170,6 +170,7 @@ export const en = {
     noReviewsHint: "Be the first to share what you thought.",
     retry: "Retry",
     whereToWatch: "Where to watch",
+    youMayAlsoLike: "You may also like",
   },
   likes: {
     like: "Like",

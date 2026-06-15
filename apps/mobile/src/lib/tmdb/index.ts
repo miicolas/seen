@@ -21,6 +21,7 @@ export { getDiscoverFeed } from "./discover";
 export { trendingMedia } from "./trending";
 export { findByExternalId } from "./find";
 export { getMovieDetail } from "./movie";
+export { getMediaRecommendations } from "./recommendations";
 export { getTvEpisodeDetail, getTvSeasonDetail } from "./tv";
 export { getWatchProviders } from "./watch-providers";
 export { tmdbLanguage } from "./client";

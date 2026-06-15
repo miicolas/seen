@@ -22,6 +22,9 @@ export const discoverKeys = {
 export const tmdbKeys = {
   detail: (mediaType: MediaType, tmdbId: number, locale: string) =>
     ["tmdb", "detail", mediaType, tmdbId, locale] as const,
+  recommendations: (mediaType: MediaType, tmdbId: number, locale: string) =>
+    ["tmdb", "recommendations", mediaType, tmdbId, locale] as const,
+  person: (personId: number, locale: string) => ["tmdb", "person", personId, locale] as const,
 };
 
 export const watchProviderKeys = {
