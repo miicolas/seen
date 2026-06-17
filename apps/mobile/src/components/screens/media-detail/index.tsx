@@ -166,6 +166,7 @@ export function MediaDetail() {
                 : t("mediaDetail.ratingsAndReviews")
             }
             stats={vm.stats}
+            tmdbRating={vm.tmdbRating}
             accentHex={vm.accentHex}
             reviews={vm.reviews}
             reviewCount={vm.reviewCount}

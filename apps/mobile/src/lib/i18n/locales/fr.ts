@@ -166,6 +166,8 @@ export const fr: typeof en = {
     reviewCount: "{{count}} critique{{plural}}",
     ratingAndReviewSummary:
       "{{ratingCount}} note{{ratingPlural}} • {{reviewCount}} critique{{reviewPlural}}",
+    tmdbRatingTitle: "Évaluation TMDB",
+    tmdbRatingSummary: "Moyenne TMDB basée sur {{voteCount}} vote{{votePlural}}.",
     recentReviews: "Critiques récentes",
     recentRatings: "Notes récentes",
     viewAllReviews: "Voir toutes ({{count}})",

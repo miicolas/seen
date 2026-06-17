@@ -162,6 +162,8 @@ export const en = {
     reviewCount: "{{count}} review{{plural}}",
     ratingAndReviewSummary:
       "{{ratingCount}} rating{{ratingPlural}} • {{reviewCount}} review{{reviewPlural}}",
+    tmdbRatingTitle: "TMDB rating",
+    tmdbRatingSummary: "TMDB average based on {{voteCount}} vote{{votePlural}}.",
     recentReviews: "Recent reviews",
     recentRatings: "Recent ratings",
     viewAllReviews: "View all ({{count}})",

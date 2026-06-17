@@ -102,6 +102,21 @@ export function useMediaDetailViewModel() {
     mediaType === "movie" && review?.rating != null ? ratingToStars(review.rating) : 0;
   const hasRating = myStars > 0;
   const hasReview = mediaType === "movie" && review != null;
+  const tmdbVoteAverage = detail?.vote_average;
+  const tmdbVoteCount = detail?.vote_count;
+  const tmdbRating =
+    mediaType === "movie" &&
+    typeof tmdbVoteAverage === "number" &&
+    Number.isFinite(tmdbVoteAverage) &&
+    tmdbVoteAverage > 0 &&
+    typeof tmdbVoteCount === "number" &&
+    Number.isFinite(tmdbVoteCount) &&
+    tmdbVoteCount > 0
+      ? {
+          averageRating: Math.min(5, Math.max(0, tmdbVoteAverage / 2)),
+          voteCount: Math.trunc(tmdbVoteCount),
+        }
+      : null;
 
   const infoRows: InfoRowData[] = [
     director ? { label: mediaType === "tv" ? "Creator" : "Director", value: director } : null,
@@ -192,6 +207,7 @@ export function useMediaDetailViewModel() {
     cast,
     infoRows,
     stats,
+    tmdbRating,
     reviews: mediaType === "tv" ? [] : reviews,
     reviewCount: mediaType === "tv" ? 0 : reviewCount,
     myStars,

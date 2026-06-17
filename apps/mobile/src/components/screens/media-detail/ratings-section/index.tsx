@@ -15,9 +15,15 @@ import { ReviewCard } from "./review-card";
 
 const STAR_ROWS = [5, 4, 3, 2, 1] as const;
 
+interface TmdbRating {
+  averageRating: number;
+  voteCount: number;
+}
+
 export function RatingsSection({
   title = "Ratings & Reviews",
   stats,
+  tmdbRating,
   accentHex,
   reviews,
   reviewCount = reviews.length,
@@ -25,6 +31,7 @@ export function RatingsSection({
 }: {
   title?: string;
   stats: MediaReviewStats | null;
+  tmdbRating?: TmdbRating | null;
   accentHex: string;
   reviews: ReviewLike[];
   reviewCount?: number;
@@ -33,6 +40,7 @@ export function RatingsSection({
   const theme = useTheme();
   const { t } = useTranslation();
   const hasStats = stats && stats.avg_rating != null && stats.rating_count > 0;
+  const hasTmdbRating = !hasStats && tmdbRating != null && tmdbRating.voteCount > 0;
   const writtenReviews = reviews.filter(
     (review) => Boolean(review.title?.trim()) || Boolean(review.comment?.trim()),
   );
@@ -51,7 +59,7 @@ export function RatingsSection({
     return { starCounts: counts, maxStar: Math.max(1, ...counts) };
   }, [histogram]);
 
-  if (!hasStats && !hasReviews) return null;
+  if (!hasStats && !hasTmdbRating && !hasReviews) return null;
 
   return (
     <DetailSection title={title}>
@@ -113,6 +121,39 @@ export function RatingsSection({
                 </View>
               );
             })}
+          </View>
+        </View>
+      ) : hasTmdbRating ? (
+        <View
+          style={[
+            styles.summaryBlock,
+            {
+              borderTopColor: theme.backgroundSelected,
+              borderBottomColor: theme.backgroundSelected,
+            },
+          ]}>
+          <View style={styles.summaryTop}>
+            <View style={styles.scoreBlock}>
+              <Text size="2xl" weight="heavy">
+                {tmdbRating.averageRating.toFixed(1)}
+              </Text>
+              <Text size="xs" weight="semibold" color={theme.textSecondary}>
+                {t("mediaDetail.outOfFive")}
+              </Text>
+              <StarRating value={tmdbRating.averageRating} size="xs" readOnly />
+            </View>
+
+            <View style={styles.summaryCopy}>
+              <Text size="md" weight="bold" color={theme.text} fillWidth>
+                {t("mediaDetail.tmdbRatingTitle")}
+              </Text>
+              <Text size="sm" weight="regular" color={theme.textSecondary} fillWidth>
+                {t("mediaDetail.tmdbRatingSummary", {
+                  voteCount: tmdbRating.voteCount,
+                  votePlural: tmdbRating.voteCount === 1 ? "" : "s",
+                })}
+              </Text>
+            </View>
           </View>
         </View>
       ) : null}
