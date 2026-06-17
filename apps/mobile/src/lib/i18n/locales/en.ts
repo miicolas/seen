@@ -124,6 +124,7 @@ export const en = {
   search: {
     title: "Your recommendations",
     titleWithName: "For you, {{name}}",
+    friendsRated: "Friends recently rated",
   },
   review: {
     screenTitle: "Review Sheet",
@@ -184,7 +185,9 @@ export const en = {
     sendCount: "Send to {{count}}",
     messagePlaceholder: "Add a message (optional)",
     noFriendsTitle: "No one to recommend to",
-    noFriends: "Follow people to recommend titles to them.",
+    noFriends: "Add mutual friends to recommend titles to them.",
+    friendsErrorTitle: "Couldn't load friends",
+    loadFriendsError: "Couldn't load your friends. Try again.",
     error: "Couldn't send your recommendation. Try again.",
     inboxTitle: "Received",
     inboxEmpty: "No recommendations yet.",

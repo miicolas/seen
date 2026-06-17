@@ -34,38 +34,40 @@ function CastAvatar({ member, base }: { member: CastMember; base: MediaRouteBase
 
   return (
     <Link href={personDetailHref(member.id, member.name, base)} asChild>
-      <Pressable
-        style={styles.castItem}
-        accessibilityRole="button"
-        accessibilityLabel={member.name}
-        onPress={() => hapticTap()}>
-        <Image
-          source={avatar ? { uri: avatar } : undefined}
-          style={[styles.castAvatar, { backgroundColor: theme.backgroundElement }]}
-          contentFit="cover"
-          transition={200}
-        />
-        <Text
-          size="xs"
-          weight="semibold"
-          align="center"
-          color={theme.text}
-          fillWidth
-          numberOfLines={1}>
-          {truncate(member.name, 18)}
-        </Text>
-        {member.character ? (
+      <Link.Trigger withAppleZoom>
+        <Pressable
+          style={styles.castItem}
+          accessibilityRole="button"
+          accessibilityLabel={member.name}
+          onPress={() => hapticTap()}>
+          <Image
+            source={avatar ? { uri: avatar } : undefined}
+            style={[styles.castAvatar, { backgroundColor: theme.backgroundElement }]}
+            contentFit="cover"
+            transition={200}
+          />
           <Text
             size="xs"
-            weight="regular"
+            weight="semibold"
             align="center"
-            color={theme.textSecondary}
+            color={theme.text}
             fillWidth
             numberOfLines={1}>
-            {truncate(member.character, 18)}
+            {truncate(member.name, 18)}
           </Text>
-        ) : null}
-      </Pressable>
+          {member.character ? (
+            <Text
+              size="xs"
+              weight="regular"
+              align="center"
+              color={theme.textSecondary}
+              fillWidth
+              numberOfLines={1}>
+              {truncate(member.character, 18)}
+            </Text>
+          ) : null}
+        </Pressable>
+      </Link.Trigger>
     </Link>
   );
 }

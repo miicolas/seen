@@ -122,11 +122,6 @@ export function useEpisodeDetailViewModel() {
     [episode?.air_date, crew, episodeNumber, runtime, seasonNumber, seriesTitle, t],
   );
 
-  const handleClose = useCallback(() => {
-    hapticTap();
-    router.back();
-  }, []);
-
   const handleRate = useCallback(() => {
     if (episodeTmdbId <= 0) return;
     hapticTap();
@@ -194,7 +189,6 @@ export function useEpisodeDetailViewModel() {
     isLoading,
     error,
     hasEpisode: episode != null,
-    handleClose,
     handleRate,
   };
 }

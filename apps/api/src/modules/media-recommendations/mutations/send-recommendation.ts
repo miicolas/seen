@@ -1,6 +1,6 @@
 import { db } from "@seen/db";
 import { follows, mediaRecommendations } from "@seen/db/schema";
-import { and, eq, inArray } from "@seen/db/orm";
+import { aliasedTable, and, eq, inArray } from "@seen/db/orm";
 
 import { notifyRecommendation } from "../notify";
 
@@ -20,10 +20,20 @@ export async function sendRecommendation(
   const requested = [...new Set(input.recipient_ids)].filter((id) => id !== senderId);
   if (requested.length === 0) return { ok: true, count: 0 };
 
-  // Recipients must be people the sender follows (one-directional).
+  // Recipients must be mutual follows. Keep this aligned with the
+  // recommendable-friends query so a modified client cannot send outside the
+  // visible friend list.
+  const mutualFollows = aliasedTable(follows, "mutual_follows");
   const following = await db
     .select({ id: follows.followeeId })
     .from(follows)
+    .innerJoin(
+      mutualFollows,
+      and(
+        eq(mutualFollows.followerId, follows.followeeId),
+        eq(mutualFollows.followeeId, follows.followerId),
+      ),
+    )
     .where(and(eq(follows.followerId, senderId), inArray(follows.followeeId, requested)));
   const recipientIds = following.map((row) => row.id);
   if (recipientIds.length === 0) return { ok: true, count: 0 };

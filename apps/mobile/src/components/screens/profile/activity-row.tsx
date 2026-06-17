@@ -5,45 +5,17 @@ import { PressableScale } from "pressto";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 
-import { MetricPill } from "@/components/ui/metric-pill";
+import { RatingPill } from "@/components/ui/rating-pill";
 import { Text } from "@/components/ui/text";
 import { BORDER_RADIUS, SPACING } from "@/constants/design-tokens";
-import { useAccentColor } from "@/hooks/use-accent-color";
 import { useTheme } from "@/hooks/use-theme";
 import { hapticTap } from "@/lib/haptics";
-import { episodeDetailHref, mediaDetailHref } from "@/lib/navigation";
+import { activityDetailHref } from "@/lib/navigation";
 import { tmdbImageUrl } from "@/lib/tmdb";
-import { ratingToStars } from "@/services/core/rating";
 import type { ProfileActivityItem } from "@/services/profiles";
 
 const POSTER_WIDTH = 64;
 const POSTER_HEIGHT = 96;
-
-function activityHref(item: ProfileActivityItem) {
-  if (item.kind === "episode") {
-    return episodeDetailHref(
-      {
-        seriesId: item.tmdb_id,
-        episodeTmdbId: item.episode_tmdb_id ?? 0,
-        seasonNumber: item.season_number ?? 0,
-        episodeNumber: item.episode_number ?? 0,
-        seriesTitle: item.media_title,
-        poster_path: item.poster_path,
-      },
-      "profile",
-    );
-  }
-  return mediaDetailHref(
-    {
-      id: item.tmdb_id,
-      media_type: item.media_type,
-      title: item.media_title,
-      poster_path: item.poster_path,
-      backdrop_path: null,
-    },
-    "profile",
-  );
-}
 
 // Native, tappable activity row mirroring the watchlist row: the poster drives
 // the Apple zoom transition through a real <Link>, and the runtime pill is
@@ -51,7 +23,6 @@ function activityHref(item: ProfileActivityItem) {
 export function ActivityRow({ item }: { item: ProfileActivityItem }) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { accentHex, getBackgroundColor } = useAccentColor();
   const posterUri = tmdbImageUrl(item.poster_path, "w342");
   const reviewTitle = item.review_title?.trim();
   const comment = item.comment?.trim();
@@ -61,7 +32,7 @@ export function ActivityRow({ item }: { item: ProfileActivityItem }) {
       : null;
 
   return (
-    <Link href={activityHref(item)} asChild>
+    <Link href={activityDetailHref(item, "profile")} asChild>
       <PressableScale onPress={() => hapticTap()} style={styles.row}>
         <Link.AppleZoom>
           {posterUri ? (
@@ -115,15 +86,7 @@ export function ActivityRow({ item }: { item: ProfileActivityItem }) {
               {fallback}
             </Text>
           ) : null}
-          {item.rating != null ? (
-            <MetricPill
-              icon="star.fill"
-              iconSize={10}
-              label={String(ratingToStars(item.rating))}
-              tint={accentHex}
-              background={getBackgroundColor()}
-            />
-          ) : null}
+          {item.rating != null ? <RatingPill rating={item.rating} /> : null}
         </View>
       </PressableScale>
     </Link>

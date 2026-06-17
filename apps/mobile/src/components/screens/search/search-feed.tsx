@@ -1,3 +1,5 @@
+import { useFocusEffect } from "expo-router";
+import { useCallback } from "react";
 import { RefreshControl, ScrollView, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 
@@ -7,14 +9,15 @@ import { useNotInterestedList } from "@/hooks/not-interested/use-not-interested-
 import { useMyPlatforms } from "@/hooks/platforms/use-my-platforms";
 import { useAvailableFeed } from "@/hooks/recommendations/use-available-feed";
 import { useFeed } from "@/hooks/recommendations/use-feed";
+import { useFollowingActivity } from "@/hooks/social/use-following-activity";
 import { useDiscoverMedia } from "@/hooks/tmdb/use-discover-media";
 import { useAccentColor } from "@/hooks/use-accent-color";
 import type { MediaFilter, MediaType, TmdbMovieSummary } from "@/lib/tmdb";
 import type { FeedSection, ResumeEntry } from "@/services/recommendations";
 
 import { FeedSectionShelf } from "../home/feed-section-shelf";
-import { FriendsWatchedShelf } from "../home/friends-watched-shelf";
 import { ResumeShelf } from "../home/resume-shelf";
+import { FriendsRatedShelf } from "./friends-rated-shelf";
 import {
   SearchDiscoverAvailabilityShelves,
   SearchDiscoverLeadShelves,
@@ -24,6 +27,7 @@ import {
 import { InlineEmptyState, InlineMessage, WarmUpPrompt } from "./search-empty-states";
 
 const PERSONAL_BATCH_SIZE = 2;
+const SOCIAL_ACTIVITY_PAGE_SIZE = 15;
 
 function matchesFilter(mediaType: MediaType | ResumeEntry["media_type"], filter: MediaFilter) {
   if (filter === "all") return true;
@@ -47,7 +51,15 @@ export function SearchFeed({ filter, bottomInset }: { filter: MediaFilter; botto
   const myPlatforms = useMyPlatforms();
   const hasPlatforms = (myPlatforms.data?.providers.length ?? 0) > 0;
   const available = useAvailableFeed({ filter, enabled: hasPlatforms });
+  const { data: followingActivityData, refetch: refetchFollowingActivity } =
+    useFollowingActivity({ pageSize: SOCIAL_ACTIVITY_PAGE_SIZE });
   const { isDismissed } = useNotInterestedList();
+
+  useFocusEffect(
+    useCallback(() => {
+      void refetchFollowingActivity();
+    }, [refetchFollowingActivity]),
+  );
 
   const filterDismissed = (media: TmdbMovieSummary) => !isDismissed(media.id, media.media_type);
   const sections = (feed.data?.sections ?? [])
@@ -64,15 +76,18 @@ export function SearchFeed({ filter, bottomInset }: { filter: MediaFilter; botto
       matchesFilter(entry.media_type, filter) &&
       !isDismissed(entry.tmdb_id, notInterestedType(entry.media_type)),
   );
-  const friendsWatched = (feed.data?.friendsRecentlyWatched ?? []).filter(
-    (entry) => matchesFilter(entry.media_type, filter) && filterDismissed(entry),
+  const friendsRated = followingActivityData.filter(
+    (entry) =>
+      entry.rating != null &&
+      matchesFilter(entry.media_type, filter) &&
+      !isDismissed(entry.tmdb_id, entry.media_type),
   );
   const todaySection = sections.find((section) => section.key === "today");
   const personalSections = sections.filter((section) => section.key !== "today");
   const firstPersonal = personalSections.slice(0, PERSONAL_BATCH_SIZE);
   const nextPersonal = personalSections.slice(PERSONAL_BATCH_SIZE, PERSONAL_BATCH_SIZE * 2);
   const remainingPersonal = personalSections.slice(PERSONAL_BATCH_SIZE * 2);
-  const hasPersonalContent = sections.length > 0 || resume.length > 0 || friendsWatched.length > 0;
+  const hasPersonalContent = sections.length > 0 || resume.length > 0 || friendsRated.length > 0;
 
   const visibleTrending = discover.trending.filter(filterDismissed);
   const featured = visibleTrending.slice(0, 5);
@@ -100,6 +115,7 @@ export function SearchFeed({ filter, bottomInset }: { filter: MediaFilter; botto
 
   function refresh() {
     void feed.refresh();
+    void refetchFollowingActivity();
     discover.refetch();
     if (hasPlatforms) available.refetch();
   }
@@ -123,7 +139,7 @@ export function SearchFeed({ filter, bottomInset }: { filter: MediaFilter; botto
         <>
           {todaySection ? renderSection(todaySection) : null}
           <ResumeShelf entries={resume} />
-          <FriendsWatchedShelf entries={friendsWatched} />
+          <FriendsRatedShelf entries={friendsRated} />
           {!hasPersonalContent && !feed.error ? <WarmUpPrompt /> : null}
           {feed.error ? <InlineMessage>{t("home.loadError")}</InlineMessage> : null}
 

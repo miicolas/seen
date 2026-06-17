@@ -15,6 +15,7 @@ import { BORDER_RADIUS, LAYOUT, SPACING } from "@/constants/design-tokens";
 import { useAccentColor } from "@/hooks/use-accent-color";
 import { useSendRecommendation } from "@/hooks/media-recommendations/use-send-recommendation";
 import { useTheme } from "@/hooks/use-theme";
+import { errorMessage } from "@/lib/format";
 import { hapticError, hapticSelection, hapticSuccess, hapticTap } from "@/lib/haptics";
 import type { MediaType } from "@/lib/tmdb";
 import { profileAvatarUrl } from "@/services/profiles";
@@ -49,6 +50,10 @@ export function RecommendSheet() {
   );
   const selectedCount = selected.size;
   const candidates = friends.data ?? [];
+  const friendLoadError =
+    friends.error && candidates.length === 0
+      ? errorMessage(friends.error, t("recommend.loadFriendsError"))
+      : null;
   const canSend = selectedCount > 0 && !isSending && Number.isFinite(tmdbId) && tmdbId > 0;
 
   function close() {
@@ -103,6 +108,26 @@ export function RecommendSheet() {
       {friends.isLoading ? (
         <View style={styles.empty}>
           <ActivityIndicator />
+        </View>
+      ) : friendLoadError ? (
+        <View style={styles.empty}>
+          <ContentUnavailable
+            icon="exclamationmark.triangle"
+            title={t("recommend.friendsErrorTitle")}
+            description={friendLoadError}
+            minHeight={260}
+            action={
+              <Button
+                title={t("profile.retry")}
+                icon="arrow.clockwise"
+                onPress={() => {
+                  void friends.refetch();
+                }}
+                loading={friends.isFetching}
+                width="fill"
+              />
+            }
+          />
         </View>
       ) : candidates.length === 0 ? (
         <View style={styles.empty}>

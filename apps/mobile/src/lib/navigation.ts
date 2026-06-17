@@ -132,6 +132,47 @@ export function episodeDetailHref(
   } as Href;
 }
 
+export type ActivityDetailLink = {
+  kind: "media" | "episode";
+  media_title: string;
+  media_type: MediaType;
+  tmdb_id: number;
+  poster_path: string | null;
+  season_number: number | null;
+  episode_number: number | null;
+  episode_tmdb_id: number | null;
+};
+
+export function activityDetailHref(
+  item: ActivityDetailLink,
+  base: MediaRouteBase = "search",
+): Href {
+  if (item.kind === "episode") {
+    return episodeDetailHref(
+      {
+        seriesId: item.tmdb_id,
+        episodeTmdbId: item.episode_tmdb_id ?? 0,
+        seasonNumber: item.season_number ?? 0,
+        episodeNumber: item.episode_number ?? 0,
+        seriesTitle: item.media_title,
+        poster_path: item.poster_path,
+      },
+      base,
+    );
+  }
+
+  return mediaDetailHref(
+    {
+      id: item.tmdb_id,
+      media_type: item.media_type,
+      title: item.media_title,
+      poster_path: item.poster_path,
+      backdrop_path: null,
+    },
+    base,
+  );
+}
+
 export function episodeReviewsListHref(params: {
   seriesId: number;
   seasonNumber: number;

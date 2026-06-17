@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { ScreenHeader, ScreenToolbar } from "@/components/navigation";
+import { ScreenHeader } from "@/components/navigation";
 import { Text } from "@/components/ui/text";
 import { useMediaRouteBase } from "@/hooks/use-media-route-base";
 import { useTheme } from "@/hooks/use-theme";
@@ -38,17 +38,6 @@ export function EpisodeDetail() {
     <>
       <ScreenHeader />
       <Stack.Title>{vm.title}</Stack.Title>
-      <ScreenToolbar
-        placement="right"
-        actions={[
-          {
-            key: "close",
-            icon: "xmark",
-            onPress: vm.handleClose,
-            tintColor: "#ffffff",
-          },
-        ]}
-      />
 
       <View style={[styles.root, { backgroundColor: theme.background }]}>
         <MediaParallaxHeader

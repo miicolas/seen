@@ -128,6 +128,7 @@ export const fr: typeof en = {
   search: {
     title: "Tes recommandations",
     titleWithName: "Pour toi, {{name}}",
+    friendsRated: "Notés récemment par tes amis",
   },
   review: {
     screenTitle: "Critique",
@@ -188,7 +189,9 @@ export const fr: typeof en = {
     sendCount: "Envoyer à {{count}}",
     messagePlaceholder: "Ajouter un message (facultatif)",
     noFriendsTitle: "Personne à qui recommander",
-    noFriends: "Abonne-toi à des personnes pour leur recommander des titres.",
+    noFriends: "Ajoute des amis mutuels pour leur recommander des titres.",
+    friendsErrorTitle: "Impossible de charger tes amis",
+    loadFriendsError: "Impossible de charger tes amis. Réessaie.",
     error: "Échec de l'envoi de ta recommandation. Réessaie.",
     inboxTitle: "Reçues",
     inboxEmpty: "Aucune recommandation pour le moment.",
